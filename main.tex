@@ -73,13 +73,14 @@
 \DeclareMathOperator{\ob}{ob}
 \DeclareMathOperator{\opcart}{opcart}
 
-% Adjunctions & horizontal arrows
+%FIXME: pullbacks not looking good
+% Adjunctions, horizontal arrows, pullback
 \usetikzlibrary{decorations.pathmorphing}
 \usetikzlibrary{decorations.markings}
 \tikzset{%
     adj/.style={%
-        draw=none,
-        "\dashv"{anchor=center, rotate=-90}
+        /tikz/commutative diagrams/phantom,
+        "\dashv"{rotate=-90}
     },
     loose/.default=0.5ex,
     loose/.style={%
@@ -87,6 +88,10 @@
         postaction=decorate,
         decoration={markings, mark=at position 0.5 with {\draw[-] (0,#1) -- (0,-#1);}}
     },
+    pullback/.style={
+        /tikz/commutative diagrams/phantom,
+        "\scalebox{1.5}{$\lrcorner$}"{pos=0.125}
+    }
 }
 
 % `よ`
@@ -188,26 +193,6 @@
 \renewcommand\cftaftertoctitle{\par\noindent\hrulefill\par\vskip-.3em}
 \renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
 
-% String diagrams colours
-% TODO: Choisir de meilleurs couleurs
-% \tgColours{F5A3A3,F5CCA3,F5F5A3,CCF5A3,A3F5A3,A3F5CC,A3F5F5,A3CCF5,A3A3F5,CCA3F5,F5A3F5,F5A3CC}
-
-% Distributors
-% % TODO: FIXME: profunctor
-% \makeatletter
-% \def\slashedarrowfill@#1#2#3#4#5{%
-%   $\m@th\thickmuskip0mu\medmuskip\thickmuskip\thinmuskip\thickmuskip
-%   \relax#5#1\mkern-7mu%
-%   \cleaders\hbox{$#5\mkern-2mu#2\mkern-2mu$}\hfill
-%   \mathclap{#3}\mathclap{#2}%
-%   \cleaders\hbox{$#5\mkern-2mu#2\mkern-2mu$}\hfill
-%   \mkern-7mu#4$%
-% }
-% \def\rightslashedarrowfill@{%
-%   \slashedarrowfill@\relbar\relbar\mapstochar\rightarrow}
-% \newcommand\xslashedrightarrow[2][]{%
-%   \ext@arrow 0055{\rightslashedarrowfill@}{#1}{#2}}
-% \makeatother
 
 % hyperlinks
 \definecolor{ocre}{RGB}{0, 113, 188}
@@ -252,70 +237,6 @@ In accordance to N. Arkor and D. McDermott's articles, horizontal arrows will be
 \subsection{Acknowledgments}
 
 Arkor et McDermott for articles (+ discussion on Zulip with Arkor), Jana K. Nickel for handwritten notes on conjoint/companion, Morgan Rogers as a tutor, LIPN...
-
-\section{Context}
-
-% TODO: needed ?
-
-\subsection{Relative monads}
-
-Les monades relatives ont été pour la première fois introduites dans l'article \cite{acu}, bien que la notion d'adjoints relatif remonte à la fin des années 60 \cite{ulmer}. On se place dans une $\cat{V}$-catégorie avec $\cat{V}$ monoïdale.
-
-\begin{definition}
-    \index{monade}
-    Une \textbf{monade} sur une catégorie $\cat{C}$ est la donnée d'un endofoncteur $T : \cat{C} \To \cat{C}$ et de deux transformations naturelles $\eta : 1_\cat{C} \To T$ et $\mu : T^2 \To T$ tels que les deux diagrammes commutent :
-    \[
-        \begin{tikzcd}
-            T^3 \ar[r, Rightarrow, "T\mu"] \ar[d, Rightarrow, "\mu_T"] & T^2 \ar[d, Rightarrow, "\mu"]\\
-            T^2 \ar[r, Rightarrow, "\mu"] & T
-        \end{tikzcd}
-        \begin{tikzcd}
-            T \ar[rd, Rightarrow, "1_T"] \ar[r, Rightarrow, "T\eta"] & T^2 \ar[d, Rightarrow, "\mu"] & T \ar[l, Rightarrow, "\eta_T"] \ar[ld, Rightarrow, "1_T"]\\
-                                                                     & T
-        \end{tikzcd}
-    \]
-    De façon concise : $(T, \eta, \mu)$ est un monoïde (strict) dans $\cat{End(C)}$.
-\end{definition}
-
-On réécrit cette définition sous une forme \textit{extensive}, plus commune chez les informaticiens :
-
-\begin{definition}
-    \index{monade}
-    Une \textbf{monade} sur une catégorie $\cat{C}$ est la donnée pour tout objet $A$ de $\cat{C}$ d'un objet $TA \in \cat{C}$ et d'un morphisme $\eta_A : A \to TA$, et pour $f : A \to TB$, d'un morphisme $f^\dagger : TA \to TB$ tels que
-    \begin{itemize}
-        \item $\eta_A^\dagger = 1_{TA}$.
-        \item Pour $f : A \to TB$, $f^\dagger \circ \eta_A = f$.
-        \item Pour $f : A \to TB, g : B \to TC$, $g^\dagger \circ f^\dagger = (g^\dagger \circ f)^\dagger$.
-    \end{itemize}
-\end{definition}
-
-\begin{remark}
-    Ces deux définitions sont équivalentes : on définit $f^\dagger := \mu_B \circ Tf$ pour obtenir la forme extensive; et $Tf := (\eta_B \circ f)^\dagger, \mu_A := 1_{TA}^\dagger$ pour retrouver une monade. La première définition donne les $T$-algèbres et la catégorie d'Eilenberg-Moore de $T$ tandis que la seconde donne la catégorie de Kleisli de $T$.
-\end{remark}
-
-La seconde définition permet surtout de généraliser la définition d'une monade. On fixe donc un foncteur $J : \cat{B} \to \cat{C}$, dit \textbf{racine}.
-
-\begin{definition}
-    \index{monade relative}
-    Une \textbf{$J$-monade} (ou \textbf{monade $J$-relative}) est la donnée d'un foncteur $T : \cat{B} \to \cat{C}$, une transformation naturelle $\eta : J \To T$ et une fonction $\dagger : \cat{C}(J-, T-) \To \cat{C}(T-, T-)$ telles que pour tout $f : JA \to TB$ :
-    \begin{itemize}
-        \item $f = f^\dagger \circ \eta_A$.
-        \item $\eta_A^\dagger = 1_{TA}$.
-        \item $(g^\dagger \circ f)^\dagger = g^\dagger \circ f^\dagger$.
-    \end{itemize}
-\end{definition}
-
-\begin{example}[Sanity Check]
-    Pour $\cat{V} = \cat{Set}$, $J = 1_\cat{C}$, $T$ une $J$-monade. On retrouve bien la définition d'une monade sous forme extensive.
-\end{example}
-
-On peut se demander si l'ont peut retrouver une caractérisation interne à $\cat{(B, C)}$. \textit{Sous réserve d'existence} de $\Lan_J$, on peut former un monoïde biaisé avec pour unité $J$ et pour opération :
-\[
-    \begin{tikzcd}
-        A \ar[r, "F"] & C \ar[rd, "\Lan_J G"]\\
-        A \ar[ru, "G"] \ar[rr, "J"] && C
-    \end{tikzcd}
-\]
 
 \section{Formal Category Theory}
 
@@ -523,7 +444,7 @@ The universal property gives a identity or a composite (eventually left- or righ
     \[\begin{tikzcd}[column sep=tiny]
         & \ar[dl, equal] A \ar[dr, equal] &\\
         A & {} & \ar[ll, equal, loose] A
-        \ar[from=1-2, to=2-2, draw=none, "e_A"{anchor=center}]
+        \ar[from=1-2, to=2-2, phantom, "e_A"{anchor=center}]
     \end{tikzcd}\]
     When the vertical arrows of a cell are the identity, we will write $\varphi : p_1, \cdots, p_n \To q$ and when the horizontal domain is empty, $\varphi : \To q$ (e.g. $e_1 : \To A(1, 1)$).
 \end{notation}
@@ -535,21 +456,21 @@ The universal property gives a identity or a composite (eventually left- or righ
         & A \ar[d, "f"] &\\
         & B \ar[dl, equal] \ar[dr, equal] & \\
         B & {} & \ar[ll, equal, loose] B
-        \ar[from=2-2, to=3-2, draw=none, "e_B"{anchor=center}]
+        \ar[from=2-2, to=3-2, phantom, "e_B"{anchor=center}]
     \end{tikzcd}
     \hspace{1em} = \hspace{1em}
     \begin{tikzcd}[column sep=tiny]
         & A \ar[dl, "f"'] \ar[dr, "f"] &\\
         B & {} & \ar[ll, equal, loose] B
-        \ar[from=1-2, to=2-2, draw=none, "e_f"{anchor=center}]
+        \ar[from=1-2, to=2-2, phantom, "e_f"{anchor=center}]
     \end{tikzcd}\]
     We think of $e_f$ as an identity cell for $f$. If $A(1, 1)$ exists, we can also apply the universal property of $A(1, 1)$ to get:
     \[\begin{tikzcd}[column sep=tiny]
         & A \ar[dl, equal] \ar[dr, equal] &\\
         A \ar[d, "f"'] & {} & \ar[ll, equal, loose] A \ar[d, "f"]\\
         B & {} & \ar[ll, equal, loose] B
-        \ar[from=1-2, to=2-2, draw=none, "e_A"{anchor=center}]
-        \ar[from=2-2, to=3-2, draw=none, "\widetilde{e_f}"{anchor=center}]
+        \ar[from=1-2, to=2-2, phantom, "e_A"{anchor=center}]
+        \ar[from=2-2, to=3-2, phantom, "\widetilde{e_f}"{anchor=center}]
     \end{tikzcd}\]
 \end{remark}
 
@@ -558,7 +479,7 @@ The universal property gives a identity or a composite (eventually left- or righ
     \[\begin{tikzcd}[column sep=tiny]
         & A \ar[dl, "f"'] \ar[dr, "g"] &\\
         B & {} & \ar[ll, equal, loose] B
-        \ar[from=1-2, to=2-2, draw=none, "\varphi"{anchor=center}]
+        \ar[from=1-2, to=2-2, phantom, "\varphi"{anchor=center}]
     \end{tikzcd}\]
 \end{notation}
 
@@ -610,7 +531,7 @@ When the restrictions exists, we have a useful result:
         A \ar[d, "f"'] & \ar[l, equal] A \ar[d, equal]\\
         B \ar[d, equal] & \ar[l, loose, "{B(1, f)}"', ""{anchor=center,name=t}] A \ar[d, "f"]\\
         B & \ar[l, equal, loose, ""{anchor=center, name=b}] B
-        \ar[from=t, to=b, draw=none, "\opcart"{anchor=center}]
+        \ar[from=t, to=b, phantom, "\opcart"{anchor=center}]
     \end{tikzcd}
     \hspace{1em}=\hspace{1em}
     \begin{tikzcd}
@@ -622,7 +543,7 @@ When the restrictions exists, we have a useful result:
         A \ar[d, equal] & \ar[l, equal] A \ar[d, "f"]\\
         A \ar[d, "f"'] & \ar[l, loose, "{B(f, 1)}"', ""{anchor=center,name=t}] B \ar[d, equal]\\
         B & \ar[l, equal, loose, ""{anchor=center, name=b}] B
-        \ar[from=t, to=b, draw=none, "\opcart"{anchor=center}]
+        \ar[from=t, to=b, phantom, "\opcart"{anchor=center}]
     \end{tikzcd}\]
     We define the cells $\smallsmile_f$ as the composite
     \[\begin{tikzcd}
@@ -633,20 +554,20 @@ When the restrictions exists, we have a useful result:
     \begin{tikzcd}
         B \ar[d, equal] & \ar[l, loose, "{B(1, f)}"'] A & \ar[l, loose, "{B(f, 1)}"'] B \ar[d, equal]\\
         B & {} & \ar[ll, equal, loose] B
-        \ar[from=1-2, to=2-2, draw=none, "\smallsmile_f"{anchor=center}]
+        \ar[from=1-2, to=2-2, phantom, "\smallsmile_f"{anchor=center}]
     \end{tikzcd}\]
     Furthermore, knowing that $B(f, f) \simeq B(f, 1) \odot B(1, f)$ when one of the sides exists, we define $\smallfrown_f$:
     \[\begin{tikzcd}
         A \ar[d, equal] & \ar[l, loose, equal] A \ar[d, "f"] & \ar[l, loose, equal] A \ar[d, equal]\\
         A \ar[d, equal] & \ar[l, "{B(f, 1)}"', loose] B & \ar[l, "{B(1, f)}"', loose] A \ar[d, equal]\\
         A & {} & \ar[ll, loose, "{B(f, f)}"] A
-        \ar[from=2-2, to=3-2, draw=none, "\opcart"{anchor=center}]
+        \ar[from=2-2, to=3-2, phantom, "\opcart"{anchor=center}]
     \end{tikzcd}
     =
     \begin{tikzcd}
         A \ar[d, equal] & \ar[l, loose, equal] A & \ar[l, loose, equal] A \ar[d, equal]\\
         A & {} & \ar[ll, loose, "{B(f, f)}"] A
-        \ar[from=1-2, to=2-2, draw=none, "\smallfrown_f"{anchor=center}]
+        \ar[from=1-2, to=2-2, phantom, "\smallfrown_f"{anchor=center}]
     \end{tikzcd}\]
 \end{notation}
 
@@ -700,7 +621,7 @@ When the restrictions exists, we have a useful result:
     A \textbf{virtual equipment} is a virtual double category in which all horizontal identities and restrictions exist. It is moreover \textbf{strict} if it is equipped with a functorial choice of restrictions : $p(1, 1) = p$ et $p(f, g)(f', g') = p(ff', gg')$.
 \end{definition}
 
-\begin{example}[Back to Example \ref{ex:span}] %TODO vérifier
+\begin{example}[Back to Example \ref{ex:span}]
     For $E$ a category with pullbacks, $\Span(\cat{E})$ is always a normal virtual equipment, where horizontal identities are
     \[\begin{tikzcd}
         & \ar[dl, "\id_A"'] A \ar[dr, "\id_A"] &\\
@@ -850,16 +771,16 @@ Using right lift and extensions, we can express the universal property of weight
         J \ar[d, equal] & \ar[l, "p_1"', loose] \cdots & \ar[l, "p_m"', loose] Y \ar[d, equal] & \ar[l, "{X(\colim^{\vec{p}}f, 1)}"'{name=t}, loose] X \ar[d, equal]\\
         J \ar[d, equal] & {} & \ar[ll, "{X(f, \colim^{\vec{p}}f)}"{name=0}, loose] Y & \ar[l, "{X(\colim^{\vec{p}}f, 1)}"{name=b}, loose] X \ar[d, equal]\\
         J &&& \ar[lll, "{X(f, 1)}"{name=2}, loose] X
-        \ar[from=1-2, to=0, draw=none, "\lambda"{anchor=center}] \ar[from=t, to=b, draw=none, "="{anchor=center}]
-        \ar[from=2-3, to=2-2, draw=none, ""{name=1}] \ar[from=1, to=2, draw=none, "{\smallsmile_{\colim^{\vec{p}}f}(f, 1)}"{anchor=center}]
+        \ar[from=1-2, to=0, phantom, "\lambda"{anchor=center}] \ar[from=t, to=b, phantom, "="{anchor=center}]
+        \ar[from=2-3, to=2-2, phantom, ""{name=1}] \ar[from=1, to=2, phantom, "{\smallsmile_{\colim^{\vec{p}}f}(f, 1)}"{anchor=center}]
     \end{tikzcd}\]
     Dually, for $\vec{p} := (p_1, \cdots, p_m) : J \dfrom \cdots \dfrom Y$, we can define \textbf{$\vec{p}-$cones} as a pair of a vertical arrow $c : Y \to X$ and a cell $\mu : \vec{p} \To X(c, f)$, and a $\vec{p}$-cone is \textbf{limiting} (or a $\vec{p}$-limit) if the following diagram exhibits $X(1, \lim^{\vec{p}}f)$ as the right extension $\vec{p}\rext X(1, f)$.
     \[\begin{tikzcd}[sep=huge]
         X \ar[d, equal] & \ar[l, "{X(1, \lim^{\vec{p}}f)}"'{name=t}, loose] Y \ar[d, equal] & \ar[l, "p_1"', loose] \cdots & \ar[l, "p_m"', loose] J \ar[d, equal]\\
         X \ar[d, equal] & \ar[l, "{X(1, \lim^{\vec{p}}f)}"{name=b}, loose] Y & {} & \ar[ll, "{X(\lim^{\vec{p}}f, f)}"{name=0}, loose] J \ar[d, equal]\\
         X &&& \ar[lll, "{X(1, f)}"{name=2}, loose] J
-        \ar[from=1-3, to=0, draw=none, "\mu"{anchor=center}] \ar[from=t, to=b, draw=none, "="{anchor=center}]
-        \ar[from=2-3, to=2-2, draw=none, ""{name=1}] \ar[from=1, to=2, draw=none, "{\smallsmile_{\lim^{\vec{p}}f}(1, f)}"{anchor=center}]
+        \ar[from=1-3, to=0, phantom, "\mu"{anchor=center}] \ar[from=t, to=b, phantom, "="{anchor=center}]
+        \ar[from=2-3, to=2-2, phantom, ""{name=1}] \ar[from=1, to=2, phantom, "{\smallsmile_{\lim^{\vec{p}}f}(1, f)}"{anchor=center}]
     \end{tikzcd}\]
 \end{definition}
 
@@ -925,7 +846,7 @@ Finally, we define extensions and lift of vertical arrows, that will act like po
     \end{itemize}
 \end{definition}
 
-In particular, the left Kan extension of $f$ through $j$ is the $Y(j, 1)$-colimit of $f$. We can then deduce the following properties:
+In particular, the left Kan extension of $f$ through $j$ is the $X(j, 1)$-colimit of $f$. We can then deduce the following properties:
 
 \begin{lemma}
     Let $f : Z \to Y, j : Z \to X$ be vertical arrows such that $j \plext f : X \to Y$ exists.
@@ -939,6 +860,8 @@ In particular, the left Kan extension of $f$ through $j$ is the $Y(j, 1)$-colimi
 \end{lemma}
 
 \subsection{Density and full faithfulness}
+\todo{Ajouter les defs et les 20 000 lemmes qui vont avec}
+\todo{add lemmas from \cite[Appendix]{diliberticodensity}}
 
 \begin{lemma}
     \label{lem:ff_dense_prelim}
@@ -1010,27 +933,27 @@ We will see later (Corollary \ref{cor:adj_defs_same}) that the two notions coinc
             C \ar[d, equal] & \ar[l, loose, "\ell"', ""{anchor=center,name=t1}] A \ar[d, equal] & \ar[l, equal, ""{anchor=center,name=t2}] A \ar[d, equal]\\
             C \ar[d, equal] & \ar[l, loose, "\ell", ""{anchor=center,name=b1}] A & \ar[l, loose, "r\odot\ell", ""{anchor=center,name=b2}] A \ar[d, equal]\\
             C && \ar[ll, loose, "\ell", ""{anchor=center,name=bb}] A
-            \ar[from=t1, to=b1, draw=none, "="{anchor=center}] \ar[from=t2, to=b2, draw=none, "\eta"{anchor=center}, yshift=-0.4ex]
-            \ar[from=2-2, to=bb, draw=none, "{(1_\ell, \varepsilon)}"{anchor=center}]
+            \ar[from=t1, to=b1, phantom, "="{anchor=center}] \ar[from=t2, to=b2, phantom, "\eta"{anchor=center}, yshift=-0.4ex]
+            \ar[from=2-2, to=bb, phantom, "{(1_\ell, \varepsilon)}"{anchor=center}]
         \end{tikzcd}
         =
         \begin{tikzcd}
             C \ar[d, equal] & \ar[l, loose, "\ell"', ""{anchor=center,name=t}] A \ar[d, equal]\\
             C & \ar[l, loose, "\ell", ""{anchor=center,name=b}] A
-            \ar[from=t, to=b, draw=none, "="{anchor=center}]
+            \ar[from=t, to=b, phantom, "="{anchor=center}]
         \end{tikzcd}\]
         \[\begin{tikzcd}[row sep=small]
             A \ar[d, equal] & \ar[l, equal, ""{anchor=center,name=t1}] A \ar[d, equal] & \ar[l, loose, "r"', ""{anchor=center,name=t2}] C \ar[d, equal]\\
             A \ar[d, equal] & \ar[l, loose, "r\odot\ell", ""{anchor=center,name=b1}] A & \ar[l, loose, "r", ""{anchor=center,name=b2}] C \ar[d, equal]\\
             A && \ar[ll, loose, "r", ""{anchor=center,name=bb}] C
-            \ar[from=t1, to=b1, draw=none, "\eta"{anchor=center}, yshift=-0.4ex] \ar[from=t2, to=b2, draw=none, "="{anchor=center}]
-            \ar[from=2-2, to=bb, draw=none, "{(\varepsilon, 1_r)}"{anchor=center}]
+            \ar[from=t1, to=b1, phantom, "\eta"{anchor=center}, yshift=-0.4ex] \ar[from=t2, to=b2, phantom, "="{anchor=center}]
+            \ar[from=2-2, to=bb, phantom, "{(\varepsilon, 1_r)}"{anchor=center}]
         \end{tikzcd}
         =
         \begin{tikzcd}
             A \ar[d, equal] & \ar[l, loose, "r"', ""{anchor=center,name=t}] C \ar[d, equal]\\
             A & \ar[l, loose, "r", ""{anchor=center,name=b}] C
-            \ar[from=t, to=b, draw=none, "="{anchor=center}]
+            \ar[from=t, to=b, phantom, "="{anchor=center}]
         \end{tikzcd}\]
     \end{wrapfigure}
     A \textbf{horizontal adjunction} $\ell\dashv r$ comprises of the following data:
@@ -1058,7 +981,7 @@ We will see later (Corollary \ref{cor:adj_defs_same}) that the two notions coinc
         \begin{tikzcd}
             & C \ar[dr, "r", ""{anchor=north,name=radj}] &\\
             A \ar[ur, "\ell", ""{anchor=north,name=ladj}] \ar[rr, "j"'] && E
-            \ar[from=ladj, to=radj, draw=none, "\dashv"{anchor=center}]
+            \ar[from=ladj, to=radj, phantom, "\dashv"{anchor=center}]
         \end{tikzcd}
     \end{wrapfigure}
     A \textbf{relative adjunction} $\ell \dashv_j r$ comprises of the following data:
@@ -1087,28 +1010,28 @@ As for classical adjunctions, there's multiple characterizations using unit and 
                 \ar[d, equal] C & \ar[l, loose, "{C(1, \ell)}"', ""{anchor=center,name=m1}] A \ar[d, equal] & \ar[l, loose, "{E(j, j)}"', ""{anchor=center,name=m2}] A \ar[d, equal]\\
                 \ar[d, equal] C & \ar[l, loose, "{C(1, \ell)}", ""{anchor=center,name=b1}] A & \ar[l, loose, "{E(j, r\ell)}", ""{anchor=center,name=b2}] A \ar[d, equal]\\
                 C && \ar[ll, loose, "{C(1, \ell)}", ""{anchor=center,name=bb}] A
-                \ar[from=t1, to=m1, draw=none, "="{anchor=center}] \ar[from=t2, to=m2, draw=none, "\smallfrown_j"{anchor=center}]
-                \ar[from=m1, to=b1, draw=none, "="{anchor=center}] \ar[from=m2, to=b2, draw=none, "{E(j, \eta)}"{anchor=center}]
-                \ar[from=3-2, to=bb, draw=none, "{\varepsilon(1, \ell)}"{anchor=center}]
+                \ar[from=t1, to=m1, phantom, "="{anchor=center}] \ar[from=t2, to=m2, phantom, "\smallfrown_j"{anchor=center}]
+                \ar[from=m1, to=b1, phantom, "="{anchor=center}] \ar[from=m2, to=b2, phantom, "{E(j, \eta)}"{anchor=center}]
+                \ar[from=3-2, to=bb, phantom, "{\varepsilon(1, \ell)}"{anchor=center}]
             \end{tikzcd}
             \hspace{1em} = \hspace{1em}
             \begin{tikzcd}
                 \ar[d, equal] C & \ar[l, loose, "{C(1, \ell)}"', ""{anchor=center,name=t}] A \ar[d, equal]\\
                 C & \ar[l, loose, "{C(1, \ell)}", ""{anchor=center,name=b}] A
-                \ar[from=t, to=b, draw=none, "="{anchor=center}]
+                \ar[from=t, to=b, phantom, "="{anchor=center}]
             \end{tikzcd}\]
             \[\begin{tikzcd}
                 \ar[d, equal] E & \ar[l, loose, "{E(1, j)}"', ""{anchor=center,name=t1}] A \ar[d, equal] & \ar[l, loose, "{E(j, 1)}"', ""{anchor=center,name=t2}] E \ar[d, equal] & \ar[l, loose, "{E(1, r)}"', ""{anchor=center,name=t3}] C \ar[d, equal]\\
                 \ar[d, equal] E & \ar[l, loose, "{E(1, r\ell)}", ""{anchor=center,name=b1}] A & \ar[l, loose, "{E(j, 1)}", ""{anchor=center,name=b2}] E & \ar[l, loose, "{E(1, r)}", ""{anchor=center,name=b3}] C \ar[d, equal]\\
                 E &&& \ar[lll, loose, "{E(1, r)}", ""{anchor=center,name=bb}] C
-                \ar[from=t1, to=b1, draw=none, "{E(1, \eta)}"{anchor=center}] \ar[from=t2, to=b2, draw=none, "="{anchor=center}] \ar[from=t3, to=b3, draw=none, "="{anchor=center}]
-                \ar[from=b2, to=bb, draw=none, "{E(1, r), \varepsilon}"{anchor=center}, yshift=-0.8ex]
+                \ar[from=t1, to=b1, phantom, "{E(1, \eta)}"{anchor=center}] \ar[from=t2, to=b2, phantom, "="{anchor=center}] \ar[from=t3, to=b3, phantom, "="{anchor=center}]
+                \ar[from=b2, to=bb, phantom, "{E(1, r), \varepsilon}"{anchor=center}, yshift=-0.8ex]
             \end{tikzcd}
             \hspace{1em} = \hspace{1em}
             \begin{tikzcd}
                 \ar[d, equal] E & \ar[l, loose, "{E(1, j)}"'] A & \ar[l, loose, "{E(j, 1)}"', ""{anchor=center,name=t}] E & \ar[l, loose, "{E(1, r)}"'] C \ar[d, equal]\\
                 E &&& \ar[lll, loose, "{E(1, r)}", ""{anchor=center,name=b}] C
-                \ar[from=t, to=b, draw=none, "{\smallsmile_j(1, r)}"{anchor=center}]
+                \ar[from=t, to=b, phantom, "{\smallsmile_j(1, r)}"{anchor=center}]
             \end{tikzcd}\]
         \item A unit cell $\eta : j \To r\circ\ell$ and a cell $\flat : E(j, r) \To C(\ell, 1)$ such that the following diagrams commute
             \[\begin{tikzcd}
@@ -1125,28 +1048,28 @@ As for classical adjunctions, there's multiple characterizations using unit and 
                 \ar[d, equal] C & \ar[l, loose, "{C(1, \ell)}"', ""{anchor=center,name=t1}] A \ar[d, equal] & \ar[l, loose, "{C(\ell, 1)}"', ""{anchor=center,name=t2}] C \ar[d, equal]\\
                 \ar[d, equal] C & \ar[l, loose, "{C(1, \ell)}", ""{anchor=center,name=b1}] A & \ar[l, loose, "{E(j, r)}", ""{anchor=center,name=b2}] C \ar[d, equal]\\
                 C && \ar[ll, equal, loose, ""{anchor=center,name=bb}] C
-                \ar[from=t1, to=b1, draw=none, "="{anchor=center}] \ar[from=t2, to=b2, draw=none, "\sharp"{anchor=center}]
-                \ar[from=2-2, to=bb, draw=none, "\varepsilon"{anchor=center}]
+                \ar[from=t1, to=b1, phantom, "="{anchor=center}] \ar[from=t2, to=b2, phantom, "\sharp"{anchor=center}]
+                \ar[from=2-2, to=bb, phantom, "\varepsilon"{anchor=center}]
             \end{tikzcd}
             \hspace{1em} = \hspace{1em}
             \begin{tikzcd}
                 \ar[d, equal] C & \ar[l, loose, "{C(1, \ell)}"'] A & \ar[l, loose, "{C(\ell, 1)}"'] C \ar[d, equal]\\
                 C && \ar[ll, equal, loose, ""{anchor=center,name=b}] C
-                \ar[from=1-2, to=b, draw=none, "\smallsmile_\ell"{anchor=center}]
+                \ar[from=1-2, to=b, phantom, "\smallsmile_\ell"{anchor=center}]
             \end{tikzcd}
             \hspace{3em}
             \begin{tikzcd}
                 \ar[d, equal] A & \ar[l, equal, ""{anchor=center,name=t1}] \ar[d, equal] & \ar[l, loose, "{E(j, r)}"', ""{anchor=center,name=t2}] C \ar[d, equal]\\
                 \ar[d, equal] A & \ar[l, loose, "{C(\ell, \ell)}", ""{anchor=center,name=b1}] A & \ar[l, loose, "{E(j, r)}", ""{anchor=center,name=b2}] C \ar[d, equal]\\
                 A && \ar[ll, loose, "{E(j, r)}", ""{anchor=center,name=bb}] C
-                \ar[from=t1, to=b1, draw=none, "\smallfrown_\ell"{anchor=center}] \ar[from=t2, to=b2, draw=none, "="{anchor=center}]
-                \ar[from=2-2, to=bb, draw=none, "{\sharp, \varepsilon}"{anchor=center}]
+                \ar[from=t1, to=b1, phantom, "\smallfrown_\ell"{anchor=center}] \ar[from=t2, to=b2, phantom, "="{anchor=center}]
+                \ar[from=2-2, to=bb, phantom, "{\sharp, \varepsilon}"{anchor=center}]
             \end{tikzcd}
             \hspace{1em} = \hspace{1em}
             \begin{tikzcd}
                 \ar[d, equal] A & \ar[l, loose, "{E(j, r)}"', ""{anchor=center,name=t}] C \ar[d, equal]\\
                 A & \ar[l, loose, "{E(j, r)}", ""{anchor=center,name=b}] C
-                \ar[from=t, to=b, draw=none, "="{anchor=center}]
+                \ar[from=t, to=b, phantom, "="{anchor=center}]
             \end{tikzcd}\]
         \item A horizontal adjunction $C(1, \ell) \dashv E(j, r)$
     \end{enumerate}
@@ -1160,7 +1083,7 @@ As for classical adjunctions, there's multiple characterizations using unit and 
             \ar[d, equal] A & \ar[l, loose, "{C(\ell, 1)}"', ""{anchor=center,name=t}] C \ar[d, equal] \\
             \ar[d, "j"r] & \ar[l, loose, "{E(j, r)}", ""{anchor=center,name=b}] C \ar[d, "r"]\\
             E & \ar[l, loose, equal] E
-            \ar[from=t, to=b, draw=none, "\sharp"{anchor=center}]
+            \ar[from=t, to=b, phantom, "\sharp"{anchor=center}]
         \end{tikzcd}
         \hspace{10pt}
         \varepsilon :=
@@ -1168,8 +1091,8 @@ As for classical adjunctions, there's multiple characterizations using unit and 
             \ar[d, equal] C & \ar[l, loose, "{C(1, \ell)}"', ""{anchor=center,name=t1}] A \ar[d, equal] & \ar[l, loose, "{E(j, r)}"', ""{anchor=center,name=t2}] C \ar[d, equal] \\
             \ar[d, equal] C & \ar[l, loose, "{C(1, \ell)}", ""{anchor=center,name=b1}] A & \ar[l, loose, "{C(\ell, 1)}", ""{anchor=center,name=b2}] C \ar[d, equal] \\
             C && \ar[ll, loose, equal, ""{anchor=center,name=bb}] C
-            \ar[from=t1, to=b1, draw=none, "="{anchor=center}] \ar[from=t2, to=b2, draw=none, "\flat"{anchor=center}]
-            \ar[from=2-2, to=bb, draw=none, "\smallsmile_\ell"{anchor=center}]
+            \ar[from=t1, to=b1, phantom, "="{anchor=center}] \ar[from=t2, to=b2, phantom, "\flat"{anchor=center}]
+            \ar[from=2-2, to=bb, phantom, "\smallsmile_\ell"{anchor=center}]
         \end{tikzcd}
     \]
     \[\sharp :=
@@ -1178,7 +1101,7 @@ As for classical adjunctions, there's multiple characterizations using unit and 
                              && C \ar[d, "r"] & \ar[l, equal, loose] C \ar[d, equal]\\
             A \ar[d, equal] & \ar[l, loose, "{E(j, 1)}"] E & \ar[l, loose, equal, ""{anchor=center,name=b}] E & \ar[l, loose, "{E(1, r)}"] C \ar[d, equal]\\
             A &&& \ar[lll, "{E(j, r)}"] C
-            \ar[from=t, to=b, draw=none, "\eta"{anchor=center}]
+            \ar[from=t, to=b, phantom, "\eta"{anchor=center}]
         \end{tikzcd}
         \hspace{10pt}
         \flat :=
@@ -1187,8 +1110,8 @@ As for classical adjunctions, there's multiple characterizations using unit and 
             \ar[d, equal] A & \ar[l, loose, "{C(1, \ell)}"', ""{anchor=center,name=m1}] C \ar[d, equal] & \ar[l, loose, "{C(\ell, 1)}"'] A & \ar[l, loose, "{E(j, r)}", ""{anchor=center,name=m2}] C \ar[d, equal]\\
             \ar[d, equal] A & \ar[l, loose, "{C(1, \ell)}", ""{anchor=center,name=b1}] C && \ar[ll, loose, equal, ""{anchor=center,name=b2}] C \ar[d, equal]\\
             A &&& \ar[lll, loose, "{C(1, \ell)}"] C
-            \ar[from=t1, to=m2, draw=none, "="{anchor=center}]
-            \ar[from=m1, to=b1, draw=none, "="{anchor=center}] \ar[from=2-3, to=b2, draw=none, "\varepsilon"{anchor=center}]
+            \ar[from=t1, to=m2, phantom, "="{anchor=center}]
+            \ar[from=m1, to=b1, phantom, "="{anchor=center}] \ar[from=2-3, to=b2, phantom, "\varepsilon"{anchor=center}]
         \end{tikzcd}
     \]
 \end{proof}
@@ -1252,7 +1175,7 @@ The root $j$ breaks the asymmetry of the adjunction. Dualizing, we get a differe
         \begin{tikzcd}
             Z \ar[dr, "r"', ""{anchor=south,name=radj}] \ar[rr, "i"] && V\\
             & X \ar[ur, "\ell"', ""{anchor=south,name=ladj}] &\\
-            \ar[from=radj, to=ladj, draw=none, "\vdash"{anchor=center}]
+            \ar[from=radj, to=ladj, phantom, "\vdash"{anchor=center}]
         \end{tikzcd}
     \end{wrapfigure}
     A \textbf{relative coadjunction} $r \vdash_i \ell$ comprises of the following data:
@@ -1268,6 +1191,7 @@ The root $j$ breaks the asymmetry of the adjunction. Dualizing, we get a differe
     In the case where the root or the coroot is the identity, adjunctions and coadjunctions coincide.
 \end{remark}
 
+\todo{Ajouter TOUT, en particulier les monades relatives et les résultats sur leurs algèbres !}
 
 \section{(Co)presheaves objects and (co)completions}
 \label{sec:presheaves}
@@ -1291,10 +1215,11 @@ This definition axiomatizes well the classification of distributors by a preshea
 $$\PP|_{A\dfrom} = \set{\pi_A^\PP(1, f) \mid \cod(f) = \psh\PP A}$$
 
 \begin{remark}
+    \label{rem:pobj_deter}
     An immediate consequence of this equality is that, for two classes of horizontal arrows $\PP, \PP'$ such that $\pi_A : A \dfrom P$ exhibits both a $\PP$-presheaf and a $\PP'$-presheaf object, $\PP|_{A\dfrom} = \PP'|_{A\dfrom}$.
 \end{remark}
 
-We also have that, since we suppose that $\bb{X}$ is strict, $\widearc{\pi_A^\PP} = 1_{\psh\PP A}$ and, for every horizontal arrow $p : A \dfrom X$ in $\PP$ and $f : Y \to X$, $\widearc{p(1, f)} = \widearc{p}\circ f$. Finally, the universal property of the $\PP$-presheaf object characterizes it not only up to equivalence, but to isomorphism.
+We also have, since we suppose that $\bb{X}$ is strict, $\widearc{\pi_A^\PP} = 1_{\psh\PP A}$ and, for every horizontal arrow $p : A \dfrom X$ in $\PP$ and $f : Y \to X$, $\widearc{p(1, f)} = \widearc{p}\circ f$.
 
 \begin{proposition}
     \label{prop:rift_psh}
@@ -1316,18 +1241,18 @@ This proposition has a few useful consequences:
     \label{cor:psh}
     Let $A$ an object admitting a $\PP$-presheaf object.
     \begin{enumerate}[ref=\ref{cor:psh} (\alph*)]
-        \item Let $p : A \dfrom X$ in $\PP$. $\widearc{p} : X \to \psh\PP A$ is fully faithful if and only if $p$ is dense.
+        \item \label{cor:psh:dense_iff_ff} Let $p : A \dfrom X$ in $\PP$. $\widearc{p} : X \to \psh\PP A$ is fully faithful if and only if $p$ is dense.
         \item \label{cor:psh:fact} Every cell $\phi$ with frame as in the left factorizes uniquely as in the right:
             \[\begin{tikzcd}
                 A \ar[d, equal] & \ar[l, "p"', loose] X & \ar[l, "p_1"'{name=p1}, loose] \cdots & \ar [l, "p_n"', loose] X' \ar[d, equal]\\
                 A &&& \ar[lll, "q"{name=q}, loose] X'
-                \ar[from=p1, to=q, draw=none, "\phi"{description}]
+                \ar[from=p1, to=q, phantom, "\phi"{description}]
             \end{tikzcd}
             \hspace{5em}
             \begin{tikzcd}
                 A \ar[d, equal] & \ar[l, "\pi_A"'{name=t}, loose] \psh\PP A \ar[d, equal] & \ar[l, "{\psh\PP A(1,\widearc{p})}"', loose] X & \ar[l, "p_1"'{name=p1}, loose] \cdots & \ar[l, "p_n"', loose] X' \ar[d, equal]\\
                 A & \ar[l, "\pi_A"{name=b}, loose] \psh\PP A &&& \ar[lll, "{\psh\PP A(1, \widearc{q})}"{name=rest}, loose] X'
-                \ar[from=t, to=b, draw=none, "="{anchor=center}] \ar[from=p1, to=rest, draw=none, "\widearc{\phi}"{description}]
+                \ar[from=t, to=b, phantom, "="{anchor=center}] \ar[from=p1, to=rest, phantom, "\widearc{\phi}"{description}]
             \end{tikzcd}\]
     \end{enumerate}
 \end{corollary}
@@ -1347,7 +1272,65 @@ We can deduce a second characterization of $\PP$-presheaf object.
     \end{itemize}
 \end{proof}
 
-%TODO: restriction of \yo through inclusion of P, repletion, absolute colimits, and admissible objects!!!
+Going back to the definition of a $\PP$-presheaf object, its universal property characterizes it not only up to equivalence, but to isomorphism. This also often useful but is has an important consequence: if we take the closure of $\PP$ under isomorphic distributors, called the \textit{repletion}, we usually don't have an isomorphism between a $\PP$ and a $\PP'$-presheaf object for $A$ (Remark \ref{rem:pobj_deter}).
+
+This doesn't mean $\PP^\simeqq$ isn't useful, it can still be used to create arrows:
+
+\begin{proposition}
+    \label{prop:psh_colims}
+    Let $A$ be an object admitting a $\PP$-presheaf object, $\vec{p} : X \dfrom \cdots \dfrom Y$ a weight and $q : A \dfrom X$ such that $q\in\PP$ and $q\odot_L \vec{p}$ exists. Then $\psh\PP A$ admits the colimit $\colim^{\vec{p}}\widearc{q}$ if and only if $(q\odot_L\vec{p})\in\PP^\simeqq$, and in that case the colimit is $\pi_A$-absolute.
+\end{proposition}
+
+\todo{ajouter \cite[Proposition 3.20]{arkor2026presheavescocompletionsformalcategory} et son corollaire ?}
+
+\begin{proof}
+    We have the chain of isomorphisms:
+    $$\psh\PP A(\widearc{q}, 1) \rift \vec{p} \simeq(\pi_A\rift q)\rift \vec{p} \simeq \pi_A (q\odot_L\vec{p})$$
+    When the colimit exist, we then have $\pi_A(1, \colim^{\vec{p}}\widearc{q}) \simeq q\odot_L\vec{p}\simeq\pi_A(1, \widearc{q})\odot_L\vec{p}$.
+\end{proof}
+
+We usually want to consider $\PP$-presheaf objects "containing the representables":
+
+\begin{definition}
+    An object $A$ is $\PP$-admissible if it admits a $\PP$-presheaf object and such that $A(1, 1)\in\PP^\simeqq$. We will write
+    $$\yo_A^\PP \simeq \widearc{A(1, 1)} : A \to \psh\PP A$$
+\end{definition}
+
+The deviation in notation from \cite{arkor2026presheavescocompletionsformalcategory} is to emphasize that this arrow is the analogue of Yoneda embeddings. In fact, it has several similar propreties:
+
+\begin{lemma}
+    \label{lem:pp_admisible}
+    Let $A$ be a $\PP$-admissible object.
+    \begin{itemize}[ref=\ref{lem:pp_admissible} (\alph*)]
+        \item \label{lem:pp_admissible:yoneda} (Yoneda Lemma) There's an isomorphism $\psh\PP A(\yo_A^\PP, 1) \simeq \pi_A$.
+        \item $\yo_A^\PP$ is dense, fully faithful and creates weighted limits.
+        \item For each weight $p\in\PP$, $\widearc{p}$ is the $\yo_A^\PP$-absolute $p$-weighted colimit of $\yo_A^\PP$.
+    \end{itemize}
+\end{lemma}
+
+\begin{proof}\hfill
+    \begin{itemize}
+        \item Using \ref{prop:rift_psh}, we have $\psh\PP A(\yo_A^\PP, 1) \simeq \pi_A \rift A(1, 1) \simeq \pi_A$.
+        \item Density comes from density of $\pi_A$, fully faithfulness from Corollary \ref{cor:psh:dense_iff_ff} and weighted limits from \ref{todo}
+        \item Consequence of \ref{prop:psh_colims}
+    \end{itemize}
+\end{proof}
+
+A useful consequence of the Yoneda Lemma (\ref{lem:pp_admissible:yoneda}) will be studied in the next section:
+
+\begin{corollary}
+    Let $\PP\subseteq\PP'$ two classes of distributors and $A$ a $\PP$ and $\PP'$-admissible object. The induced arrow $\widearc{\pi_A^\PP}$ is fully faithful and commutes with the Yoneda embeddings up to isomorphism:
+    \[\begin{tikzcd}
+        \psh\PP A \ar[rr, hook, "\widearc{\pi_A^\PP}"] && \psh{\PP'}A\\
+                                                       & \ar[lu, "\yo_A^\PP"] A \ar[ru, "\yo_A^{\PP'}"]
+    \end{tikzcd}\]
+\end{corollary}
+
+\begin{proof}
+    Since $\pi_A^\PP$ is dense so the associated arrow is fully faithful by Corollary \ref{cor:psh:dense_iff_ff}. Furthermore, the chain of isomorphisms
+    $$\pi_A^{\PP'}(1, \widearc{\pi_A^\PP}\yo_A^\PP) = \pi_A^\PP(1, \yo_A^\PP) \simeq A(1, 1) \simeq \pi_A^{\PP'}(1, \yo_A^{\PP'})$$
+    And the full faithfulness of restriction gives the commutativity up to isomorphism.
+\end{proof}
 
 \subsection{Copresheaves and Isbell Duality}
 
@@ -1379,13 +1362,13 @@ The results from the previous section can be dualized:
             \[\begin{tikzcd}
                 Z \ar[d, equal] & \ar[l, "p_1"', loose] \cdots & \ar[l, "p_n"'{name=pn}, loose] Y & \ar [l, "p"', loose] A \ar[d, equal]\\
                 Z &&& \ar[lll, "q"{name=q}, loose] A
-                \ar[from=pn, to=q, draw=none, "\phi"{description}]
+                \ar[from=pn, to=q, phantom, "\phi"{description}]
             \end{tikzcd}
             \hspace{5em}
             \begin{tikzcd}
                 Z \ar[d, equal] & \ar[l, "p_1"', loose] \cdots & \ar[l, "p_n"'{name=pn}, loose] Y & \ar[l, "{\copsh\PP A(\widecheck{p}, 1)}"', loose] \copsh\PP A \ar[d, equal] & \ar[l, "\ip_A^\PP"'{name=t}, loose] A \ar[d, equal]\\
                 Z &&& \ar[lll, "{\copsh\PP A(\widearc{q}, 1)}"{name=rest}, loose] \copsh\PP A & \ar[l, "\ip_A^\PP"{name=b}, loose] A
-                \ar[from=t, to=b, draw=none, "="{anchor=center}] \ar[from=pn, to=rest, draw=none, "\widearc{\phi}"{description}]
+                \ar[from=t, to=b, phantom, "="{anchor=center}] \ar[from=pn, to=rest, phantom, "\widearc{\phi}"{description}]
             \end{tikzcd}\]
     \end{enumerate}
 \end{corollary}
@@ -1396,12 +1379,16 @@ The results from the previous section can be dualized:
     Between the category of vertical arrows between $\copsh\PP A$ and $X$, and the category of horizontal arrows of $\PP$ between $A$ and $X$.
 \end{proposition}
 
+\begin{lemma}[coYoneda Lemma]
+    There's an isomorphism $\copsh\PP A(1, \oy_A^\PP) \simeq \pi_A$.
+\end{lemma}
+
 \todo{\footnotesize À partir d'ici, ce n'est pas dans la littérature sous cette forme. \textbf{À prendre avec des pincettes}}
 
 We can study the relationship between a $\PP$-presheaf and a $\PP$-copresheaf object. Under some hypotheses, we can state Isbell duality.
 
 \begin{theorem}
-    \index{Dualité d'Isbell}
+    \index{Isbell Duality}
     \label{th:isbell_duality}
     Let $A$ be an object $\PP$-admissible and $\PP$-coadmissible. Suppose that $\psh\PP A(1, \yo_A^\PP)$ and $\copsh\PP A(\oy_A^\PP, 1)$ are in $\PP^\cong$. Then there's an adjunction
     %FIXME repletion ?
@@ -1430,11 +1417,34 @@ We can study the relationship between a $\PP$-presheaf and a $\PP$-copresheaf ob
     \end{align*}
 \end{proof}
 
+\begin{remark}
+    \label{rem:o_spec_plrext}
+    The astute reader will see that, hidden in the proof, we also proved that $\ca{O} \simeq \yo_A^\PP \plext \oy_A^\PP$ and $\Spec \simeq \oy_A^\PP \prext \yo_A^\PP$. Another computation gives $\ca{O} \simeq \yo_A^\PP \prext \oy_A^\PP$ and $\Spec \simeq \oy_A^\PP \plext \yo_A^\PP$.
+\end{remark}
+
 \begin{definition}
     An object $A$ will be \textbf{Isbell $\PP$-admissible} if it verifies the conditions of Theorem \ref{th:isbell_duality}.
 \end{definition}
 
-\todo[color=gray]{Avoir le théorème et sa preuve sur la même page, c'est plus joli}
+\begin{proposition}[{\cite[Proposition 2.5]{diliberticodensity}}]
+    The Isbell adjunction swaps adjunctions: Let $A$ be a Isbell $\PP$-admissible object and $i : A \hookrightarrow K$ be a dense fully faithful arrow such that $L := \yo_A^\PP \plext i \dashv i \plext \yo_A^\PP =: R$ exists (i.e. $K(i, 1)\in\PP^\simeqq$ and $\yo_A^\PP \plext i$ exists), then
+    $$\ca{O}\circ R\dashv L\circ\Spec$$
+\end{proposition}
+
+\begin{proof}
+    We have the following isomorphisms
+    \begin{align*}
+        L\circ\Spec &= (\yo_A^\PP \plext i) \circ (\oy_A^\PP \plext \yo_A^\PP)\\
+                    &\simeq \oy_A^\PP \plext i\\
+                    &\simeq (\ca{O} \circ \yo_A^\PP)\plext i\\
+                    &\simeq (\ca{O} \circ R \circ i)\plext i\\
+                    &\simeq (\ca{O}\circ R)\plext i \plext i\\
+                    &\simeq (\ca{O}\circ R) \plext \id_K
+    \end{align*}
+\end{proof}
+
+%FIXME: à enlever en compensant au dessus
+\newpage
 This adjunction also restricts through inclusions of class of horizontal cells $\PP\subseteq\PP'$:
 
 \begin{theorem}
@@ -1475,6 +1485,7 @@ This adjunction also restricts through inclusions of class of horizontal cells $
 \end{proof}
 
 \subsection{Cocompletions and presheaf objects}
+\todo{Ajouter les résultats sur les cocompletions}
 
 \subsection{Reflexive completion}
 
@@ -1504,10 +1515,10 @@ We fix an Isbell $\PP$-admissible object $A$.
     \index{arrow!reflexive}\index{reflexive!arrow}\index{reflexive!completion}
     \begin{itemize}
         \item A vertical arrow $x_A : X \to \psh\PP A$ is \textbf{reflexive} if the unit $\eta : A \To \Spec\circ\ca{O}$ induces an isomorphism $\eta_{x_A} : x_A \To \Spec\circ\ca{O}\circ x_A$.
-        \item A \textbf{reflexive completion} of $A$ is a fully faithful, reflexive vertical arrow $\ca{r}_A^\PP : \ca{R}^\PP(A) \to \psh\PP A$ such that every reflexive arrow factorizes uniquely through $r_A^\PP$.
+        \item A \textbf{reflexive completion} of $A$ is a fully faithful, reflexive arrow $\ca{r}_A^\PP : \ca{R}^\PP(A) \to \psh\PP A$ such that every reflexive arrow factorizes uniquely through $r_A^\PP$.
             \[\begin{tikzcd}
                 \ar[dr, dashed] X \ar[rr, "x_A"] && \psh\PP A\\
-                                                 & \ca{R}^\PP(A) \ar[ur, "\ca{r}_a^\PP"']
+                                                 & \ca{R}^\PP(A) \ar[ur, hook, "\ca{r}_a^\PP"']
             \end{tikzcd}\]
     \end{itemize}
 \end{definition}
@@ -1817,23 +1828,21 @@ We finish the section by studying the interaction with (co)limits.
 \subsection{Enriched categories}
 \label{subsec:enriched}
 
-Many constructions rely on the existence of additional structure of the homsets of categories: additive or linear categories, dg-categories, 2-categories... It is possible to axiomatize this approach: we \textit{enrich} a category. Although it is possible, as was done in the article \cite{arkor2026presheavescocompletionsformalcategory}, to enrich a category in a virtual bicategory (or even a virtual double category), we choose to stick to monoidal categories (as was done in \cite{arkor2024formaltheoryrelativemonads})
-
 %FIXME: Rewrite everything
-On résume ici les notions et résultats important que l'on retrouve pour des catégories enrichies, et on renvoie au livre de Max Kelly \cite{kelly} pour un traitement plus détaillé de cette théorie.
+Many constructions rely on the existence of additional structure of the homsets of categories: additive or linear categories, dg-categories, 2-categories... It is possible to axiomatize this approach: we \textit{enrich} a category. Although it is possible, as was done in the article \cite{arkor2026presheavescocompletionsformalcategory}, to enrich a category in a virtual bicategory (or even a virtual double category), we choose to stick to monoidal categories (as was done in \cite{arkor2024formaltheoryrelativemonads}) as it is more common although less general.
 
-Plusieurs constructions reposent sur l'existence de structures supplémentaires sur les ensembles de morphismes entre deux objets. On peut citer les catégories additives ou linéaires, dg-catégories, 2-catégories... Il est possible d'axiomatiser cette approche : on \textit{enrichie} une catégorie. Il faut donc un lieu dans lequel on l'enrichie :
+Most of the theory of enriched category theory can be found in \cite{kelly}.
 
 \begin{definition}
-    \index{catégorie monoïdale}
-    Une \textbf{catégorie monoïdale} $(\cat{V}, \otimes, I, a, l, r)$, que l'on notera $\cat{V}$ par simplicité, est la donnée de
+    \index{category!monoidal}
+    A \textbf{monoidal category} $(\cat{V}, \otimes, I, a, l, r)$, usually only written $\cat{V}$ comprises of the following data
     \begin{itemize}
-        \item Une catégorie $\cat{V}$.
-        \item Un foncteur $\cat{V}\times\cat{V} \to \cat{V}$.
-        \item Un objet $I$ de $\cat{V}$, \textbf{l'unité}.
-        \item Trois isomorphismes naturels $a, l, r$ de signatures $a_{XYZ} : (X \otimes Y) \otimes Z \to X \otimes (Y \otimes Z)$, $l_X : I \otimes X \to X$ et $r_X : X \otimes I \to I$ pour $X, Y, Z$ des objets de $\cat{V}$.
+        \item A category $\cat{V}$.
+        \item A functor $\cat{V}\times\cat{V} \to \cat{V}$.
+        \item An object $I$ of $\cat{V}$, the \textbf{unit}.
+        \item Three natural isomorphisms $a, l, r$ with signatures $a_{XYZ} : (X \otimes Y) \otimes Z \to X \otimes (Y \otimes Z)$, $l_X : I \otimes X \to X$ and $r_X : X \otimes I \to I$ for $X, Y, Z$ objects in $\cat{V}$.
     \end{itemize}
-    Tels que les diagrammes suivants commutent :
+    Such that the following diagrams commute
     \[\begin{tikzcd}[sep=scriptsize]
         {(X \otimes I) \otimes Y} \ar[rr, "a_{XIY}"]
         \ar[rdd, "r \otimes \id_Y"'] && {X \otimes (I \otimes Y)}
@@ -1856,15 +1865,15 @@ Plusieurs constructions reposent sur l'existence de structures supplémentaires 
 \end{definition}
 
 \begin{definition}
-    \index{catégorie $\cat{V}$-enrichie}
-    Une \textbf{$\cat{V}$-catégorie} $\cat{C}$ (ou \textbf{catégorie $\cat{V}$-enrichie}) est la donnée de
+    \index{category!$\cat{V}$-enriched}
+    A \textbf{$\cat{V}$-category} $\cat{C}$ (or \textbf{$\cat{V}$-enriched category}) comprises of the following data
     \begin{itemize}
-        \item Une classe $\ob\cat{C}$, les \textit{objets} de $\cat{C}$.
-        \item Une objet $\cat{C}(A, B)$ de $\cat{V}$ pour $A, B$ objets de $\cat{C}$.
-        \item Un morphisme $M : \cat{C}(B, C) \otimes \cat{C}(A, B)$, la \textit{loi de composition}.
-        \item Un élément \textit{identité} $i_A : I \to \cat{C}(A, A)$.
+        \item A class $\ob\cat{C}$, the \textit{objects} of $\cat{C}$.
+        \item An object $\cat{C}(A, B)$ of $\cat{V}$ for $A, B$ objects of $\cat{C}$.
+        \item A morphism $M : \cat{C}(B, C) \otimes \cat{C}(A, B)$, the \textit{composition law}.
+        \item An \textit{identity} morphism $i_A : I \to \cat{C}(A, A)$.
     \end{itemize}
-    Tels que les diagrammes d'associativité et d'unitalité soient commutatifs :
+    Such that the associativity and gnitality diagrams are commutative:
     \[\begin{tikzcd}[sep=scriptsize]
         {(\cat{C}(C, D) \otimes \cat{C}(B, C)) \otimes \cat{C}(A, B)} && {\cat{C}(C, D) \otimes (\cat{C}(B, C) \otimes \cat{C}(A, B))} \\
         \\
@@ -1891,12 +1900,12 @@ Plusieurs constructions reposent sur l'existence de structures supplémentaires 
 \end{definition}
 
 \begin{example}
-    Pour $\cat{V}$ la catégorie $\cat{Set}$, $\cat{Ab}$, $\cat{Vect}_k$, $\cat{Ch}_k$, $\cat{Cat}$, on retrouve les catégories usuelles, additives, linéaires, dg-catégories et les 2-catégories. On peut aussi choisir des catégories monoïdales plus singulières, comme $\cat{2}$ (muni du minimum), $\overline{\bb{R}^+}$ (muni de l'addition ou du max) pour obtenir les posets et les espaces métriques (ou ultramétrique). Enfin, pour $\cat{V}$ la catégorie $\cat{sSet}$ ou $\cat{Top}$, on retrouve les catégories simplicialement enrichies et topologiquement enrichies, deux modèles des $(\infty, 1)$-catégories.
+    Common examples include: $\cat{Set}$-enriched categories (known as locally small categories), $\cat{Ab}$-enriched categories (known as additive categories), $\cat{Vect}_k$ (known as $k$-linear categories), $\cat{Ch}_k$-enriched categories (known as dg-categories) and $\cat{Cat}$-enriched categories (known as 2-categories). More exotic examples include $\cat{2}$-enriched categories (posets) and $\overline{\bb{R}^+}$ (metric or ultrametric spaces).
 \end{example}
 
 \begin{definition}
-    \index{Foncteur $\cat{V}$-enrichi}\index{Transformation naturelle $\cat{V}$-enrichie}
-    Un \textbf{$\cat{V}$-foncteur} $F : \cat{A} \to \cat{B}$ est la donnée d'une fonction $F : \ob\cat{A} \to \ob\cat{B}$ et pour $A, B$ deux objets de $\cat{A}$, une morphisme $F_{AB} : \cat{A}(A, B) \to \cat{B}(FA, FB)$ de $\cat{V}$ tels que $F$ soit compatible avec la composition et les unités :
+    \index{$\cat{V}$-enriched!category}\index{$\cat{V}$-enriched!natural transformation}
+    A \textbf{$\cat{V}$-functor} $F : \cat{A} \to \cat{B}$ comprises of a function $F : \ob\cat{A} \to \ob\cat{B}$ and for all $A, B$ objects of $\cat{A}$, a morphism $F_{AB} : \cat{A}(A, B) \to \cat{B}(FA, FB)$ de $\cat{V}$ such that $F$ is compatible with composition and units:
     \[\begin{tikzcd}[sep=small]
         \cat{A}(B, C) \otimes \cat{A}(A, B) \ar[rr, "M"] \ar[dd, "F \otimes F"']
             && \cat{A}(A, C) \ar[dd, "F"]\\
@@ -1910,7 +1919,7 @@ Plusieurs constructions reposent sur l'existence de structures supplémentaires 
         \\
         && \cat{B}(FA, FA)
     \end{tikzcd}\]
-    Une \textbf{$\cat{V}$-transformation naturelle} $\alpha : F \to G$ est la donnée de morphismes $\alpha_A : I \to \cat{B}(FA, GA)$ tels que :
+    A \textbf{$\cat{V}$-natural transformation} $\alpha : F \to G$ comprises of morphisms $\alpha_A : I \to \cat{B}(FA, GA)$ such that:
     \[\begin{tikzcd}
         & I \otimes \cat{A}(A, B) \ar[r, "\alpha_B\otimes F"] & \cat{B}(FB, GB) \otimes \cat{B}(FA, FB) \ar[rd, start anchor=east, "M"]\\
         \cat{A}(A, B) \ar[ru, "l^{-1}"] \ar[rd, "r^{-1}"] &&& \cat{B}(FA, GB)\\
@@ -1918,68 +1927,55 @@ Plusieurs constructions reposent sur l'existence de structures supplémentaires 
     \end{tikzcd}\]
 \end{definition}
 
-\begin{remark}
-    On peut, comme dans le cas classique, composer verticalement deux $\cat{V}$-transformations naturelles $\alpha : F \to G, \beta : G \to H$ avec
-    \[
-        (\beta\cdot\alpha)_A := I \simeq I \otimes I \xrightarrow{\beta_A \otimes \alpha_A} \cat{B}(GA, HA) \otimes \cat{B}(FA, GA) \xrightarrow{M} \cat{B}(FA, HA)
-    \]
-    On a aussi pour un $\cat{V}$-foncteur $Q : \cat{B} \to \cat{C}$
-    \[
-        (Q\alpha)_A := I \xrightarrow{\alpha_A} \cat{B}(FA, GA) \xrightarrow{Q} \cat{C}(QFA, QGA)
-    \]
-    Enfin, par $\cat{V}$-naturalité, on a aussi une composition horizontale de $\alpha : F \to G : \cat{C} \to \cat{D}$ et $\beta : H \to J : \cat{D} \to \cat{E}$ dont la composante $(\beta \star \alpha)_A$ est donnée par :
+It is common to add hypothesis on the enriching category: for example, asking for $\otimes$ to be symmetric, asking for $(-\otimes X)$ to have a right adjoint (viewed as the "internal hom" out of $X$) or completeness/cocompleteness. We refrain from doing so unless necessary.
+
+\begin{definition}
+    The virtual double category $\cat{V}-\bb{Cat}$ of $\cat{V}$-enriched categories has
+    \begin{itemize}
+        \item \textbf{objects:} $\cat{V}$-enriched categories.
+        \item \textbf{arrows:} $\cat{V}$-functors.
+        \item \textbf{distributors:} $\cat{V}$-distributors. A $\cat{V}$-distributor $p : X \dfrom Y$ comprises of an object $p(x, y)$ for all objects $x$ of $X$ and $y$ of $Y$, natural contravariantely in $x$ and covariantely in $y$ and compatible with composition and identities.
+        \item \textbf{cells:} $\cat{V}$-natural transformations. A cell
+            \[\begin{tikzcd}
+                C_0 \ar[d, "f"'] & \ar[l, loose, "p_1"'] \cdots & \ar[l, loose, "p_n"'] C_n \ar[d, "g"]\\
+                D && \ar[ll, loose, "q"] D'
+            \end{tikzcd}\]
+            Is the data of a $\cat{V}$-natural morphism
+            $$p_1(x_0, x_1) \otimes \cdots \otimes p_n(x_{n-1}, x_n) \to q(fx_0, gx_n)$$
+            With a few commutative diagrams that can be found in \cite[Definition 8.1]{arkor2024formaltheoryrelativemonads}.
+    \end{itemize}
+\end{definition}
+
+\begin{proposition}
+    This virtual double category is a virtual equipment.
+\end{proposition}
+
+\begin{proof}
+    The loose identity on $A$ is given by $(x, y) \mapsto A(x, y)$ and the restriction by $p(f, g)(x, y) = p(fx, gy)$. The associated cell is the identity.
+\end{proof}
+
+We want to explicitly describe right lifts of $\cat{V}$-distributors.
+
+\begin{definition}[{\cite[Definition 8.5]{arkor2024formaltheoryrelativemonads}}]
+    A $\cat{V}$-presheaf on a $\cat{V}$-category $C$ is the data of an object $p(c)$ of $\cat{V}$ for each object $c$ of $C$ compatible with "morphisms" of $C$ : $C(d, c) \otimes p(c) \to p(d)$ for all $c, d$ in $C$ compatible with the identity and composition in the evident way.
+
+    For $p, q$ $\cat{V}$-presheaves on $C$ and $v$ an object of $C$, a family of morphisms $\set{\phi_c : p(c)\otimes v \to q(c)}_{c\in\ob(C)}$ is $\cat{V}$-natural in $c$ when for all $c'$, the following diagram commutes
     \[\begin{tikzcd}
-        I \ar[r, "\alpha_A"] & \cat{D}(FA, GA) \ar[r, "l^{-1}"] \ar[d, "r^{-1}"] & I \otimes \cat{D}(FA, GA) \ar[r, "\beta_{GA} \otimes H"]
-                             & \cat{E}(HGA, JGA) \otimes \cat{E}(HFA, HGA) \ar[d, "M"]\\
-                             & \cat{D}(FA, GA) \otimes I \ar[r, "J \otimes \beta_{FA}"] & \cat{E}(JFA, JGA) \otimes \cat{E}(HFA, JFA)
-                                \ar[r, "M"] & \cat{E}(HFA, JGA)
+        C(c', c)\otimes p(c)\otimes v \dar \rar & C(c', c)\otimes q(c) \dar\\
+        p(c')\otimes v \rar & q(c')
     \end{tikzcd}\]
-    Les catégories, foncteurs et transformations naturelles enrichies dans $\cat{V}$ forment donc naturellement une 2-catégorie.
-\end{remark}
-
-\begin{definition}
-    On note $\cat{V-Cat}$ la 2-catégorie des $\cat{V}$-catégories, $\cat{I}$ la $\cat{V}$-catégorie à un objet $\star$ avec $\cat{I}(\star, \star) = I$ et on notera $(-)_0 : \cat{V-Cat} \to \cat{Cat}$ le foncteur représentable $\cat{V-Cat}(\cat{I}, -)$. Pour $\cat{C}$ une $\cat{V}$-catégorie, on appellera $\cat{C}_0$ la \textbf{catégorie sous-jacente}.
+    If there exists an object $\ca{P}C(p, q)$ of $\cat{V}$ with a universal $\cat{V}$-natural family, we call $\ca{P}C(p, q)$ the object of $\cat{V}$-natural transformations from $p$ to $q$.
 \end{definition}
-
-\begin{definition}
-    \index{distributeur}\index{profoncteur}\index{distributeur!représentable}
-    Un \textbf{distributeur} (aussi appelé \textbf{profoncteur}) $F : \cat{A} \nvrightarrow \cat{B}$ est un foncteur $F : \cat{B}^\op \times \cat{A} \to \cat{Set}$.
-\end{definition}
-
-\begin{example}
-    L'exemple classique est $\Hom_\cat{C} : \cat{C}^\op \times \cat{C} \to \cat{Set}$. On peut aussi, à partir de foncteurs ou distributeurs, construire plusieurs distributeurs :
-    \begin{itemize}
-        \item En considérant les plongements de Yoneda (que l'on notera $\yo$), on peut former à partir de $F : A \to B$
-            \begin{itemize}
-                \item $\Hom_\cat{B}(-, F-) : \cat{A} \nvrightarrow \cat{B}$ (un tel distributeur est dit \textbf{représentable})
-                \item $\Hom_\cat{B}(F-, -) : \cat{B} \nvrightarrow \cat{A}$
-                \item $\Hom_\cat{B}(F-, F-) : \cat{A} \nvrightarrow \cat{A}$
-            \end{itemize}
-        \item Par associativité du produit, d'un distributeur $D : \cat{A} \times \cat{B} \nvrightarrow \cat{C}$ on peut former un distributeur $\cat{A} \nvrightarrow \cat{B}^\op \times \cat{C}$. Un distributeur $D : \cat{A} \nvrightarrow \cat{B}$ induit donc
-            \begin{itemize}
-                \item $D_! : \cat{A}\times \cat{B}^\op \nvrightarrow \cat{1}$
-                \item $D^! : \cat{1} \nvrightarrow \cat{A}^\op\times \cat{B}$
-                \item $D^\op : \cat{B}^\op \nvrightarrow \cat{A}^\op$
-            \end{itemize}
-    \end{itemize}
-\end{example}
 
 \begin{remark}
-    Les distributeurs $\cat{A} \nvrightarrow \cat{B}$ forment naturellement une catégorie, c'est $\Fun(\cat{B}^\op \times \cat{A}, \cat{Set})$. Par ailleurs, lorsque le domaine et le codomaine sont petits, on peut composer deux distributeurs $F : \cat{A} \nvrightarrow \cat{B}$ et $G : \cat{B} \nvrightarrow \cat{C}$ :
-    \[
-        (G\circ F)(c, a) := \int^{b\in \cat{B}}F(b, a)\otimes G(c, b)
-    \]
-    Cette opération est bien associative, et a pour identité $\Hom_\cat{C}$
+    When $\cat{V}$ is symmetric and closed, a $\cat{V}$-presheaf is just a $\cat{V}$-functor $C^\op \to \cat{V}$ and in that case, $\ca{P}C(p, q) \simeqq [C^\op, \cat{V}](p, q)$ (when it exists).
 \end{remark}
 
-\begin{definition}
-    On peut donc former la bicatégorie $\cat{Dist}$ des distributeurs dont
-    \begin{itemize}
-        \item Les \textit{objets} sont les petites catégories.
-        \item Les \textit{morphismes} sont les distributeurs.
-        \item Les \textit{2-morphismes} sont les transformations naturelles.
-    \end{itemize}
-\end{definition}
+\begin{lemma}[{\cite[Lemma 8.7]{arkor2024formaltheoryrelativemonads}}]
+    Let $p : Z \dfrom Y, q : Y \dfrom X$ be $\cat{V}$-distributors. If the objects $\ca{P}C(p(-, x), q(-, y))$ for all $x\in\ob(X), y\in\ob(Y)$, they form the right lift $q\rift p : Y \dfrom X$.
+\end{lemma}
+
+<++>
 
 \subsection{Internal and locally internal categories}
 
@@ -1993,25 +1989,25 @@ We refer to \cite[Chapter 8]{borceux1} and \cite[Chapter 2]{johnstone} for an el
             \[\begin{tikzcd}
                 \ar[d, "f_0"'] X_0 & \ar[l, loose, "X"', ""{anchor=center,name=t}] X_0 \ar[d, "f_0"]\\
                 Y_0 & \ar[l, loose, "Y", ""{anchor=center,name=b}] Y_0
-                \ar[from=t, to=b, draw=none, "\omega_f"{anchor=center}]
+                \ar[from=t, to=b, phantom, "\omega_f"{anchor=center}]
             \end{tikzcd}\]
         \item \textit{Distributors:} $p := (p : X_0 \dfrom Y_0, \chi, \varphi) : X \dfrom Y$ such that $\chi(1_p, \mu_Y) = \chi(\chi, 1_Y)$, $\chi(1_p, \eta_Y) = 1_p$ and dually $\varphi(\mu_X, 1_p) = \varphi(1_X, \varphi)$, $\varphi(\eta_X, 1_p) = 1_p$; et $\varphi(1_X, \xi) = \xi(\varphi, 1_Y)$.
             \[\begin{tikzcd}
                 \ar[d, equal] X_0 & \ar[l, loose, "p"'] Y_0 & \ar[l, loose, "Y"'] Y_0 \ar[d, equal]\\
                 X_0 & {} & \ar[ll, loose, "p"] Y_0
-                \ar[from=1-2, to=2-2, draw=none, "\chi"{anchor=center}]
+                \ar[from=1-2, to=2-2, phantom, "\chi"{anchor=center}]
             \end{tikzcd}
             \hspace{10pt}
             \begin{tikzcd}
                     \ar[d, equal] X_0 & \ar[l, loose, "X"'] X_0 & \ar[l, loose, "p"'] Y_0 \ar[d, equal]\\
                     X_0 & {} & \ar[ll, loose, "p"] Y_0
-                    \ar[from=1-2, to=2-2, draw=none, "\varphi"{anchor=center}]
+                    \ar[from=1-2, to=2-2, phantom, "\varphi"{anchor=center}]
             \end{tikzcd}\]
         \item \textit{Cell:} A cell in $\Mod(\bb{X})$ is given by one in $\bb{X}$ with frame
             \[\begin{tikzcd}
                 \ar[d, "f_0"'] X_0 & \ar[l, loose, "p_1"'] \cdots & \ar[l, loose, "p_n"'] Y_0 \ar[d, "g_0"]\\
                 X_0' & {} & \ar[ll, loose, "q"] Y_0'
-                \ar[from=1-2, to=2-2, draw=none, "\theta"{anchor=center}]
+                \ar[from=1-2, to=2-2, phantom, "\theta"{anchor=center}]
             \end{tikzcd}\]
             Such that $\theta(\varphi, 1\cdots 1) = \chi_q(\omega_f, \theta)$, $\theta(1\cdots 1, \chi) = \varphi_q(\theta, \omega_g)$ and for all $2 \leq i \leq n$, $\theta(1\cdots 1, \chi_{i-1}, 1\cdots 1) = \theta(1\cdots 1, \varphi_i, 1\cdots 1)$.
     \end{itemize}
@@ -2058,15 +2054,32 @@ In particular, when $\cat{E}$ is an elementary topos, we can compose distributor
     Every object of $\ca{S}\mathit{pan}(\cat{E})$, regarded with the trivial monad, is a \textbf{discrete internal category}. Switching the source and target arrows, we get the \textbf{opposite internal category} of $C$.
 \end{definition}
 
+Starting with something easy, for $f : C \to D$ an internal functor, the cell $\smallfrown_f$ looks like
 
+\[\begin{tikzcd}
+    C_0 \ar[d, equal] & \ar[l, "s"'] C_1 \ar[d, "{(s, f_1, t)}"] \ar[r, "t"] & C_0 \ar[d, equal]\\
+    C_0 & \ar[l, "\pi_0"] C_0 \times_{D_0} D_1 \times_{D_0} C_0 \ar[r, "\pi_1"] & C_0
+\end{tikzcd}\]
 
-\subsection{Catégories fibrées}
+\begin{lemma}
+    $f : C \to D$ is fully faithful if and only if $C_1$ is the iterated pullback
+    \[\begin{tikzcd}
+        \dar (C_0 \underset{D_0}{\times} D_1) \underset{D_1}{\times} (D_1 \underset{D_0}{\times} C_0) \rar \ar[dr, pullback] & \dar D_1 \underset{D_0}{\times} C_0 \rar \ar[dr, pullback] & C_0 \ar[d, "f_0"]\\
+        \dar C_0 \underset{D_0}{\times} D_1 \rar \ar[dr, pullback] & \ar[d, "s"] D_1 \ar[r, "t"'] & D_0\\
+        C_0 \ar[r, "f_0"'] & D_0
+    \end{tikzcd}\]
+\end{lemma}
+
+\subsection{Fibered Categories}
+\todo{À jeter ?}
 
 \cite{borceux2}
 
 \subsection{\texorpdfstring{$\infty$}{∞}-catégories}
 
 \cite{riehl_verity}
+\todo{problème des two-sided isofibrations discretes dans A\backslash Fib(K)/B}
+\todo{remplacer par les \texorpdfstring{$\infty$}{∞}-équipements de \cite{ruit2025formalcategorytheoryinftyequipments} ?}
 
 \clearpage
 \appendix
