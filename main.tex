@@ -39,26 +39,32 @@
 % FIXME: blacktriangleleft and right too short
 \newcommand{\PP}{{\bb P}}
 \newcommand{\To}{\Rightarrow}
-\newcommand{\dfrom}{\nvleftarrow}
-\newcommand{\iset}[1]{\llbracket #1 \rrbracket}
-\newcommand{\ip}{\flip\pi}
-\newcommand{\oy}{\flip\yo}
-\newcommand{\op}{\mathrm{op}}
-\newcommand{\nvequal}{=\!\!\!|\!\!\!=}
-\newcommand{\psh}[2]{{\widehat{#1}}[{#2}]}
+\newcommand{\coce}[2]{{\hat{#1}}_{#2}}
+\newcommand{\coc}[2]{{\widehat{#1}}(#2)}
+\newcommand{\colimeq}{\mathrel{\hat\approx}}
+\newcommand{\colimleq}{\mathrel{\hat\lesssim}}
 \newcommand{\copsh}[2]{{\widebreve{#1}}[{#2}]}
+\newcommand{\dfrom}{\nvleftarrow}
+\newcommand{\from}{\leftarrow}
+\newcommand{\ip}{\flip\pi}
+\newcommand{\iset}[1]{\llbracket #1 \rrbracket}
+\newcommand{\lext}{\mathbin{\rhd}}
+\newcommand{\lift}{\mathbin{\lhd}}
+\newcommand{\nvequal}{=\!\!\!|\!\!\!=}
+\newcommand{\op}{\mathrm{op}}
+\newcommand{\oy}{\flip\yo}
+\newcommand{\plext}{\mathbin{{\rhd}\mathclap{\mspace{-17.5mu}\cdot}}}
+\newcommand{\plift}{\mathbin{\flip{{\rhd}\mathclap{\mspace{-17.5mu}\cdot}}}}
+\newcommand{\prext}{\mathbin{{\blacktriangleright}\mathclap{\mspace{-10.5mu}\raisebox{-0.45pt}{\textcolor{white}{$\cdot$}}}}}
+\newcommand{\prift}{\mathbin{\flip{{\blacktriangleright}\mathclap{\mspace{-10.5mu}\raisebox{-0.45pt}{\textcolor{white}{$\cdot$}}}}}}
+\newcommand{\psh}[2]{{\widehat{#1}}[{#2}]}
+\newcommand{\rext}{\mathbin{\blacktriangleright}}
+\newcommand{\rift}{\mathbin{\blacktriangleleft}}
 \newcommand{\set}[1]{\left\{#1\right\}}
 \newcommand{\simeqq}{\cong}
-\newcommand{\lift}{\mathbin{\lhd}}
-\newcommand{\rift}{\mathbin{\blacktriangleleft}}
-\newcommand{\lext}{\mathbin{\rhd}}
-\newcommand{\rext}{\mathbin{\blacktriangleright}}
-\newcommand{\plext}{\mathbin{{\rhd}\mathclap{\mspace{-17.5mu}\cdot}}}
-\newcommand{\prext}{\mathbin{{\blacktriangleright}\mathclap{\mspace{-10.5mu}\raisebox{-0.45pt}{\textcolor{white}{$\cdot$}}}}}
-\newcommand{\plift}{\mathbin{\flip{{\rhd}\mathclap{\mspace{-17.5mu}\cdot}}}}
-\newcommand{\prift}{\mathbin{\flip{{\blacktriangleright}\mathclap{\mspace{-10.5mu}\raisebox{-0.45pt}{\textcolor{white}{$\cdot$}}}}}}
 
 % Operators
+\DeclareMathOperator{\bSpan}{\ca{S}\mathit{pan}}
 \DeclareMathOperator{\Dist}{\bb{D}\textbf{ist}}
 \DeclareMathOperator{\Fun}{Fun}
 \DeclareMathOperator{\Hom}{Hom}
@@ -66,6 +72,7 @@
 \DeclareMathOperator{\Mod}{\bb{M}\textbf{od}}
 \DeclareMathOperator{\Span}{\bb{S}\textbf{pan}}
 \DeclareMathOperator{\Spec}{Spec}
+\DeclareMathOperator{\cart}{cart}
 \DeclareMathOperator{\cod}{cod}
 \DeclareMathOperator{\colim}{colim}
 \DeclareMathOperator{\co}{co}
@@ -174,7 +181,7 @@
 
 % Environements
 \theoremstyle{plain}
-\newtheorem{theorem}{Theorem}[section]
+\newtheorem{theorem}{Theorem}[subsection]
 \newtheorem{proposition}[theorem]{Proposition}
 \newtheorem{corollary}[theorem]{Corollary}
 \newtheorem{lemma}[theorem]{Lemma}
@@ -226,17 +233,25 @@
 
 \section{Introduction}
 
+\subsection{Outline of the thesis}
+
 \subsection{Conventions}
 
-We will use Sans Serif for 1-categories: \cat{A}, \cat{B}, \cat{C}..., calligraphy for 2-categories or bicategories: $\ca{H}, \ca{J}, \ca{K}$..., blackboard bold for virtual double categories: $\bb{X}, \bb{Y}$... Usually, objects will be in capital letters $A, B, C$, minuscule for arrows $f, g, h$ (although horizontal arrows/loose-cells will use letters $p, q, r, s$...) and Greek letters for cells $\alpha, \beta, \phi, \psi$...
+We will use Sans Serif for 1-categories: \cat{A}, \cat{B}, \cat{C}..., calligraphy for 2-categories or bicategories: $\ca{H}, \ca{J}, \ca{K}$..., blackboard bold for virtual double categories: $\bb{X}, \bb{Y}$... Usually, objects will be in capital letters $A, B, C$, lower case for arrows $f, g, h$ (although horizontal arrows/loose-cells will use letters $p, q, r, s$...) and Greek letters for cells $\alpha, \beta, \phi, \psi$...
 
-As this thesis was first written in French, tight and loose cells are called vertical arrows (or just arrows) and horizontal arrows (or distributors) as in a double category, and we reserve the term "cell" for 2-cells. Every occurrence of "vertical" (resp. "horizontal") can be replaced with tight (resp. "loose") to recover the vocabulary of Arkor and McDermott. Also, a greater attention to detail than usual will be paid to the dualization of definitions and results in this thesis, as they usually are key notions.
+As this thesis was first written in French, tight and loose cells are called vertical arrows (or just arrows) and horizontal arrows (or distributors) as in a double category, and we reserve the term "cell" for 2-cells. Every occurrence of "vertical" (resp. "horizontal") can be replaced with tight (resp. "loose") to recover the vocabulary of Arkor and McDermott.
+
+Also, a greater attention to detail than usual will be paid to the dualization of definitions and results in this thesis, as they usually are key notions.
 
 In accordance to N. Arkor and D. McDermott's articles, horizontal arrows will be denoted from right to left: $A \dfrom B$.
 
 \subsection{Acknowledgments}
 
-Arkor et McDermott for articles (+ discussion on Zulip with Arkor), Jana K. Nickel for handwritten notes on conjoint/companion, Morgan Rogers as a tutor, LIPN...
+Arkor et McDermott for articles (+ discussion on Zulip with Arkor), Jana K. Nickel for handwritten notes on conjoint/companion, Morgan Rogers as a tutor, Jonas Frey for discussion on collage
+
+Justin Carel, Hadrien Chalandon-Goskrzynski, Ugo Fialo
+
+Marta Vigano
 
 \section{Formal Category Theory}
 
@@ -247,9 +262,9 @@ Arkor et McDermott for articles (+ discussion on Zulip with Arkor), Jana K. Nick
     \label{def:vdc}
     A \textbf{virtual double category} $\bb{X}$ comprises of the following data:
     \begin{enumerate}[ref=\ref{def:vdc} (\alph*)]
-        \item A category of objects $A, B, C, \dots$ and vertical arrows $f : A \to B, \cdots$. Vertical arrows are also called tight cells, or just arrows.
-        \item For every pair of objects $A$ and $B$, a class of horizontal arrows $p : A \nvrightarrow B, \cdots$. Horizontal arrows are also called loose cells, or distributors.
-        \item \label{def:vdc:cell} For every compatible chain of horizontal arrows $p_1, \cdots, p_n$ ($n \geq 0$), two vertical arrows $f, g$ and $q$ a horizontal arrow, a class of cells (or 2-cells):
+        \item A category of objects $A, B, C, \dots$ and vertical arrows $f : A \to B, \cdots$. Vertical arrows are also called arrows.
+        \item For every pair of objects $A$ and $B$, a class of horizontal arrows $p : A \nvrightarrow B, \cdots$. Horizontal arrows are also called distributors.
+        \item \label{def:vdc:cell} For every compatible chain of horizontal arrows $p_1, \cdots, p_n$ ($n \geq 0$), two vertical arrows $f, g$ and $q$ a horizontal arrow, a class of cells:
             \[\begin{tikzcd}[row sep=tiny]
                 \bullet \ar[dd, "f"] & \ar[l, "p_1"', loose] \bullet
                                      & \ar[l, "p_2"', loose] \cdots
@@ -309,17 +324,17 @@ We choose to think of a virtual double category as a "category" of categories, o
         \item As underlying category, the (big) category of small categories and functors.
         \item As horizontal arrows, the distributors.
         \item As cells
-        \item Pour cellules
+        \item For cells
             \[\begin{tikzcd}[row sep=tiny]
                 \cat{A}_0 \ar[dd, "f"'] & \ar[l, "p_1"', loose] \cdots & \ar[l, "p_n"', loose] \cat{A}_n \ar[dd, "g"]\\
                                        & \phi & \\
                 \cat{B} && \ar[ll, "q", loose] \cat{B'}
             \end{tikzcd}\]
-            A natural transformation $\phi_{a_0, \dots, a_n} : p_1(a_0, a_1) \times \cdots \times p_n(a_{n-1}, a_n) \to q(fa_0, ga_n)$
+            A family of functions $\phi_{a_0, \dots, a_n} : p_1(a_0, a_1) \times \cdots \times p_n(a_{n-1}, a_n) \to q(fa_0, ga_n)$ satisfying extra-naturality conditions that can be found in Subsection \ref{subsec:enriched}.
     \end{enumerate}
 \end{example}
 
-Note that $\cat{V}$-categories, $\cat{V}$-functors, $\cat{V}$-distributors and $\cat{V}$-natural transformations also form a virtual double category, although we have to be careful with the definition of $\cat{V}$-distributors: we can ask for a condition of symmetry on $\cat{V}$, or a condition of co and contravariance on each object as in \cite[§8.1]{arkor2024formaltheoryrelativemonads}. The will be studied in Section \ref{subsec:enriched}
+Note that $\cat{V}$-categories, $\cat{V}$-functors, $\cat{V}$-distributors and $\cat{V}$-natural transformations also form a virtual double category, although we have to be careful with the definition of $\cat{V}$-distributors: we can ask for a condition of symmetry on $\cat{V}$, or a condition of co and contravariance on each object as in \cite[§8.1]{arkor2024formaltheoryrelativemonads}. They will be studied in Section \ref{subsec:enriched}
 
 \begin{example}
     \label{ex:span}
@@ -343,7 +358,7 @@ Note that $\cat{V}$-categories, $\cat{V}$-functors, $\cat{V}$-distributors and $
 
 \begin{remark}
     \index{virtual double category!dual}
-    Contrary to double categories or 2-categories, there's a unique notion of dual because of the asymmetry between the horizontal domain and codomain: we will denote $\bb{X}^{\co}$ the dual of a virtual double category, having the same objects and arrows but distributors reversed, and a cell with frame
+    Contrary to double categories or 2-categories, there's a unique notion of dual fir virtual double categories because of the asymmetry between the horizontal domain and codomain: we will denote $\bb{X}^{\co}$ the dual of a virtual double category, having the same objects and arrows but distributors reversed, and a cell with frame
     \[\begin{tikzcd}
         A_0 \ar[d, "f_0"'] & \ar[l, loose, "p_1"'] \cdots & \ar[l, loose, "p_n"'] A_n \ar[d, "f_n"]\\
         B_0 && \ar[ll, loose, "q"] B_n
@@ -427,12 +442,12 @@ Moreover, we know distributors on small categories can be composed using a coend
                            &&& \tilde{\phi} &&& \\
         \cdot &&&&&& \ar[llllll, "s", loose] \cdot
     \end{tikzcd}\]
-    $q$ is the \textbf{composite} $q_1 \odot \cdots \odot q_m$ de $q_1, \dots, q_m$. For $m = 0$, $q : A \dfrom A$ is the \textbf{horizontal identity} of $A$, noted $A(1, 1)$, or $\nvequal$ in diagrams.
+    $q$ is the \textbf{composite} $q_1 \odot \cdots \odot q_m$ of $q_1, \dots, q_m$. For $m = 0$, $q : A \dfrom A$ is the \textbf{horizontal identity} of $A$, noted $A(1, 1)$, or $\nvequal$ in diagrams.
 
     In the cases where we only verify the property for $l = 0$ and $f = \id$ (resp. $n = 0$ and $g = \id$), we speak of \textbf{left-opcartesian cell} (resp. right-) and \textbf{left-composite} (resp. right-), noted $\odot_L$ (resp. $\odot_R$).
 \end{definition}
 
-The universal property gives a identity or a composite (eventually left- or right-biased) and associativity (idem) up to an inversible cell; when the formers exists. In the case of the composite, asking for equality is too strict. In the case of identity however, there's often a "canonical choice".
+The universal property gives an identity or a composite (eventually left- or right-biased) and associativity (idem) up to an inversible cell; when the formers exists. In the case of the composite, asking for equality is too strict. In the case of identity however, there's often a 'canonical choice'.
 
 \begin{definition}
     \index{virtual double category!normal}
@@ -446,7 +461,7 @@ The universal property gives a identity or a composite (eventually left- or righ
         A & {} & \ar[ll, equal, loose] A
         \ar[from=1-2, to=2-2, phantom, "e_A"{anchor=center}]
     \end{tikzcd}\]
-    When the vertical arrows of a cell are the identity, we will write $\varphi : p_1, \cdots, p_n \To q$ and when the horizontal domain is empty, $\varphi : \To q$ (e.g. $e_1 : \To A(1, 1)$).
+    When the vertical arrows of a cell are the identity, we will write $\varphi : p_1, \cdots, p_n \To q$ and when the horizontal domain is empty, $\varphi : \To q$ (e.g. $e_A : \To A(1, 1)$).
 \end{notation}
 
 \begin{remark}
@@ -475,7 +490,7 @@ The universal property gives a identity or a composite (eventually left- or righ
 \end{remark}
 
 \begin{notation}
-    When there's no confusion, we will write $\varphi : f \To g$ a cell with frame
+    When there's no risk of confusion, we will write $\varphi : f \To g$ a cell with frame
     \[\begin{tikzcd}[column sep=tiny]
         & A \ar[dl, "f"'] \ar[dr, "g"] &\\
         B & {} & \ar[ll, equal, loose] B
@@ -531,7 +546,7 @@ When the restrictions exists, we have a useful result:
         A \ar[d, "f"'] & \ar[l, equal] A \ar[d, equal]\\
         B \ar[d, equal] & \ar[l, loose, "{B(1, f)}"', ""{anchor=center,name=t}] A \ar[d, "f"]\\
         B & \ar[l, equal, loose, ""{anchor=center, name=b}] B
-        \ar[from=t, to=b, phantom, "\opcart"{anchor=center}]
+        \ar[from=t, to=b, phantom, "\cart"{anchor=center}]
     \end{tikzcd}
     \hspace{1em}=\hspace{1em}
     \begin{tikzcd}
@@ -543,7 +558,7 @@ When the restrictions exists, we have a useful result:
         A \ar[d, equal] & \ar[l, equal] A \ar[d, "f"]\\
         A \ar[d, "f"'] & \ar[l, loose, "{B(f, 1)}"', ""{anchor=center,name=t}] B \ar[d, equal]\\
         B & \ar[l, equal, loose, ""{anchor=center, name=b}] B
-        \ar[from=t, to=b, phantom, "\opcart"{anchor=center}]
+        \ar[from=t, to=b, phantom, "\cart"{anchor=center}]
     \end{tikzcd}\]
     We define the cells $\smallsmile_f$ as the composite
     \[\begin{tikzcd}
@@ -612,7 +627,7 @@ When the restrictions exists, we have a useful result:
 
 \begin{corollary}
     \label{cor:res_ff}
-    In particular, restriction if fully faithful and $f\simeqq g$ if and only if $B(1, f) \simeqq B(1, g)$ if and only if $B(f, 1) \simeqq B(g, 1)$.
+    In particular, restriction is fully faithful and $f\simeqq g$ if and only if $B(1, f) \simeqq B(1, g)$ if and only if $B(f, 1) \simeqq B(g, 1)$.
 \end{corollary}
 
 \begin{definition}
@@ -643,7 +658,7 @@ We can then, up to equivalence, work in a strict virtual equipment.
 
 \subsection{Extensions, liftings and (co)limits}
 
-We work in a virtual equipment $\bb{X}$. Right extensions and lifts will be a very important, probably to most important tool in a virtual equipment, subsuming every notion. A lot of result develop a \textit{calculus of extensions} (and lifts!), replacing both reasoning internal to categories and coend calculus to an extent. A lot of results in Section \ref{sec:presheaves} were proven using coend calculus, and can be proven in a virtual equipment similarly with extension calculus.
+We work in a virtual equipment $\bb{X}$. Right extensions and lifts will be a very important, probably the most important tool in a virtual equipment, subsuming every notion. A lot of results develop a \textit{calculus of extensions} (and lifts!), replacing both reasoning internal to categories and coend calculus to an extent. A lot of results in Section \ref{sec:presheaves} were proven using coend calculus, and can be proven in a virtual equipment similarly with extension calculus.
 
 \begin{definition}
     \index{weight}\index{weight!unitary}
@@ -651,10 +666,7 @@ We work in a virtual equipment $\bb{X}$. Right extensions and lifts will be a ve
     \[\begin{tikzcd}[sep=small]
         X_0 & \ar[l, loose, "p_1"'] X_1 & \ar[l, loose, "p_2"'] \cdots & \ar[l, loose, "p_m"'] X_m
     \end{tikzcd}\]
-    We will write $\vec{p} := (p_1, \cdots, p_m) : \begin{tikzcd}[sep=small]
-        X_0 & \ar[l, loose, "p_1"'] X_1 & \ar[l, loose, "p_2"'] \cdots & \ar[l, loose, "p_m"'] X_m
-    \end{tikzcd}$
-    A weight is \textbf{unitary} if $m=1$.
+    We will write $\vec{p} := (p_1, \cdots, p_m)$. A weight is \textbf{unitary} if $m=1$.
 \end{definition}
 
 The notion of weight generalizes the one in the enriched case and the one appearing in \cite{arkor2024formaltheoryrelativemonads}.
@@ -731,9 +743,9 @@ Juggling with universal properties of extensions and lifts, and with cartesian a
     \label{lem:ext_lift}
     We fix a weight $\vec{p} := (p_1, \cdots, p_m) : Z \dfrom \cdots \dfrom Y$ and $q : Z \dfrom X$. For the dual propositions, we rather consider $\vec{p} : Y \dfrom \cdots \dfrom X$.
     \begin{enumerate}[ref=\ref{lem:ext_lift} (\alph*)]
-        \item \label{lem:ext_lift:stab_wcomp} If $p_1 \odot_L \cdots \odot p_i$ exists for some $i\in\iset{1, m}$, and if either side exists, then:
+        \item \label{lem:ext_lift:stab_wcomp} If $p_1 \odot_L \cdots \odot_L p_i$ exists for some $i\in\iset{1, m}$, and if either side exists, then:
             $$q \rift (p_1, \cdots, p_m) \simeq q \rift (p_1 \odot_L \cdots \odot_L p_i ,\cdots, p_m)$$
-            Dually, if $p_i \odot \cdots \odot p_m$ exists, and if either side exists, then:
+            Dually, if $p_i \odot_R \cdots \odot_R p_m$ exists, and if either side exists, then:
             $$(p_1, \cdots, p_m) \rext q \simeq (p_1, \cdots, p_i \odot_R \cdots \odot_R p_m) \rext q$$
         \item \label{lem:ext_lift:stab_comp} If $p_i \odot \cdots \odot p_j$ exists for some $i \leq j \in \iset{i, m}$, and if either side exists, then:
             $$q \rift (p_1, \cdots, p_m) \simeq q \rift (p_1, \cdots, p_i \odot \cdots \odot p_j, \cdots, p_m)$$
@@ -766,35 +778,36 @@ Using right lift and extensions, we can express the universal property of weight
     \index{$\vec{p}$-!cocone}\index{$\vec{p}$-weighted!cocone}\index{$\vec{p}$-!colimit}\index{$\vec{p}$-weighted!colimit}
     \index{$\vec{p}$-!cone}\index{$\vec{p}$-weighted!cone}\index{$\vec{p}$-!limit}\index{$\vec{p}$-weighted!limit}
     \label{def:colim}\label{def:lim}
-    For $\vec{p} := (p_1, \cdots, p_m) : Y \dfrom \cdots \dfrom J$ a weight and $f : J \to X$ a vertical arrow, a \textbf{$\vec{p}$-cocone} (or \textbf{$\vec{p}$-weighted cocone}) is a pair of a vertical arrow $c : Y \to X$ and a cell $\lambda : \vec{p} \To X(f, c)$. A $\vec{p}$-cocone is \textbf{colimiting}, or is a $\vec{p}$-\textbf{colimit} if the following diagram exhibits $X(\colim^{\vec{p}}f, 1)$ as the right lift $X(f, 1) \rift \vec{p}$ :
+For $\vec{p} := (p_1, \cdots, p_m) : Y \dfrom \cdots \dfrom J$ a weight and $f : J \to X$ a vertical arrow, a \textbf{$\vec{p}$-cocone} (or \textbf{$\vec{p}$-weighted cocone}) is a pair of a vertical arrow $c : Y \to X$ and a cell $\lambda : \vec{p} \To X(f, c)$. A $\vec{p}$-cocone $(c, \lambda)$ is \textbf{colimiting}, or is a $\vec{p}$-\textbf{colimit} if the following diagram exhibits $X(c, 1)$ as the right lift $X(f, 1) \rift \vec{p}$:
     \[\begin{tikzcd}[sep=huge]
-        J \ar[d, equal] & \ar[l, "p_1"', loose] \cdots & \ar[l, "p_m"', loose] Y \ar[d, equal] & \ar[l, "{X(\colim^{\vec{p}}f, 1)}"'{name=t}, loose] X \ar[d, equal]\\
-        J \ar[d, equal] & {} & \ar[ll, "{X(f, \colim^{\vec{p}}f)}"{name=0}, loose] Y & \ar[l, "{X(\colim^{\vec{p}}f, 1)}"{name=b}, loose] X \ar[d, equal]\\
+        J \ar[d, equal] & \ar[l, "p_1"', loose] \cdots & \ar[l, "p_m"', loose] Y \ar[d, equal] & \ar[l, "{X(c, 1)}"'{name=t}, loose] X \ar[d, equal]\\
+        J \ar[d, equal] & {} & \ar[ll, "{X(f, c)}"{name=0}, loose] Y & \ar[l, "{X(c, 1)}"{name=b}, loose] X \ar[d, equal]\\
         J &&& \ar[lll, "{X(f, 1)}"{name=2}, loose] X
         \ar[from=1-2, to=0, phantom, "\lambda"{anchor=center}] \ar[from=t, to=b, phantom, "="{anchor=center}]
-        \ar[from=2-3, to=2-2, phantom, ""{name=1}] \ar[from=1, to=2, phantom, "{\smallsmile_{\colim^{\vec{p}}f}(f, 1)}"{anchor=center}]
+        \ar[from=2-3, to=2-2, phantom, ""{name=1}] \ar[from=1, to=2, phantom, "{\smallsmile_{c}(f, 1)}"{anchor=center}]
     \end{tikzcd}\]
-    Dually, for $\vec{p} := (p_1, \cdots, p_m) : J \dfrom \cdots \dfrom Y$, we can define \textbf{$\vec{p}-$cones} as a pair of a vertical arrow $c : Y \to X$ and a cell $\mu : \vec{p} \To X(c, f)$, and a $\vec{p}$-cone is \textbf{limiting} (or a $\vec{p}$-limit) if the following diagram exhibits $X(1, \lim^{\vec{p}}f)$ as the right extension $\vec{p}\rext X(1, f)$.
+    Dually, for $\vec{p} := (p_1, \cdots, p_m) : J \dfrom \cdots \dfrom Y$, we can define \textbf{$\vec{p}-$cones} as a pair of a vertical arrow $c : Y \to X$ and a cell $\mu : \vec{p} \To X(c, f)$, and a $\vec{p}$-cone $(c, \mu)$ is \textbf{limiting} (or a $\vec{p}$-limit) if the following diagram exhibits $X(1, c)$ as the right extension $\vec{p}\rext X(1, f)$.
     \[\begin{tikzcd}[sep=huge]
-        X \ar[d, equal] & \ar[l, "{X(1, \lim^{\vec{p}}f)}"'{name=t}, loose] Y \ar[d, equal] & \ar[l, "p_1"', loose] \cdots & \ar[l, "p_m"', loose] J \ar[d, equal]\\
-        X \ar[d, equal] & \ar[l, "{X(1, \lim^{\vec{p}}f)}"{name=b}, loose] Y & {} & \ar[ll, "{X(\lim^{\vec{p}}f, f)}"{name=0}, loose] J \ar[d, equal]\\
+        X \ar[d, equal] & \ar[l, "{X(1, c)}"'{name=t}, loose] Y \ar[d, equal] & \ar[l, "p_1"', loose] \cdots & \ar[l, "p_m"', loose] J \ar[d, equal]\\
+        X \ar[d, equal] & \ar[l, "{X(1, c)}"{name=b}, loose] Y & {} & \ar[ll, "{X(c, f)}"{name=0}, loose] J \ar[d, equal]\\
         X &&& \ar[lll, "{X(1, f)}"{name=2}, loose] J
         \ar[from=1-3, to=0, phantom, "\mu"{anchor=center}] \ar[from=t, to=b, phantom, "="{anchor=center}]
-        \ar[from=2-3, to=2-2, phantom, ""{name=1}] \ar[from=1, to=2, phantom, "{\smallsmile_{\lim^{\vec{p}}f}(1, f)}"{anchor=center}]
+        \ar[from=2-3, to=2-2, phantom, ""{name=1}] \ar[from=1, to=2, phantom, "{\smallsmile_{c}(1, f)}"{anchor=center}]
     \end{tikzcd}\]
+    A colimiting cone is usually written $\colim^{\vec{p}}f$ and a limiting cone is written $\lim^{\vec{p}}f$.
 \end{definition}
 
 We can apply the lemmas \ref{lem:ext_lift:stab_wcomp} and \ref{lem:ext_lift:res} to get the following properties:
 
 \begin{lemma}
-    \label{lem:co-lim}
+    \label{lem:co_lim}
     Let $f : J \to X$ be a vertical arrow.
-    \begin{enumerate}[ref=\ref{lem:co-lim} (\alph*)]
-        \item Let $(p, p') : J \dfrom Y' \dfrom Y$ be a weight such that $p \odot_L p' : J \dfrom Y$ and $\colim^pf$ exists. If either side exists, then:
+    \begin{enumerate}[ref=\ref{lem:co_lim} (\alph*)]
+        \item \label{lem:co_lim:comp} Let $(p, p') : J \dfrom Y' \dfrom Y$ be a weight such that $p \odot_L p' : J \dfrom Y$ and $\colim^pf$ exists. If either side exists, then:
             $$\colim^{p\odot_Lp'}f \simeq \colim^p(\colim^{p'}f)$$
             Dually, for $(p, p') : Y \dfrom Y' \dfrom J$ a weight such that $p \odot_R p' : Y \dfrom J$ and $\lim^{p'}f$ exist. If either side exists, then:
             $$\lim{}^{p\odot_Rp'}f \simeq \lim{}^p(\lim{}^{p'}f)$$
-        \item Let $p : Y \dfrom \cdots \dfrom J$ be a weight such that $\colim^{\vec{p}}f$ exists. Then for all $x : X' \to X, y : Y' \to Y$
+        \item \label{lem:co_lim:res} Let $p : Y \dfrom \cdots \dfrom J$ be a weight such that $\colim^{\vec{p}}f$ exists. Then for all $x : X' \to X, y : Y' \to Y$
             $$X((\colim^{\vec{p}}f)y, x) \simeq X(f, x) \rift (p_1, \cdots, p_m(1, y))$$
             Dually, for $p : J \dfrom \cdots \dfrom Y$ such that $\lim^{\vec{p}}f$ exists and $x : X' \to X, y: Y' \to Y$
             $$X(x, (\lim{}^{\vec{p}}f)y) \simeq (p_1(y, 1), \cdots, p_m) \rext X(x, \lim{}^{\vec{p}}f)$$
@@ -802,7 +815,7 @@ We can apply the lemmas \ref{lem:ext_lift:stab_wcomp} and \ref{lem:ext_lift:res}
 \end{lemma}
 
 \begin{corollary}
-    Let $\vec{p} : Z \dfrom \cdots \dfrom Y$ be a weight, $f : Z \to X$ and $g : Y \to X$ vertical arrows such that $\colim^{\vec{p}}f$ et $\lim^{\vec{p}}g$ exist. Then we have a bijection $\underline{\bb{X}}$:
+    Let $\vec{p} : Z \dfrom \cdots \dfrom Y$ be a weight, $f : Z \to X$ and $g : Y \to X$ vertical arrows such that $\colim^{\vec{p}}f$ et $\lim^{\vec{p}}g$ exist. Then we have a bijection of cells in $\underline{\bb{X}}$:
     \[\begin{iffseq}
         \colim^{\vec{p}}f\To g \\
         f \To \lim^{\vec{p}}g
@@ -813,14 +826,14 @@ We also define a notion of respect for (co)limits by a horizontal arrow, akin to
 
 \begin{definition}
     \index{respect!of limits}\index{respect!of colimits}
-    A horizontal arrow $q : X \dfrom W$ \textbf{respects a colimit} $\colim^{\vec{p}}f$ when a cell $\vec{p}, q(\colim^{\vec{p}}f, 1) \To q(f, 1)$ exhibits $q(\colim^{\vec{p}}f, 1)$ as the right lift $q(f, 1) \rift \vec{p}$.
+    A horizontal arrow $q : X \dfrom W$ \textbf{respects a colimit} $\colim^{\vec{p}}f$ when the cell $\vec{p}, q(\colim^{\vec{p}}f, 1) \To q(f, 1)$ exhibits $q(\colim^{\vec{p}}f, 1)$ as the right lift $q(f, 1) \rift \vec{p}$.
 
     \noindent
     Dually, $q = W \dfrom X$ \textbf{respects a limit} $\lim^{\vec{p}}f$ when the cell $q(1, \lim^{\vec{p}}f), \vec{p} \To q(1, f)$ exhibits $q(1, \lim^{\vec{p}}f)$ as the right extension $\vec{p} \rext q(1, f)$.
 \end{definition}
 
 \begin{definition}
-    \index{preservation!if limits}\index{preservation!of colimits}
+    \index{limit!preservation}\index{colimit!preservation}
     A vertical arrow $f : X \to Y$ \textbf{preserves a colimit} if its conjoint $X(f, 1) : X \dfrom Y$ respects it. Dually, it \textbf{preserves a limit} if its companion $X(1, f) : Y \dfrom X$ respects it.
 \end{definition}
 
@@ -828,27 +841,90 @@ We also define a notion of respect for (co)limits by a horizontal arrow, akin to
     Consequently, a vertical arrow $g : X \to Y$ preserves a colimit $(\colim^{\vec{p}}f, \lambda)$ when the $\vec{p}$-cocone $(g\circ\colim^{\vec{p}}f, (g\lambda))$ is colimiting. Dually, $g : X \to Y$ preserves a limit $(\lim^{\vec{p}}f, \mu)$ when the $\vec{p}$-cone ($g\circ\lim^{\vec{p}}f, (g\mu))$ is limiting.
 \end{remark}
 
+However, this is not the only interaction between arrows and (co)limits:
+
+\begin{definition}
+    \index{limit!reflection}\index{colimit!reflection}
+    An arrow $g : X \to Z$ \textbf{reflects} $\vec p$-colimits if a $\vec p$-cocone $(c, \lambda)$ for $f$ is colimiting only if the $\vec p$-cocone $(gc, g\gamma)$ for $gf$ is colimiting. Dually, it reflects $\vec p$-limits if a $\vec p$-cone for $f$ is limiting only if the induced $\vec p$-cone for $gf$ is limiting.
+\end{definition}
+
+\begin{definition}
+    \index{limit!lifting}\index{colimit!lifting}
+    An arrow $g : X \to Z$ \textbf{lifts} $\vec p$-colimits when if $(d, \lambda)$ is a colimiting $\vec p$-cocone for $gf$, there exists a limiting $\vec p$-cocone $(c, \alpha)$ for $f$ such that $(gf, g\alpha)$ is isomorphic to
+\end{definition}
+\todo{Fix the definition}
+
+\begin{definition}
+    \index{limits!creation}\index{colimits!creation}
+    An arrow $g : X \to Z$ \textbf{creates} (non-strictly) $\vec p$-colimits if it both lifts and reflects $\vec p$-colimits. Dually, an arrow $g : X \to Z$ \textbf{creates} (non-strictly) $\vec p$-limits if it both lifts and reflects $\vec p$-limits.
+\end{definition}
+
+\begin{definition}
+    \index{colimit!$j$-absolute} \index{limit!$j$-absolute}
+    Let $\vec p : Z \dfrom \cdots \dfrom Y, j : A \dfrom E, f : Z \to E$ such that $(\colim^{\vec p} f, \lambda)$ exists. This colimit is \textbf{$j$-absolute} when the following cell is left opcartesian:
+    \[\begin{tikzcd}[sep=huge]
+        \ar[d, equal] A & \ar[l, loose, "{j(1, f)}"', ""{anchor=center,name=t}] Z \ar[d, equal] & \ar[l, loose, "p_1"'] \cdots & \ar[l, loose, "p_m"'] Y \ar[d, equal]\\
+        \ar[d, equal] A & \ar[l, loose, "{j(1, f)}"', ""{anchor=center,name=m}] Z & {} & \ar[ll, loose, "{E(f, \colim^{\vec p}f)}"'] Y \ar[d, equal]\\
+        A &&& \ar[lll, loose, "{j(1, \colim^{\vec p}f)}", ""{anchor=center,name=b}] Y
+        \ar[from=t, to=m, phantom, "="{anchor=center}] \ar[from=1-3, to=2-3, phantom, "\lambda"{anchor=center}]
+        \ar[from=2-1, to=2-4, phantom, ""{name=1}] \ar[from=1, to=b, phantom, "{j\odot\smallsmile_f(1, \colim^{\vec p}f)}"{anchor=center}]
+    \end{tikzcd}\]
+    For $j$ an arrow, a colimit is \textbf{$j$-absolute} if it is $E(j, 1)$-absolute. It is \textbf{absolute} if it is $\id_E$-absolute.
+\end{definition}
+
+The notion of $j$-absolute colimits is usually expressed as preservation by any functor. We get a similar property relative to $j$ and get the usual characterization as a special case.
+
+\begin{lemma}
+    \label{lem:rift_absolute}
+    Every right lift through $j : A \dfrom E$ respects $j$-absolute colimits.
+\end{lemma}
+
+\begin{proof}
+    Let $\colim^{\vec p}f$ a $j$-absolute colimit, we have the following isomorphisms:
+    \begin{align*}
+        (q\rift j)(\colim^{\vec p}f, 1) &\simeqq q\rift j(1, \colim^{\vec p}f) & (\ref{lem:ext_lift:res})\\
+                                        &\simeqq q\rift (j(1, f)\odot_L\vec p) & (j-\text{absoluteness})\\
+                                        &\simeqq (q\rift (j(1, f))\rift\vec p & (\ref{lem:ext_lift:stab_wcomp})\\
+                                        &\simeqq (q\rift j)(f, 1)\rift \vec p & (\ref{lem:ext_lift:res})
+    \end{align*}
+\end{proof}
+
+\begin{corollary}
+    In particular for $j$ an arrow, left pointwise extension along $j$ preserves $j$-absolute colimits. Taking $j=\id_E$, any functor preserves $\id_E$-absolute colimits.
+\end{corollary}
+
+\begin{lemma}
+    \label{lem:lifting_abs_iff_lift_respect}
+    Let $j : A \dfrom E$ be a lifting distributor. A colimit in E is $j$-absolute if and only if every right lift through $j$ respects it.
+\end{lemma}
+
+\begin{proof}
+    One direction is the Lemma \ref{lem:rift_absolute}. For the other, let %FIXME: finish/repair proof
+\end{proof}
+
+<++>
+
 Finally, we define extensions and lift of vertical arrows, that will act like pointwise Kan extension and lifts. It is possible to define them as weighted colimit (as it is done in \cite[Chapter 4]{kelly} or \cite[Remark 4.1.13]{coend_calculus}), but unfolding the definition, it is possible to define four notions directly using right extensions and lifts.
 
 \begin{definition}
-    \index{extension de Kan!à gauche}
-    \index{Kan lift!left-}\index{Kan lift!right-}\index{Kan extension!right-}\index{Kan extension!left-}
-    \label{def:kan}
+    \index{pointiwse lift!left-}\index{pointwise lift!right-}\index{pointwise extension!right-}\index{pointwise extension!left-}
+    \label{def:pointwise}
     Let $f : Z \to Y, j : Z \to X$ be vertical arrows.
     \begin{itemize}
-        \item The \textbf{left Kan extension of $f$ along $j$} is, if it exists, the vertical arrow $j\plext f : X \to Y$ such that $Y(j \plext f, 1) \simeq Y(f, 1) \rift X(j, 1)$.
-        \item The \textbf{right Kan extension of $f$ along $j$} is, if it exists, the vertical arrow $j \prext f : X' \to Y$ such that $Y(1, j\prext f) \simeq X(1, j) \rext Y(1, f)$.
+        \item The \textbf{left pointwise extension of $f$ along $j$} is, if it exists, the vertical arrow $j\plext f : X \to Y$ such that $Y(j \plext f, 1) \simeq Y(f, 1) \rift X(j, 1)$.
+        \item The \textbf{right pointwise extension of $f$ along $j$} is, if it exists, the vertical arrow $j \prext f : X' \to Y$ such that $Y(1, j\prext f) \simeq X(1, j) \rext Y(1, f)$.
     \end{itemize}
     Soit $j : X \to Z, f : Y \to Z$.
     \begin{itemize}
-        \item The \textbf{left Kan lift of $f$ through $j$} is, if it exists, the vertical arrow $f \plift j : X \to Y$ such that $Y(f\plift j, 1) \simeq Z(j, 1) \rext Z(f, 1)$.
-        \item The \textbf{right Kan lift of $f$ through $j$} is, if it exists, the vertical arrow $f \prift j : X \to Y$ such that $Y(1, f\prift j) \simeq Z(1, f) \rift Z(1, j)$.
+        \item The \textbf{left pointwise lift of $f$ through $j$} is, if it exists, the vertical arrow $f \plift j : X \to Y$ such that $Y(f\plift j, 1) \simeq Z(f, 1) \rext Z(j, 1)$ which is $Z(j, f)$ by Lemma \ref{lem:ext_lift:res}.
+        \item The \textbf{right pointwise lift of $f$ through $j$} is, if it exists, the vertical arrow $f \prift j : X \to Y$ such that $Y(1, f\prift j) \simeq Z(1, j) \rift Z(1, f)$ which is $Z(f, j)$ by Lemma \ref{lem:ext_lift:res}.
     \end{itemize}
 \end{definition}
 
-In particular, the left Kan extension of $f$ through $j$ is the $X(j, 1)$-colimit of $f$. We can then deduce the following properties:
+In particular, the left pointwise extension of $f$ through $j$ is the $X(j, 1)$-colimit of $f$ and the right pointwise extension of $f$ through $j$ is the $X(1, j)$-limit of $f$. We can then deduce the following properties:
 
 \begin{lemma}
+    \label{lem:pt_ext_props}
     Let $f : Z \to Y, j : Z \to X$ be vertical arrows such that $j \plext f : X \to Y$ exists.
     \begin{enumerate}
         \item $1_Z \plext f$ exists and is isomorph to $f$.
@@ -859,31 +935,146 @@ In particular, the left Kan extension of $f$ through $j$ is the $X(j, 1)$-colimi
     \end{enumerate}
 \end{lemma}
 
+\begin{proof}
+    The first item is a consequence of the fact that right lift along identities are identities. The second comes from Lemma \ref{lem:co_lim:comp} and the fact that $Y(j', 1) \odot Y(j, 1) \simeqq Y(j'j, 1)$. The last one comes from Lemma \ref{lem:co_lim:res}.
+\end{proof}
+
+As a consequence, pointwise extensions satisfy the 2-categorical property of usual Kan extensions.
+
+\begin{corollary}
+    \label{cor:kan_2cat}
+    Let $j : Z \to X, f : Z \to Y$ such that $j\plext f : X \to Y$ exists. Then we have a bijection of cells:
+    \[\begin{iffseq}
+        \vec{r}\To X((j\plext f)y, x)\\
+        Y(j, y), \vec{r}\To X(f, x)
+    \end{iffseq}\]
+    And in particular, in $\bb{X}$:
+    \[\begin{iffseq}
+        j\plext f\To x\\
+        f\To x\circ j
+    \end{iffseq}\]
+\end{corollary}
+
+\begin{proof}
+    The first bijection comes from the universal property of the right lift, while the second one follow by taking $y = \id_Y$ and $n=0$.
+\end{proof}
+
 \subsection{Density and full faithfulness}
-\todo{Ajouter les defs et les 20 000 lemmes qui vont avec}
-\todo{add lemmas from \cite[Appendix]{diliberticodensity}}
+
+\begin{definition}
+    \index{arrow!fully faithful}
+    An arrow $j : A \to E$ is \textbf{fully faithful} if it satisfies one of the following equivalent characterizations:
+    \begin{enumerate}
+        \item $e_f : f \To f$ is cartesian.
+        \item $\smallfrown_f : \To E(j, j)$ is opcartesian.
+        \item The cell $A(1, 1) \To E(j, j)$ induced by $\smallfrown_j$ is invertible.
+    \end{enumerate}
+\end{definition}
+
+Having \textit{any} isomorphism suffices:
+
+\begin{corollary}
+    $j : A \to E$ is fully faithful if and only if $A(1, 1) \simeqq E(j, j)$.
+\end{corollary}
+
+\begin{proof}
+    The proof uses horizontal adjunctions, introduced in Subsection \ref{subsec:hadj}. Postcomposition by $\smallfrown_j : \To E(j, j)$ is the unit of $E(1, j) \dashv E(j, 1)$, and by \ref{lem:hadj_opcart} it is opcartesian if and only if $A(1, 1) \simeqq E(j, j)$.
+\end{proof}
 
 \begin{lemma}
-    \label{lem:ff_dense_prelim}
-    Let $f$ be a dense and fully faithful vertical arrow. Then $f$ preserves weighted limits.
+    \label{lem:ff_refl_co_lim}
+    Fully faithful arrows reflect weighted limits and colimits.
 \end{lemma}
 
 \begin{proof}
-    Let $\vec{p}, g$ such that $\lim^{\vec{p}}g$ exists.
-    \begin{align*}
-        B(1, f\circ \lim{}^{\vec{p}}g) &= B(1, 1)(1, f\circ\lim{}^{\vec{p}}g)\\
-                                     &\simeq (B(f, 1)\rift B(f, 1))(1, f\circ\lim{}^{\vec{p}}g) & (\text{density})\\
-                                     &\simeq (B(f, f)\rift B(f, 1))(1, \lim{}^{\vec{p}}g) & (\ref{lem:ext_lift:res})\\
-                                     &\simeq (A(1, 1)\rift B(f, 1))(1, \lim{}^{\vec{p}}g) & (\text{f.f.})\\
-                                     &\simeq A(1, \lim{}^{\vec{p}}g)\rift B(f, 1) & (\ref{lem:ext_lift:res})\\
-                                     &\simeq \vec{p}\rext (A(1, g)\rift B(f, 1)) & (\ref{def:lim}, \ref{lem:ext_lift:assoc_rift_rext})\\
-                                     &\simeq \vec{p}\rext B(1, gf)
-    \end{align*}
+    Let $\vec p : Z \dfrom \cdots \dfrom Y$, $f : Z \to W$ and $g : W \hookrightarrow X$ such that there exists a $\vec p$-cocone $(c : Y \to X, \lambda)$ for $f$ with $(gc, g\lambda)$ exhibiting a colimit $\colim^{\vec p} gf$. Then $W(c, 1) \simeqq X(gc, g) \simeqq X(gf, g)\rext \vec p \simeqq X(f, 1) \rext \vec p$. The dual is similar.
+\end{proof}
+
+\begin{lemma}
+    \label{lem:ff_res}
+    Let $j : A \to E$ be a fully faithful arrow. Then for every $p : A \dfrom X$, the right lift $p \rift E(j, 1)$ exists and the associated cell $(p \rift E(j, 1))(j, 1) \To p$ is an isomorphism.
+\end{lemma}
+
+\begin{proof}
+    The cell is equal to the composite
+    $$p \simeqq p\rift A(1, 1) \simeqq p\rift E(j, j) \simeqq (p\rift E(j, 1))(j, 1)$$
+\end{proof}
+
+\begin{lemma}
+    \label{lem:ff_lext_comp}
+    Let $j : W \to Y, f : W \to X, g : W \to Z$ be arrows such that $j$ is fully faithful, $f\plext j$ and $j\plext g$ exist and the latter preserves the former. Then
+    $$(j\plext g)\circ(f\plext j)\simeqq f\plext g$$
+\end{lemma}
+
+\begin{proof}
+    Using \ref{lem:ff_res}, we have
+    $$(j\plext g) \circ (f\plext j) \simeqq f\plext((j\plext g)\circ j)\simeqq f\plext g$$
+\end{proof}
+
+\begin{corollary}
+    For $i : A \hookrightarrow K$ fully faithful and all $f : A \to B$ such that $i \plext f$ exists, $(i\plext f) \circ i \simeqq f$.
+\end{corollary}
+
+\begin{definition}
+    \label{def:dense}
+    \index{arrow!dense}\index{arrow!codense}
+    \index{distributor!dense}\index{distributor!codense}
+    A distributor $p : A \dfrom B$ is \textbf{dense} when $e_p : p \To p$ exhibits $B(1, 1) : B \dfrom B$ as the right lift $p\rift p$. An arrow is \textbf{dense} if its conjoint is.
+
+    Dually, it is \textbf{codense} when $e_p : p \To p$ exhibits $A(1, 1)$ as the right extension $p\rext p$. An arrow is \textbf{codense} if its companion is.
+\end{definition}
+
+\begin{remark}
+    \label{rem:vert_co_dense}
+    The condition on conjoint and companion can be rewritten as $j$ being dense if and only if $j\plext j\simeqq \id_E$, exhibited by $e_j : j \To j$. Dually, it is codense if and only if $j\prext j \simeqq \id_A$, exhibited by $e_j$ once again.
+\end{remark}
+
+We think of a dense arrow as "essentially describing the codomain", the same way a dense continuous function "describes" the target space. In enriched category theory, this has many equivalent interpretations, notably that every object in the domain is a canonical weighted colimit over the dense functor. In a virtual equipment, we recover a characterization in terms of distributors, generalizing \cite[Lemma 3.20]{arkor2024formaltheoryrelativemonads}:
+
+\begin{lemma}
+    \label{lem:res_dense_fid}
+    A distributor $p : A \dfrom E$ is dense if and only if the assignment of $\phi : \vec{r} \To E(g, h)$ to
+    \[\begin{tikzcd}[sep=huge]
+        \ar[d, equal] A & \ar[l, loose, "{p(1, g)}"', ""{anchor=center,name=t}] \cdot \ar[d, equal] & \ar[l, loose, "r_1"'] \cdots & \ar[l, loose, "r_n"'] \cdot \ar[d, equal]\\
+        \ar[d, equal] A & \ar[l, loose, "{p(1, g)}", ""{anchor=center,name=m1}] \cdot & {} & \ar[ll, loose, "{E(g, h)}", ""{anchor=center,name=m2}] \cdot \ar[d, equal]\\
+        A &&& \ar[lll, loose, "{p(1, h)}", ""{anchor=center,name=b}] \cdot
+        \ar[from=2-3, to=2-2, phantom, ""{name=1}]
+        \ar[from=t,to=m1, phantom, "="{anchor=center}] \ar[from=1-3, to=m2, phantom, "\phi"{anchor=center}] \ar[from=1, to=b, phantom, "{p\odot\smallsmile_g(1, h)}"{anchor=center}]
+    \end{tikzcd}\]
+    Induces a bijection of cells:
+    \[\begin{iffseq}
+        \vec{r}\To E(g, h)\\
+        p(1, g), \vec{r}\To p(1, h)
+    \end{iffseq}\]
+    In particular, there is a bijection of cells:
+    \[\begin{iffseq}
+        g\To h\\
+        p(1, g)\To p(1, h)
+    \end{iffseq}\]
+\end{lemma}
+
+\begin{proof}
+    The first bijection exhibits $E(g, h)$ as the right lift $p(1, h) \rift p(1, g)$, which Corollary \ref{cor:kan_2cat} gives when $j$ is dense, using the characterization in Remark \ref{rem:vert_co_dense}. Taking $g=h=\id_E$, we get $E(1, 1)\simeqq p\rift p$ hence the converse. Taking $n=0$, we get the second bijection.
+\end{proof}
+
+\begin{remark}
+    In particular, when $p$ is dense, restriction of $p$ on the domain are fully faithful.
+\end{remark}
+
+Although dense arrows are not stable by composition, as long as the second arrow preserves certain weighted colimits, it is possible:
+
+\begin{lemma}[{\cite[Lemma 7.9]{averyleinster}}]
+    \label{lem:comp_dense}
+    Let $A \xrightarrow{f} B \xrightarrow{g} C$ be dense arrows, and such that $g$ preserves $B(f, 1)$-weighted colimits. Then $gf$ is dense.
+\end{lemma}
+
+\begin{proof}
+    $gf \plext gf \simeq g\plext(f\plext gf) \simeq g\plext(g\circ(f\plext f)) \simeq g\plext g \simeq 1_C$
 \end{proof}
 
 \begin{lemma}
     \label{lem:codense_lim_equiv}
-    Let $\begin{tikzcd} A \ar[r, "f"] & B \ar[r, "g", bend left] \ar[r, "g'"', bend right] & C\end{tikzcd}$ such that $f$ is codense and $g, g'$ preserve limits. If $gf \simeq g'f$ then $g\simeq g'$.
+    Let $\begin{tikzcd} A \ar[r, "f"] & B \ar[r, "g", bend left] \ar[r, "g'"', bend right] & C\end{tikzcd}$ such that $f$ is codense and $g, g'$ preserve $B(1, f)$-weighted limits. If $gf \simeq g'f$ then $g\simeq g'$.
 \end{lemma}
 
 \begin{proof}
@@ -916,14 +1107,85 @@ In particular, the left Kan extension of $f$ through $j$ is the $X(j, 1)$-colimi
     \end{align*}
 \end{proof}
 
+Density arrows also interact nicely with weighted limits and absolute colimits:
+
+\begin{lemma}
+    \label{lem:ff_dense_prelim}
+    Let $f$ be a dense and fully faithful vertical arrow. Then $f$ preserves weighted limits.
+\end{lemma}
+
+\begin{proof}
+    Let $\vec{p}, g$ such that $\lim^{\vec{p}}g$ exists.
+    \begin{align*}
+        B(1, f\circ \lim{}^{\vec{p}}g) &= B(1, 1)(1, f\circ\lim{}^{\vec{p}}g)\\
+                                     &\simeq (B(f, 1)\rift B(f, 1))(1, f\circ\lim{}^{\vec{p}}g) & (\text{density})\\
+                                     &\simeq (B(f, f)\rift B(f, 1))(1, \lim{}^{\vec{p}}g) & (\ref{lem:ext_lift:res})\\
+                                     &\simeq (A(1, 1)\rift B(f, 1))(1, \lim{}^{\vec{p}}g) & (\text{f.f.})\\
+                                     &\simeq A(1, \lim{}^{\vec{p}}g)\rift B(f, 1) & (\ref{lem:ext_lift:res})\\
+                                     &\simeq \vec{p}\rext (A(1, g)\rift B(f, 1)) & (\ref{def:lim}, \ref{lem:ext_lift:assoc_rift_rext})\\
+                                     &\simeq \vec{p}\rext B(1, gf)
+    \end{align*}
+\end{proof}
+
+\begin{lemma}
+    \label{lem:dense_abs_iff_iso}
+    Let $p : Z \dfrom \cdots \dfrom Y$ a weight, $j : A \dfrom E$ a dense distributor and $f : Z \to E$ an arrow. An arrow $c : Y \to E$ forms a $j$-absolute $\vec p$-weighted colimit of $f$ if and only if there is an isomorphism
+    $$j(1, c) \simeq j(1, v) \odot_L \vec p$$
+\end{lemma}
+
+\begin{proof}
+    The only if direction is immediate, so suppose the isomorphism exists. Then we have the following isomorphisms:
+    \begin{align*}
+        E(c, 1) &\simeqq j \rift j(1, c) & (\text{density})\\
+                &\simeqq j \rift (j(1, f)\odot_L\vec p) & (\text{by hypothesis})\\
+                &\simeqq (j \rift j(1, f))\odot_L \vec p & (\ref{lem:ext_lift:stab_wcomp}\&\ref{lem:ext_lift:stab_split})\\
+                &\simeqq (j \rift j)(f, 1)\rift \vec p & (\ref{lem:ext_lift:res})\\
+                &\simeqq E(f, 1)\rift \vec p & (\text{density})
+    \end{align*}
+    %FIXME: not finished ([AM26] 2.30)
+\end{proof}
+
+Absoluteness also characterises full faithfulness of weighted colimits:
+
+\begin{lemma}
+    Let $p : Y \dfrom Z, f : Y \to X$ such that $\colim^pf$ exists. Any three of the following conditions implies the fourth
+\end{lemma}
+
+\begin{proof}
+    We have a chain of isomorphism, that can be translated to obtain every implication. The following is $(a)\land(b)\land(c)\implies(d)$:
+    \begin{align*}
+        Z(1, 1) &\simeqq p\rift p & (p\text{ dense})\\
+                &\simeqq X(f, f)\odot_L p)\rift p & (f\text{ fully faithful})\\
+                &\simeqq X(f, \colim^pf)\rift p & (\colim^pf\text{ is $f$-absolute})\\
+                &\simeqq (X(f, 1)\rift p)(1, \colim^pf) & \text{(Lemma \ref{lem:ext_lift:res})}\\
+                &\simeqq X(\colim^pf, \colim^pf)
+    \end{align*}
+\end{proof}
+
+Finally, density and full faithfulness can characterize when left extensions witness equivalences.
+
+\begin{lemma}
+    \label{lem:left_witness_equiv}
+    Let $j : A \to E, f: A \to B$ arrows such that $f\plext j$ and $j\plext f$ exist and $f\plext j \dashv j\plext f$. Then
+    \begin{enumerate}
+        \item The adjunction is coreflective if $j$ is fully faithful, $f$ is dense and $f\plext j$ is $j$-absolute.
+        \item The adjunction is reflective if $f$ is fully faithful and $j$ is dense.
+    \end{enumerate}
+    In particular, the adjunction is an equivalence when $f$ and $j$ are dense and fully faithful and $f\plext j$ is $j$-absolute.
+\end{lemma}
+
+\begin{proof}
+    $f\plext j$ is preserved by $j\plext f$ since it is $j$-absolute (Lemma \ref{lem:rift_absolute}) and by Lemma \ref{lem:ff_lext_comp} we have $(j\plext f)\circ(f\plext j) \simeqq f\plext f \simeqq 1$. Conversely, $f\plext j$ preserves all left extensions, being a left adjoint, so Lemma \ref{lem:ff_lext_comp} gives $(f\plext j)\circ(j\plext f) \simeqq j\plext j\simeqq 1$.
+\end{proof}
 
 \section{Adjunctions and Monads}
 
-\subsection{Relative adjunctions}
+Not only do we have two kinds of arrows with cells between them in a virtual equipment, leading to two possible notions of adjunctions; there's also distributors, permitting the definition of adjunctions through the isomorphism on $\Hom$ distributors. We start with horizontal adjunctions and monads, as it leads to a few useful results in the study of (vertical) relative adjunctions and monads.
 
-Intuitively, we have two possible definitions for adjunctions: either we use an isomorphism on the (restriction of) distributors, thinking of it as an isomorphism on the $\Hom$, or we use the unit/counit characterisation. The first is easily defined in an arbitrary virtual equipment, while the second can be expressed in the underlying 2-category $\underline{\bb{X}}$ (\cite[p.~762]{maranda} for a historic reference, \cite[Paragraph~1.1]{auderset_2-cat_adj} and \cite[Section 1.11]{kelly} for a modern treatment).
+\subsection{Loose adjunctions and loose monads}
+\label{subsec:hadj}
 
-We will see later (Corollary \ref{cor:adj_defs_same}) that the two notions coincide. We delay the definition of an adjunction, which we will get as a special case of a relative adjunction. Moreover, we will start with the horizontal notion.
+The definition and many results in this section make sense in an arbitrary virtual double category, as written in \cite[Subection 2.4]{arkor2024formaltheoryrelativemonads}.
 
 \begin{definition}
     \index{adjunction!horizontal}
@@ -962,8 +1224,8 @@ We will see later (Corollary \ref{cor:adj_defs_same}) that the two notions coinc
         \item An object $C$, the \textbf{apex}.
         \item A horizontal arrow $\ell : C \dfrom A$, the \textbf{left relative adjoint}.
         \item A horizontal arrow $r : A \dfrom C$ \textbf{right relative adjoint}.
-        \item A cell $\eta : \To r\odot\ell$, l'\textbf{unit}.
-        \item A cell $\varepsilon : \ell, r \To e_C$, la \textbf{counit}.
+        \item A cell $\eta : \To r\odot\ell$, the \textbf{unit}.
+        \item A cell $\varepsilon : \ell, r \To e_C$, the \textbf{counit}.
     \end{enumerate}
     such that $r\odot\ell$ exists and we have the equalities on the right.
 \end{definition}
@@ -971,6 +1233,51 @@ We will see later (Corollary \ref{cor:adj_defs_same}) that the two notions coinc
 \begin{example}
     Let $\ell : A \to C$ be a vertical arrow. Noting that $C(\ell, \ell) \simeq C(\ell, 1) \odot C(1, \ell)$ (Theorem \ref{th:comp_rest}), we have $C(1, \ell) \dashv C(\ell, 1)$ with $\smallfrown_\ell$ as unit and $\smallsmile_\ell$ as counit.
 \end{example}
+
+\begin{definition}
+    \label{monad!loose}
+    A \textbf{loose monad} in $\bb{X}$ comprises of the following data:
+    \begin{enumerate}
+        \item A \textbf{base} object $A$.
+        \item A \textbf{underlying distributor} $t: A \dfrom A$.
+        \item A \textbf{multiplication} $\mu: t, t \To t$
+        \item A \textbf{unit} $\eta: \To t$
+    \end{enumerate}
+    Such that
+    \begin{align*}
+        \mu(\mu, e_t) &= \mu(e_t, \mu) & \mu(\eta, e_t) &= \mu(e_t, \eta) = e_t
+    \end{align*}
+\end{definition}
+
+We will come back to loose monads in Subsection \ref{subsec:internal}.
+
+Thankfully, loose adjunctions induce loose monads:
+
+\begin{lemma}
+    \label{lem:hadj_hmon}
+    Every loose adjunction $\ell \dashv r$ induces a loose monad.
+\end{lemma}
+
+\begin{proof}
+    Let $\ell \dashv r$ be an adjunction with unit $\eta$ and counit $\varepsilon$. The loose monad has $r\odot\ell$ as underlying distributor, $r\odot\varepsilon\odot\ell$ as multiplication and $\eta$ as unit. Associativity comes from associativity in composition of cells and unit laws from diagram chasing.
+\end{proof}
+
+Finally, a useful lemma characterizing certain adjunctions:
+
+\begin{lemma}
+    \label{lem:hadj_opcart}
+    Let $\ell \dashv r$ be a horizontal adjunction. Then $r\odot\ell\simeqq A(1, 1)$ if and only if $\eta:\To r\odot\ell$ is opcartesian.
+\end{lemma}
+
+\begin{proof}
+    One direction is trivial, we focus on the other: suppose $r\odot\ell\simeqq A(1, 1)$. The induced loose monad structure on A(1, 1) (by Lemma \ref{lem:hadj_hmon}). By Eckmann-Hilton, $\bb{X}\iset{A, A}(A(1, 1), A(1, 1))$ is equipped with a commutative monoidal structure, so the unit is a two-sided inverse. Transferring the structure back to $r\odot\ell$, the unit is invertible.
+\end{proof}
+
+\subsection{Relative adjunctions}
+
+Intuitively, we have two possible definitions for adjunctions: either we use an isomorphism on the (restriction of) distributors, thinking of it as an isomorphism on the $\Hom$, or we use the unit/counit characterisation. The first is easily defined in an arbitrary virtual equipment, while the second can be expressed in the underlying 2-category $\underline{\bb{X}}$ (\cite[p.~762]{maranda} for a historic reference, \cite[Paragraph~1.1]{auderset_2-cat_adj} and \cite[Section 1.11]{kelly} for a modern treatment).
+
+We will see later (Corollary \ref{cor:adj_defs_same}) that the two notions coincide. We delay the definition of an adjunction, which we will get as a special case of a relative adjunction.
 
 % TODO: texte de transition
 
@@ -1000,11 +1307,11 @@ We will see later (Corollary \ref{cor:adj_defs_same}) that the two notions coinc
 As for classical adjunctions, there's multiple characterizations using unit and counit cells.
 
 \begin{proposition}
-    \label{prop:equiv-radj-car}
+    \label{prop:equiv_radj_car}
     Let $j : A \to E, \ell : A \to C, r : C \to E$ be vertical arrows. The following data are equivalent to characterize an $j$-relative adjunction $\ell \dashv_j r$:
-    \begin{enumerate}[ref=\ref{prop:equiv-radj-car} (\alph*)]
+    \begin{enumerate}[ref=\ref{prop:equiv_radj_car} (\alph*)]
         \item An isomorphism $\sharp : C(\ell, 1) \simeq E(j, r) : \flat$.
-        \item An unit cell $\eta : j \To \ell; r$ and counit $\varepsilon : C(1, \ell), E(j, r) \To C(1 ,1)$ such that
+        \item An unit cell $\eta : j \To r\circ\ell$ and counit $\varepsilon : C(1, \ell), E(j, r) \To C(1 ,1)$ such that
             \[\begin{tikzcd}
                 \ar[d, equal] C & \ar[l, loose, "{C(1, \ell)}"', ""{anchor=center,name=t1}] A \ar[d, equal] & \ar[l, equal, ""{anchor=center,name=t2}] A \ar[d, equal] \\
                 \ar[d, equal] C & \ar[l, loose, "{C(1, \ell)}"', ""{anchor=center,name=m1}] A \ar[d, equal] & \ar[l, loose, "{E(j, j)}"', ""{anchor=center,name=m2}] A \ar[d, equal]\\
@@ -1107,9 +1414,9 @@ As for classical adjunctions, there's multiple characterizations using unit and 
         \flat :=
         \begin{tikzcd}
             \ar[d, equal] A & \ar[l, equal] A \ar[d, "\ell"] & \ar[l, equal] A \ar[d, equal] & \ar[l, loose, "{E(j, r)}"', ""{anchor=center,name=t1}] C \ar[d, equal] \\
-            \ar[d, equal] A & \ar[l, loose, "{C(1, \ell)}"', ""{anchor=center,name=m1}] C \ar[d, equal] & \ar[l, loose, "{C(\ell, 1)}"'] A & \ar[l, loose, "{E(j, r)}", ""{anchor=center,name=m2}] C \ar[d, equal]\\
-            \ar[d, equal] A & \ar[l, loose, "{C(1, \ell)}", ""{anchor=center,name=b1}] C && \ar[ll, loose, equal, ""{anchor=center,name=b2}] C \ar[d, equal]\\
-            A &&& \ar[lll, loose, "{C(1, \ell)}"] C
+            \ar[d, equal] A & \ar[l, loose, "{C(\ell, 1)}"', ""{anchor=center,name=m1}] C \ar[d, equal] & \ar[l, loose, "{C(1, \ell)}"'] A & \ar[l, loose, "{E(j, r)}", ""{anchor=center,name=m2}] C \ar[d, equal]\\
+            \ar[d, equal] A & \ar[l, loose, "{C(\ell, 1)}", ""{anchor=center,name=b1}] C && \ar[ll, loose, equal, ""{anchor=center,name=b2}] C \ar[d, equal]\\
+            A &&& \ar[lll, loose, "{C(\ell, 1)}"] C
             \ar[from=t1, to=m2, phantom, "="{anchor=center}]
             \ar[from=m1, to=b1, phantom, "="{anchor=center}] \ar[from=2-3, to=b2, phantom, "\varepsilon"{anchor=center}]
         \end{tikzcd}
@@ -1134,6 +1441,7 @@ Considering relative adjunctions is not without consequences: the root distorts 
 We also recover a conservation of (co)limits.
 
 \begin{proposition}
+    \label{prop:radj_co_lim}
     Let $j : A \to E$ a root.
     \begin{itemize}
         \item If $\ell : A \to C$ is a left $j$-adjoint, then $\ell$ preserves the colimits that $j$ preserves.
@@ -1166,6 +1474,94 @@ We also recover a conservation of (co)limits.
     \end{itemize}
 \end{proof}
 
+\begin{corollary}
+    Every dense and fully faithful arrow creates weighted limits.
+\end{corollary}
+
+\begin{proof}
+    Let $f : A \to B$ a dense and fully faithful arrow, therefore it reflects limits by \ref{lem:ff_refl_co_lim}. By full faithfulness, $1\dashv_ff$, hence by density it preserves weighted limits by Proposition \ref{prop:radj_co_lim}.
+\end{proof}
+
+Better than that, when $j$ is dense the right adjoint also preserves a class of colimits:
+
+\begin{lemma}
+    \label{lem:radj_right_labs_colim}
+    Let $j : A \to E$ be a dense arrow, $\ell\dashv_j r$ a relative adjunction. Then $r$ preserves $\ell$-absolute colimits
+\end{lemma}
+
+\begin{proof}
+    We have
+    \begin{align*}
+        E(j, r\colim^{\vec p}f) &\simeqq C(\ell, \colim^{\vec p}f)\\
+                                &\simeqq C(\ell, f)\odot_L\vec p\\
+                                &\simeqq E(j, rf)\odot_L\vec p
+    \end{align*}
+    Hence $r\colim^{\vec p}f\simeqq\colim^{\vec p}(rf)$ by Lemma \ref{lem:dense_abs_iff_iso}.
+\end{proof}
+
+\begin{corollary}
+    In particular, left $j$-adjoints preserve the left pointwise extensions that $j$ preserve and right $j$-adjoint preserve every right pointwise extension when $j$ is dense.
+\end{corollary}
+
+Relative adjoints, as usual adjoints, can be computed by absolute pointwise lifts and  extensions.
+
+\begin{proposition}
+    Let $j : A \to E, r : C \to E$ be arrows. An arrow $\ell : A \to C$ is a left $j$-adjoint to $r$ if and only if there is a cell $\eta : j \to r\ell$ exhibiting $\ell$ as the left lift $j\plift r$
+    \[\begin{tikzcd}
+        &  C \ar[dr, "r"] &\\
+        A \ar[ur, dashed, "j\plift r"] \ar[rr, "j"'] &{}& E
+        \ar[from=1-2, to=2-2, phantom, "\dashv"{anchor=center}]
+    \end{tikzcd}\]
+\end{proposition}
+
+\begin{proof}
+    Immediate from Definition \ref{def:pointwise}.
+\end{proof}
+
+Once again, we need an extra condition regarding the root when considering the right adjoint.
+
+\begin{proposition}
+    Let $j : A \to E$ and $\ell : A \to C$ be arrows with $j$ fully faithful.
+    \[\begin{tikzcd}
+        &  C \ar[dr, dashed, "\ell\plext r"] &\\
+        A \ar[ur, "\ell"] \ar[rr, "j"'] &{}& E
+        \ar[from=1-2, to=2-2, phantom, "\dashv"{anchor=center}]
+    \end{tikzcd}\]
+    \begin{enumerate}
+        \item If $\ell\plext j$ exists and is $j$-absolute, $l\dashv_j\ell\dashv j$.
+        \item If $j$ is dense and $\ell$ has a right $j$-adjoint $r$, $r$ is the pointwise left extension $\ell\plext j$ and it is $j$-absolute.
+    \end{enumerate}
+\end{proposition}
+
+\begin{proof}
+    For (a), we have by $j$-absoluteness $E(j, l\plext\ell, j)\simeq E(j, j)\odot_L C(\ell, 1)$ and by fullfaithfulness $E(j, j)\odot_L C(\ell, 1) \simeqq A(1, 1)\odot_L C(\ell, 1) \simeqq C(\ell, 1)$ as required. For (b), we use Lemma \ref{lem:dense_abs_iff_iso}.
+\end{proof}
+
+\begin{definition}
+    \index{adjunction!left morphism}
+    Let $j : A \to E$ be an arrow and $\ell\dashv_j r, \ell'\dashv_jr'$ $j$-relative adjunctions. A \textbf{left morphism} from $\ell\dashv_jr$ to $\ell'\dashv_j r'$ consists of
+    \[\begin{tikzcd}
+        &C'\ar[ddr, "r'", bend left]&\\
+        &\ar[u, "c"{description}] C \ar[dr, "r"]\\
+        A \ar[uur, bend left, "\ell'", ""{anchor=center,name=a}] \ar[ur, "\ell"] \ar[rr, "j"'] && E
+        \ar[from=a, to=2-2, Rightarrow, "\lambda"', shorten=2mm]
+    \end{tikzcd}\]
+    \begin{enumerate}
+        \item An arrow $c : C \to C'$ such that $r = r'c$.
+        \item A cell $\lambda : \ell'\To \ell$.
+    \end{enumerate}
+    Rendering the following diagram commutative
+    \[\begin{tikzcd}
+        \ar[d, "{\smallfrown_c(\ell, 1)}"'] C(\ell, 1) \ar[r, "\sharp"] & E(j, r)\\
+        C'(c\ell, c) \ar[r, "{C'(\lambda, c)}"'] & C'(\ell', c)\ar[u, "{\sharp'(1, c)}"']
+    \end{tikzcd}\]
+    It is \textbf{strict} when $\lambda$ is the identity. We write $\cat{RAdj}_L(j)$ the category of $j$-relative adjunctions and left morphisms.
+\end{definition}
+
+\begin{example}
+    For any arrow $j : A \to E$ and $j$-relative adjunction $\ell\dashv_j r$, $(r, \eta)$ forms a left morphism from $\ell\dashv_j r$ to $j\dashv_j \id_E$. The latter is then terminal in $\cat{RAdj}_L(j)$.
+\end{example}
+
 The root $j$ breaks the asymmetry of the adjunction. Dualizing, we get a different notion, that of relative coadjunction.
 
 \begin{definition}
@@ -1191,7 +1587,135 @@ The root $j$ breaks the asymmetry of the adjunction. Dualizing, we get a differe
     In the case where the root or the coroot is the identity, adjunctions and coadjunctions coincide.
 \end{remark}
 
-\todo{Ajouter TOUT, en particulier les monades relatives et les résultats sur leurs algèbres !}
+\subsection{Relative monads}
+
+\begin{definition}
+    \index{relative monad}\index{monad!relative}
+    \begin{wrapfigure}{r}{0.47\textwidth}
+        \vspace{-2\baselineskip}
+        \[\begin{tikzcd}[sep=large]
+            \ar[d, equal] A & \ar[l, loose, "{E(j, t)}"', ""{anchor=center, name=t}] A \ar[d, equal]\\
+            \ar[d, equal] A & \ar[l, loose, "{E(t, t)}"', ""{anchor=center, name=m}] A \ar[d, equal]\\
+            A & \ar[l, loose, "{E(j, t)}", ""{anchor=center, name=b}] A
+            \ar[from=t, to=m, phantom, "\dag"{anchor=center}]
+            \ar[from=m, to=b, phantom, "{E(\eta, t)}"{anchor=center}]
+        \end{tikzcd}
+        \hspace{1em}=\hspace{1em}
+        \begin{tikzcd}[sep=large]
+            \ar[d, equal] A & \ar[l, loose, "{E(j, t)}"', ""{anchor=center, name=t}] A \ar[d, equal]\\
+            A & \ar[l, loose, "{E(j, t)}", ""{anchor=center, name=b}] A
+            \ar[from=t, to=b, phantom, "="{anchor=center}]
+        \end{tikzcd}\]
+        \vspace{-7\baselineskip}
+    \end{wrapfigure}
+    A \textbf{relative monad} consists of:
+    \begin{enumerate}
+        \item An arrow $j : A \to E$, the \textbf{root}
+        \item An arrow $t : A \to E$, the \textbf{underlying arrow}
+        \item A cell $\dag : E(j, t) \To E(t, t)$, the \textbf{extension}
+        \item A cell $\eta : j \To t$, the \textbf{unit}
+    \end{enumerate}
+    Satisfying the following equations:
+    \[\begin{tikzcd}[sep=large]
+        \ar[d, equal] A & \ar[l, equal, ""{anchor=center, name=t}] A \ar[d, equal]\\
+        \ar[d, equal] A & \ar[l, loose, "{E(j, j)}", ""{anchor=center, name=mt}] A \ar[d, equal]\\
+        \ar[d, equal] A & \ar[l, loose, "{E(j, t)}", ""{anchor=center, name=mb}] A \ar[d, equal]\\
+        A & \ar[l, loose, "{E(t, t)}", ""{anchor=center, name=b}] A
+        \ar[from=t, to=mt, phantom, "\smallfrown_j"{anchor=center}]
+        \ar[from=mt, to=mb, phantom, "{E(\eta, t)}"{anchor=center}]
+        \ar[from=mb, to=b, phantom, "\dag"{anchor=center}]
+    \end{tikzcd}
+    \hspace{1em}=\hspace{1em}
+    \begin{tikzcd}[sep=large]
+        \ar[d, equal] A & \ar[l, equal, ""{anchor=center, name=t}] A \ar[d, equal]\\
+        A & \ar[l, loose, "{E(t, t)}", ""{anchor=center, name=b}] A
+        \ar[from=t, to=b, phantom, "\smallfrown_j"{anchor=center}]
+    \end{tikzcd}\]
+    \[\begin{tikzcd}[sep=large]
+        \ar[d, equal] A & \ar[l, loose, "{E(j, t)}"', ""{anchor=center, name=t1}] A \ar[d, equal] & \ar[l, loose, "{E(j, t)}"', ""{anchor=center, name=t2}] A \ar[d, equal]\\
+        \ar[d, equal] A & \ar[l, loose, "{E(t, t)}"', ""{anchor=center, name=m1}] A & \ar[l, loose, "{E(t, t)}"', ""{anchor=center, name=m2}] A \ar[d, equal] \\
+            A &{}& \ar[ll, loose, "{E(t, t)}"] A
+            \ar[from=t1, to=m1, phantom, "\dag"{anchor=center}] \ar[from=t2, to=m2, phantom, "\dag"{anchor=center}]
+            \ar[from=2-2, to=3-2, phantom, "{\smallsmile_t(t, t)}"{anchor=center}]
+    \end{tikzcd}
+    \hspace{1em}=\hspace{1em}
+    \begin{tikzcd}[sep=large]
+        \ar[d, equal] A & \ar[l, loose, "{E(j, t)}"', ""{anchor=center,name=t1}] A \ar[d, equal] & \ar[l, loose, "{E(j, t)}"', ""{anchor=center,name=t2}] A \ar[d, equal]\\
+        \ar[d, equal] A & \ar[l, loose, "{E(j, t)}"', ""{anchor=center,name=m1}] A & \ar[l, loose, "{E(t, t)}"', ""{anchor=center,name=m2}] A\ar[d, equal]\\
+        \ar[d, equal] A &{}& \ar[ll, loose, "{E(j, t)}"'] A \ar[d, equal]\\
+        A &{}& \ar[ll, loose, "{E(t, t)}"] A
+        \ar[from=t1, to=m1, phantom, "="{anchor=center}] \ar[from=t2, to=m2, phantom, "\dag"{anchor=center}]
+        \ar[from=2-2, to=3-2, phantom, "{\smallsmile_t(j, t)}"{anchor=center}]
+        \ar[from=3-2, to=4-2, phantom, "\dag"{anchor=center}]
+    \end{tikzcd}\]
+    A morphism of $j$-relative monads from $(t, \dag, \eta)$ to $(t', \dag', \eta')$ is a cell $\tau : t \To t'$ such that
+    \[\begin{tikzcd}
+        & \ar[dl, "\eta"'] j \ar[dr, "\eta'"] &\\
+        t \ar[rr, "\tau"'] && t'
+    \end{tikzcd}
+    \hspace{1em}
+    \begin{tikzcd}
+        \ar[d, "\dag"'] E(j, t) \ar[rr, "{E(j, \tau)}"] && E(j, t') \ar[d, "\dag'"]\\
+        E(t, t) \ar[dr, "{E(t, \tau)}"'] && \ar[dl, "{E(\tau, t')}"] E(t', t')\\
+                                         & E(t, t')
+    \end{tikzcd}\]
+\end{definition}
+
+
+\section{Algebras and opalgebras}
+
+In the classical settings, two categories of algebras are usually studied: the Eilenberg-Moore category ("all the algebras") and the Kleisli category ("free algebras"). Internal notions in virtual equipment exists: algebras and opalgebras. While the first ones are known to the reader, the latter are less so. Although in the classical setting free algebras and opalgebras coincide, in the formal setting the latter notion is of importance.
+
+\subsection{(op)Algebras and (op)algebras object}
+
+\begin{definition}
+    \begin{wrapfigure}{r}{0.47\textwidth}
+        \vspace{-\baselineskip}
+        \[\begin{tikzcd}[sep=large]
+            \ar[d, equal] A & \ar[l, loose, "{E(j, e)}"', ""{anchor=center,name=t}] D \ar[d, equal]\\
+            \ar[d, equal] A & \ar[l, loose, "{E(t, e)}"', ""{anchor=center,name=m}] D \ar[d, equal]\\
+            A & \ar[l, loose, "{E(j, e)}", ""{anchor=center,name=b}] D
+            \ar[from=t, to=m, phantom, "\rtimes"{anchor=center}] \ar[from=m, to=b, phantom, "{E(\eta, e)}"{anchor=center}]
+        \end{tikzcd}
+        \hspace{1em}=\hspace{1em}
+        \begin{tikzcd}
+            \ar[d, equal] A & \ar[l, loose, "{E(j, e)}"', ""{anchor=center, name=t}] D\ar[d, equal]\\
+            A & \ar[l, loose, "{E(j, e)}", ""{anchor=center, name=b}] D
+            \ar[from=t, to=b, phantom, "="{anchor=center}]
+        \end{tikzcd}\]
+        \vspace{-7\baselineskip}
+    \end{wrapfigure}
+    Let $T$ be a relative monad. An \textbf{algebra for $T$} consists of:
+    \begin{enumerate}
+        \item An object $D$, the \textbf{domain}
+        \item An arrow $e : D \to E$, the \textbf{underlying arrow}
+        \item A cell $\rtimes : E(j, e) \To E(t, e)$
+    \end{enumerate}
+    Satisfying the following equations:
+    \vspace{2\baselineskip}
+    \[\begin{tikzcd}[sep=large]
+        \ar[d, equal] A & \ar[l, loose, "{E(j, t)}"', ""{anchor=center, name=t1}] A \ar[d, equal] & \ar[l, loose, "{E(j, e)}"', ""{anchor=center, name=t2}] D \ar[d, equal]\\
+        \ar[d, equal] A & \ar[l, loose, "{E(t, t)}"', ""{anchor=center, name=m1}] A & \ar[l, loose, "{E(t, e)}"', ""{anchor=center, name=m2}] D \ar[d, equal]\\
+        A &{}& \ar[ll, loose, "{E(t, e)}", ""{anchor=center, name=b}] D
+        \ar[from=t1, to=m1, phantom, "\dag"{anchor=center}] \ar[from=t2, to=m2, phantom, "\rtimes"{anchor=center}]
+        \ar[from=2-2, to=3-2, phantom, "{\smallsmile_t(t, e)}"{anchor=center}]
+    \end{tikzcd}
+    \hspace{1em}=\hspace{1em}
+    \begin{tikzcd}[sep=large]
+        \ar[d, equal] A & \ar[l, loose, "{E(j, t)}"'] A \ar[d, equal] & \ar[l, loose, "{E(j, e)}"', ""{anchor=center, name=t}] D \ar[d, equal]\\
+        \ar[d, equal] A & \ar[l, loose, "{E(j, t)}"'] A & \ar[l, loose, "{E(t, e)}"', ""{anchor=center, name=m}] D\ar[d, equal]\\
+        \ar[d, equal] A &{}& \ar[ll, loose, "{E(j, e)}"] D \ar[d, equal]\\
+        A &{}& \ar[ll, loose, "{E(t, e)}"] D
+        \ar[from=t, to=m, phantom, "\rtimes"{anchor=center}]
+        \ar[from=2-2, to=3-2, phantom, "{\smallsmile_t(j, e)}"{anchor=center}]
+        \ar[from=3-2, to=4-2, phantom, "\rtimes"{anchor=center}]
+    \end{tikzcd}\]
+    A $T$-algebra morphism from $(e, \rtimes)$ to $(e', \rtimes')$ is a cell $\varepsilon : e \To e'$ such that
+    \[\begin{tikzcd}
+        \ar[d, "{E(j, \varepsilon)}"'] E(j, e) \ar[r, "\rtimes"] & E(t, e) \ar[d, "{E(t, \varepsilon)}"]\\
+        E(j, e') \ar[r, "\rtimes'"'] & E(t, e')
+    \end{tikzcd}\]
+\end{definition}
 
 \section{(Co)presheaves objects and (co)completions}
 \label{sec:presheaves}
@@ -1216,7 +1740,7 @@ $$\PP|_{A\dfrom} = \set{\pi_A^\PP(1, f) \mid \cod(f) = \psh\PP A}$$
 
 \begin{remark}
     \label{rem:pobj_deter}
-    An immediate consequence of this equality is that, for two classes of horizontal arrows $\PP, \PP'$ such that $\pi_A : A \dfrom P$ exhibits both a $\PP$-presheaf and a $\PP'$-presheaf object, $\PP|_{A\dfrom} = \PP'|_{A\dfrom}$.
+    An immediate consequence of this equality is that, for two classes of horizontal arrows $\PP, \PP'$ such that $\pi_A : A \dfrom P$ exhibits both a $\PP$-presheaf and a $\PP'$-presheaf object, we have $\PP|_{A\dfrom} = \PP'|_{A\dfrom}$.
 \end{remark}
 
 We also have, since we suppose that $\bb{X}$ is strict, $\widearc{\pi_A^\PP} = 1_{\psh\PP A}$ and, for every horizontal arrow $p : A \dfrom X$ in $\PP$ and $f : Y \to X$, $\widearc{p(1, f)} = \widearc{p}\circ f$.
@@ -1239,9 +1763,9 @@ This proposition has a few useful consequences:
 
 \begin{corollary}
     \label{cor:psh}
-    Let $A$ an object admitting a $\PP$-presheaf object.
+    Let $A$ an object admitting a $\PP$-presheaf object and $p : A \dfrom X$ in $\PP$.
     \begin{enumerate}[ref=\ref{cor:psh} (\alph*)]
-        \item \label{cor:psh:dense_iff_ff} Let $p : A \dfrom X$ in $\PP$. $\widearc{p} : X \to \psh\PP A$ is fully faithful if and only if $p$ is dense.
+        \item \label{cor:psh:dense_iff_ff} $\widearc{p} : X \to \psh\PP A$ is fully faithful if and only if $p$ is dense.
         \item \label{cor:psh:fact} Every cell $\phi$ with frame as in the left factorizes uniquely as in the right:
             \[\begin{tikzcd}
                 A \ar[d, equal] & \ar[l, "p"', loose] X & \ar[l, "p_1"'{name=p1}, loose] \cdots & \ar [l, "p_n"', loose] X' \ar[d, equal]\\
@@ -1262,7 +1786,7 @@ We can deduce a second characterization of $\PP$-presheaf object.
 \begin{proposition}
     A horizontal arrow $\pi_A^\PP : A \dfrom \psh\PP A$ exhibits a $\PP$-presheaf object for $A$ if and only if for every object $X$, it induces an isomorphism
     $$\pi_A^\PP(1, -) : \bb{X}[X, \psh\PP A] \rightleftarrows \PP\iset{X, A} : \widearc{(-)}$$
-    Between the category of vertical arrows between $X$ and $\psh\PP A$, and the category of horizontal arrows in $\PP$ between $X$ and $A$.
+    Natural in $X$, between the category of vertical arrows between $X$ and $\psh\PP A$, and the category of horizontal arrows in $\PP$ between $X$ and $A$.
 \end{proposition}
 
 \begin{proof}\hfill
@@ -1329,7 +1853,7 @@ A useful consequence of the Yoneda Lemma (\ref{lem:pp_admissible:yoneda}) will b
 \begin{proof}
     Since $\pi_A^\PP$ is dense so the associated arrow is fully faithful by Corollary \ref{cor:psh:dense_iff_ff}. Furthermore, the chain of isomorphisms
     $$\pi_A^{\PP'}(1, \widearc{\pi_A^\PP}\yo_A^\PP) = \pi_A^\PP(1, \yo_A^\PP) \simeq A(1, 1) \simeq \pi_A^{\PP'}(1, \yo_A^{\PP'})$$
-    And the full faithfulness of restriction gives the commutativity up to isomorphism.
+    We conclude with \ref{lem:res_dense_fid}.
 \end{proof}
 
 \subsection{Copresheaves and Isbell Duality}
@@ -1380,7 +1904,7 @@ The results from the previous section can be dualized:
 \end{proposition}
 
 \begin{lemma}[coYoneda Lemma]
-    There's an isomorphism $\copsh\PP A(1, \oy_A^\PP) \simeq \pi_A$.
+    There's an isomorphism $\copsh\PP A(1, \oy_A^\PP) \simeq \ip_A$.
 \end{lemma}
 
 \todo{\footnotesize À partir d'ici, ce n'est pas dans la littérature sous cette forme. \textbf{À prendre avec des pincettes}}
@@ -1484,9 +2008,6 @@ This adjunction also restricts through inclusions of class of horizontal cells $
         \end{align*}
 \end{proof}
 
-\subsection{Cocompletions and presheaf objects}
-\todo{Ajouter les résultats sur les cocompletions}
-
 \subsection{Reflexive completion}
 
 We now want to study the fixed point of the Isbell adjunction. We will closely follow Avery and Leinster's article \cite{averyleinster}. One issue is that we don't have a notion of size nor of $\cat{V}$ or $\cat{Set}$ in a virtual equipment, so it is not possible to consider small functors. We chose to use $\PP$ as a measure for size. We will see in Subsection \ref{subsec:enriched} that, in the case of (possibly enriched) 1-categories, taking $\PP := \set{\text{small }\cat{V}\!-\!\text{presheaves on }A}$, we recover the results from \cite{averyleinster}.
@@ -1556,15 +2077,6 @@ Since we are interested in the reflexive completion, we now suppose that a refle
 
 \begin{proof}
     $n_f^\PP \circ f = \widearc{N_f} \circ f = \widearc{B(1, f)} \circ f = \widearc{B(f, f)} \simeq \widearc{A(1, 1)} = \yo_A^\PP$
-\end{proof}
-
-\begin{lemma}[{\cite[Lemma 7.9]{averyleinster}}]
-    \label{lem:comp_dense}
-    Let $A \xrightarrow{f} B \xrightarrow{g} C$ be dense arrows, and such that $g$ preserves weighted colimits. Then $gf$ is dense.
-\end{lemma}
-
-\begin{proof}
-    $gf \plext gf \simeq g\plext(f\plext gf) \simeq g\plext(g\circ(f\plext f)) \simeq g\plext g \simeq 1_C$
 \end{proof}
 
 \begin{definition}[{\cite[Definition 7.10]{averyleinster}}]
@@ -1823,6 +2335,394 @@ We finish the section by studying the interaction with (co)limits.
     Let $x : J \to \psh\PP A$ be a reflexive arrow, $\vec{p}$ a weight such that $\colim^{\vec{p}}x$ exists and is absolute. Then $\Spec\circ\ca{O}\circ\colim^{\vec{p}}x \simeq \colim^{\vec{p}}(\Spec\circ\ca{O}\circ x) \simeq \colim^{\vec{p}}x$ so $\colim^{\vec{p}}x$ is reflexive and factorizes through $\ca{R}^\PP(A)$.
 \end{proof}
 
+
+\section{Cocompleteness and cocompletions}
+
+\subsection{Atomicity}
+
+\begin{definition}
+    Let $p : Y \dfrom \cdots \dfrom Z$ a weight. A distributor $j : A \dfrom E$ is a $\vec p$-atom if $E$ admits $\vec p$colimits and these colimits are $j$-absolute. It is a $\Phi$-atom for $\Phi$ a class of weights when it is a $\vec p$-atom for all $\vec p\in\Phi$. An arrow is a $\vec p$-atom (resp. $\Phi$-atom) when its conjoint is.
+\end{definition}
+
+\begin{theorem}
+    Let $j : A \to E$ an arrow, and $\ell\dashv_j r$ a relative adjunction. Then
+    \begin{enumerate}
+        \item If $j$ is a $\Phi$-atom and $r$ is $\Phi$-cocontinuous, then $\ell$ is a $\Phi$-atom.
+        \item If $j$ is dense and $\ell$ is a $\Phi$-atom then $r$ is $\Phi$-cocontinuous.
+    \end{enumerate}
+\end{theorem}
+
+\begin{proof}
+    Let $\vec p : X \dfrom \cdots \dfrom Z$ be a weight in $\Phi$ and $g : X \to C$ an arrow. Then
+    \begin{enumerate}
+        \item \begin{align*}
+                C(\ell, \colim^{\vec p}g) &\simeqq E(j, r\colim^{\vec p}g)\\
+                                          &\simeqq E(j, \colim^{\vec p}(rg))\\
+                                          &\simeqq E(j, rg)\odot_L \vec p\\
+                                          &\simeqq C(\ell, g)\odot_L \vec p
+            \end{align*}
+        \item Since $\ell$ is a $\Phi$-atom, $\Phi$-colimits are $\ell$-absolute and we conclude by Lemma \ref{lem:radj_right_labs_colim}.
+    \end{enumerate}
+\end{proof}
+
+\begin{definition}
+    \index{distributor!monic}
+    \label{def:monic}
+    A distributor $j : A \dfrom E$ is \textbf{monic} when for all $f, f' : X \to C$, $j(1, f) = j(1, f') \implies f = f'$.
+\end{definition}
+
+\begin{proposition}
+    For $j : A \dfrom E$, the following are equivalent:
+    \begin{enumerate}
+        \item There exists a class $\PP$ of distributors such that $j(1, f)\odot_Lj\in\PP^\simeqq$ for each $f : A \to E$ and such that $j : A \dfrom E$ exhibits a $\PP$-presheaf object.
+        \item $j$ is a dense and monic $j$-atom.
+    \end{enumerate}
+    In that case, $A$ is $\PP$-admissible if and only if $j$ is represented by a fully faithful arrow $A \to E$.
+\end{proposition}
+
+\begin{proof}
+    By definition of a presheaf object, $j$ is dense and monic, and every $j$-colimit exists and is $j$-absolute by Proposition \ref{prop:psh_colims}.
+
+    Conversely, define $\PP := \set{j(1, f) \mid f:X\to E}$. By construction, it is closed under precomposition by arrows into $E$ and for each $f : A \to E$ we have $j(1, \colim^jf)\simeqq j(1, f)\odot_L j$ because $\colim^jf$ is $j$-absolute. Then the repletion of $\PP$ is closed under the specified left-composites. Define $\pi_A^\PP := j : A \dfrom E$. It is dense by assumption and given $j(1, f) : A \dfrom X$, we define $\widearc{j(1, f)} = f$. Thus $\pi_A^\PP(1, \widearc{j(1, f)}) = j(1, f)$ and the choice is unique by monicity of $j$.
+
+    If $A$ is $\PP$-admissible, then there exists a fully faithful arrow $A \to E$ representing $\pi_A^\PP$. If $j$ is represented by a fully faithful arrow $f$, then $j(1, f) \simeq E(f, f) \simeqq A(1, 1)$ and $j(1, f)\in\PP^\simeqq$.
+\end{proof}
+
+\subsection{Rank}
+
+\begin{definition}
+    Let $j : A \to E$ be a arrow.
+    \begin{enumerate}
+        \item An arrow $f : E \to I$ \textbf{has rank $j$} if the left extension $j\plext (fj)$ exits and the cell $j\plext(jf)\To f$ is invertible.
+        \item A distributor $ p : E \dfrom I$ \textbf{has rank $j$} if the right lit $p(j, 1)\rift E(j, 1)$ exists and the cell $p \To p(1, j)\rift E(j, 1)$ is invertible.
+    \end{enumerate}
+    In particular, $f : E \to I$ has rank $j$ when its conjoint does.
+\end{definition}
+
+\begin{proposition}
+    \label{prop:rank_conditions}
+    Let $j : A \to E$ be an arrow and $f : E \to I$ (resp. $p : E \dfrom I$). Consider the following
+    \begin{enumerate}
+        \item $f$ has rank $j$ (resp. $p$ has rank $j$).
+        \item $f$ is a left extension along $j$ (resp. $p$ is a right lift through $E(j, 1)$).
+        \item $f$ preserves $j$-absolute colimits (resp. $p$ respects $j$-absolute colimits).
+    \end{enumerate}
+    Then $(a) \implies (b) \implies (c)$, if $j$ is fully faithful then $(b) \implies (a)$ and if it is also dense, then all three are equivalent.
+\end{proposition}
+
+\begin{proof}
+    It suffices to prove the proposition for a distributor. $(a) \implies (b)$ is evident and $(b) \implies (c)$ follows from \ref{lem:rift_absolute}. Suppose $j$ fully faithful and write $p = p' \rift E(j, 1)$. Then
+    \begin{align*}
+        p &\simeqq p' \rift E(j, 1)\\
+          &\simeqq (p' \rift A(1, 1))\rift E(j, 1)\\
+          &\simeqq (p' \rift E(j, j))\rift E(j, 1)\\
+          &\simeqq (p' \rift E(j, 1))(j, 1)\rift E(j, 1)\\
+          &\simeqq p(j, 1)\rift E(j, 1)
+    \end{align*}
+    Suppose that $j$ is also dense, then $\id_E$ is the $j$-absolute left extension $j\plext j$, so
+    $$E(j, j\plext j) \simeqq E(j, 1) \simeqq E(j, j) \odot_L E(j, 1)$$
+    Hence $p$ preserves $j\plext j$ so
+    $$p\simeqq p(j\plext j, 1)\simeqq p(j, 1)\rift E(j, 1)$$
+\end{proof}
+
+\subsection{Completions}
+
+\begin{definition}
+    \index{object!$\Phi$-cocomplete} \index{arrow!$\Phi$-cocontinuous} \index{distributor!$\Phi$-exact}
+    Let $\Phi$ be a class of weights.
+    \begin{enumerate}
+        \item A \textbf{$\Phi$-colimit} is a $\vec p$-colimit for $\vec p\in\Phi$.
+        \item An object $A$ is  \textbf{$\Phi$-cocomplete} if it admits every $\vec p$-colimit.
+        \item An arrow $f$ with $\Phi$-cocomplete domain is \textbf{$\Phi$-cocontinuous} if it preserves every $\Phi$-colimit.
+        \item A distributor $p$ with $\Phi$-cocomplete codomain is $\Phi$-exact if it respects every $\Phi$-colimit.
+    \end{enumerate}
+\end{definition}
+
+\begin{remark}
+    Note that an arrow with $\Phi$-cocomplete domain is $\Phi$-cocontinuous if and only if its conjoint is $\Phi$-exact.
+\end{remark}
+
+\begin{definition}
+    \index{colimit equivalent}
+    Two classes of weights $\Phi, \Phi'$ are \textbf{colimit equivalent} $\Phi \colimeq \Phi'$ if and only if $\Phi \colimleq \Phi'$ and $\Phi' \colimleq \Phi$ where $\Phi \colimleq \Phi'$ if and only if:
+    \begin{enumerate}
+        \item Every $\Phi'$-cocomplete object is $\Phi$-cocomplete.
+        \item Every $\Phi'$-cocontinuous arrow with $\Phi'$-cocomplete domain is $\Phi$-cocontinuous.
+        \item Every $\Phi'$-exact distributor with $\Phi'$-cocomplete domain is $\Phi$-exact.
+    \end{enumerate}
+\end{definition}
+
+This relation defines a preorder on the collection of classes of weights. We are interested in the maximal elements.
+
+\begin{definition}
+    \index{class of weights!colimit saturation}
+    Let $\Phi$ be a class of weights, the \textbf{colimit saturation} $\Phi^{\colim}$ of $\Phi$ is the largest class such that $\Phi^{\colim} \colimeq \Phi$. It is \textbf{colimit saturated} is $\Phi = \Phi^{\colim}$.
+\end{definition}
+
+We establish of few properties that will be used when linking cocompletions and presheaf objects.
+
+\begin{lemma}
+    $(-)^{\colim}$ defines a closure operator whose fixed points are the colimit saturated class of weights. For a class of weights $\Phi$, we have the following:
+    \begin{enumerate}
+        \item $\Phi^{\colim}$ is replete.
+        \item $B(1, f)\in\Phi^{\colim}$ for each arrow $f : A \to B$.
+        \item Given two compatible weights $\vec p, \vec q \in\Phi^{\colim}, (p_1, \cdots, p_m, q_1, \cdots, q_n)\in\Phi^{\colim}$.
+        \item If $\vec p\in\Phi^{\colim}$ and $p_1\odot_L\cdots\odot_L p_i$ exists (for $1\leq i\leq m$) then $(p_1\odot_L \cdots\odot_L p_i, p_{i+1}, \cdots, p_m)\in\Phi^{\colim}$.
+        \item If $\vec p\in\Phi^{\colim}$ and $p_i\odot\cdots\odot p_j$ exists (for $1\leq i\leq j\leq m$) then $(p_1, \cdots, p_{i-1}, p_i\odot \cdots\odot p_j, p_{j+1}, \cdots, p_m)\in\Phi^{\colim}$.
+        \item If $p\in\Phi^{\colim}, p(1, f)\in\Phi^{\colim}$
+    \end{enumerate}
+    Finally, $\Phi\colimeq\Phi'$ if and only if $\Phi^{\colim} \colimeq\Phi'^{\colim}$.
+\end{lemma}
+
+\begin{proof}
+    \begin{enumerate}
+        \item Repletion comes from essential uniqueness of colimits.
+        \item For every arrow $g : B \to C$, its $B(1, f)$-colimit is $g\circ f$.
+        \item Follows from \ref{lem:ext_lift:stab_split}.
+        \item Follows from \ref{lem:ext_lift:stab_wcomp}.
+        \item Follows from \ref{lem:ext_lift:stab_comp}.
+        \item Follows from $p(1, f) = p\odot B(1, f)$ and the previous items; or \ref{lem:co_lim:res}.
+    \end{enumerate}
+\end{proof}
+
+\begin{definition}
+    \index{$\Phi$-cocompletion}
+    \label{def:cocomp}
+    Let $\Phi$ be a class of weights and $A$ an object. A \textbf{$\Phi$-cocompletion} of $A$ consists of an object $\coc\Phi A$ and an arrow $\coce\Phi A \to \coc\Phi A$ such that:
+    \begin{enumerate}
+        \item $\coc\Phi A$ is $\Phi$-cocomplete.
+        \item For each arrow $f : A \to X$ with $\Phi$-cocomplete codomain, the left extension $\coce\Phi A \plext f : \coc\Phi A \to X$ exists, the unit $f \To (\coce\Phi A \plext f) \circ \coce\Phi A$ is invertible and $\coce\Phi A\plext f$ is the essentially unique $\Phi$-cocontinuous arrow $\widetilde{f} : \coc\Phi A\to X$ such that $f\simeqq \widetilde{f} \circ \coce\Phi A$.
+        \item For each distributor $p : A \dfrom X$, the right lift $p\rift\coc\Phi A (\coce\Phi A, 1) : \coc\Phi A \dfrom X$ exists, the cell $(p\rift\coc\Phi A(\coce\Phi A, 1))(\coce\Phi A, 1) \To p$ is invertible and $p\rift\coc\Phi A(\coce\Phi A, 1)$ is the essentially unique $\Phi$-exact distributor $\widetilde{p} : \coc\Phi A\dfrom X$ such that $p\simeqq \widetilde{p}(\coce\Phi A, 1)$.
+    \end{enumerate}
+    An object \textbf{$\Phi$-cocompletable} if it admits a $\Phi$-cocompletion.
+\end{definition}
+
+\begin{remark}
+    Consequently, the conjoint of $\coce\Phi A$ is always lifting. Plus, since an arrow is $\Phi$-cocontinuous if and only if its conjoint is $\Phi$-exact, the condition of $\Phi$-cocontinuous arrows can be replaced with
+    \begin{itemize}
+        \item If $p : A \dfrom X$ is corepresentable and $X$ is $\Phi$-cocomplete, then $p\rift\coc\Phi A(\coce\Phi A, 1)$ is corepresentable.
+    \end{itemize}
+    The notion of cocompletion is compatible with the earlier discussion on colimit equivalence: for $\Phi$ and $\Phi'$ be classes of weights such that $\Phi\colimeq\Phi'$, an arrow $j : A \to E$ exhibits the $\Phi$-cocompletion of $A$ if and only if it exhibits the $\Phi'$-cocompletion of $A$.
+\end{remark}
+
+\begin{lemma}
+    \label{lem:cocomp_ff}
+    Every $\Phi$-cocompletion $\coce\Phi A : A \to \coc\Phi A$ is fully faithful.
+\end{lemma}
+
+\begin{proof}
+    By definition there are isomorphisms
+    $$p\rift\coc\Phi A(\coce\Phi A, \coce\Phi A) \simeqq (p\rift\coc\phi A(\coce\Phi A, 1))(\coce\Phi A, 1) \simeqq p \simeqq p\rift A(1, 1)$$
+    Hence a natural bijection between cells $A(1, 1)\To p$ and $\coc\Phi A(\coce\Phi A, \coce\Phi A) \To p$, implying $A(1, 1)\simeqq\coc\Phi A(\coce\Phi A, \coce\Phi A)$, so $\coce\Phi A$ is fully faithful.
+\end{proof}
+
+\begin{lemma}
+    Let $\Phi$ be a class of weights and $A$ a $\Phi$-cocompletable object. Then $\widetilde{A(1, 1)}\simeqq\coc\Phi A(1, \coce\Phi A)$.
+\end{lemma}
+
+\begin{proof}
+    $\coc\Phi A(1, \coce\Phi A)(\coce\Phi A, 1) \simeqq \coc\Phi A(1, 1)$ by Lemma \ref{lem:cocomp_ff}, and we conclude by essential uniqueness.
+\end{proof}
+
+\begin{lemma}
+    \label{lem:cocomp_leftext_abs}
+    For $\coce\Phi A : A \to \coc\Phi A$ a $\Phi$-cocompletion, left extensions along $\coce\Phi A$ and $\Phi$-colimits in $\coc\Phi A$ are $\coce\Phi A$-absolute.
+\end{lemma}
+
+\begin{proof}
+    %FIXME: exact or cocontinuous ?
+    Every rift lift through $\coc\Phi A(\coce\Phi A, 1)$ is $\Phi$-exact, and we conclude by \ref{lem:lifting_abs_iff_lift_respect}.
+\end{proof}
+
+\begin{proposition}
+    Let $\coce\Phi A : A \to \coc\Phi A$ a $\Phi$-cocompletion. For $f : \coc\Phi A \to X$, the following are equivalent:
+    \begin{enumerate}
+        \item $f$ is $\Phi$-cocontinuous.
+        \item $f$ has rank $\coce\Phi A$
+        \item $f$ is a pointwise left extension along $\coce\Phi A$.
+        \item $f$ preserves $\coce\Phi A$-absolute colimits.
+    \end{enumerate}
+    For $p : \coc\Phi A\dfrom X$, the following are equivalent:
+    \begin{enumerate}
+        \item $p$ is $\Phi$-exact.
+        \item $p$ has rank $\coce\Phi A$.
+        \item $p$ is a right lift through $\coc\Phi A(\coce\Phi A, 1)$.
+        \item $p$ respects $\coce\Phi A$-absolute colimits.
+    \end{enumerate}
+\end{proposition}
+
+\begin{proof}
+    $\coce\Phi A$ is fully faithful by Lemma \ref{lem:cocomp_ff}, so Proposition \ref{prop:rank_conditions} gives $(b) \iff (c) \implies (d)$. $(d) \implies (a)$ is given by Lemma \ref{lem:cocomp_leftext_abs} since all $\Phi$-colimits in $\coc\Phi A$ are $\coce\Phi A$-absolute.
+
+    For $p$ a $\Phi$-exact distributor, the right lift $p(\coce\Phi A, 1)\rift\coc\Phi A(\coce\Phi A, 1)$ is the unique $\Phi$-cocontinuous $\widetilde{p(\coce\Phi A, 1)}$ such that $p(\coce\Phi A, 1) \simeqq \widetilde{p(\coce\Phi A, 1)}(\coce\Phi A, 1)$ exhibiting $p$ as a right lift through $\coc\Phi A(\coce\Phi A, 1)$, therefore $(a) \implies (c)$. For an arrow, take $p = X(f, 1)$ which exhibits $f$ as the pointwise left extension $\coce\Phi A \plext (f\coce\Phi A)$.
+\end{proof}
+
+\begin{corollary}
+    \label{cor:cocomp_dense}
+    Every $\Phi$-cocompletion $\coce\Phi A : A \to \coc\Phi A$ is dense.
+\end{corollary}
+
+\begin{proof}
+    $\id_{\coc\Phi A}$ is $\Phi$-cocontinuous, hence has rank $\coce\Phi A$, hence $\coce\Phi A \plext \coce\Phi A \simeqq \id_{\coc\Phi A}$.
+\end{proof}
+
+\begin{lemma}
+    \label{lem:cocomp_colimsat}
+    Let $\coce\Phi A : A \to \coc\Phi A$ a $\Phi$-cocompletion. Then $\coc\Phi A(\coce\Phi A, 1)$ is in the colimit saturation of $\Phi$.
+\end{lemma}
+
+\begin{proof}
+    $\Phi$-cocomplete objects admit left extensions along $\coce\Phi A$, $\Phi$-cocontinuous arrows preserve and $\Phi$-exact respect $\coce\Phi A$-absolute colimits, including left extensions along $\coce\Phi A$ by Lemma \ref{lem:cocomp_leftext_abs}.
+\end{proof}
+
+We deduce an alternative characterisation of cocompletions which we will use in Subsection \ref{subsec:psh_cocomp} to establish the link between presheaf objects and cocompletions.
+
+\begin{theorem}
+    An arrow $j : A \to E$ exhibits the $\Phi$-cocompletion of $A$ if and only if
+    \begin{enumerate}
+        \item $E$ is $\Phi$-complete.
+        \item $E(j, 1)$ is in the colimit saturation of $\Phi$.
+        \item $E(j, 1)$ is lifting and right lifts through $E(j, 1)$ are $\Phi$-exact.
+        \item $j$ is dense and fully faithful.
+    \end{enumerate}
+\end{theorem}
+
+\begin{proof}
+    First assume that $j$ exhibits the $\Phi$-cocompletion of $A$, then (a) and (c) are by definition, (b) by Lemma \ref{lem:cocomp_colimsat} and (d) by Corollary \ref{cor:cocomp_dense} and Lemma \ref{lem:cocomp_ff}.
+
+    Supposing (a) through (d) hold, we verify the conditions in Definition \ref{def:cocomp}. (a) is by assumption (a). For (b), since $E(j, 1)$ is in the colimit saturation of $\Phi$, the left extension $j \plext f : E \to X$ where $f$ is an arrow with $\Phi$-cocomplete codomain, exists and corepresents $X(f, 1)\rift E(j, 1)$. Finally for (c), given $p : A \dfrom X$, existence and $\Phi$-exactness of the right lifts exist by assumption (c) and the cell $(p\rift E(j, 1))(j, 1)\To p$ is invertible by full faithfulness of $j$ using Lemma \ref{lem:ff_res}. For $\widetilde p : E \dfrom E$ such that $p \simeqq \widetilde{p}(j, 1)$, and using density of $j$ (assumption (d)),  $\Phi$-exactness and $E(j, 1)$ being in the colimit saturation of $\Phi$, we have:
+    $$\widetilde p \simeqq \widetilde{p}(j\plext j, 1) \simeqq \widetilde{p}(j, 1) \rift E(j, 1) \simeqq p\rift E(j, 1)$$
+    Hence essential uniqueness.
+\end{proof}
+
+It is possible to get another characterisation of those objects that are equivalent to a $\Phi$-cocompletion with a useful criterion on adjointness.
+
+\begin{proposition}
+    Let $j : A \to E$ a dense arrow with $\Phi$-cocomplete codomain. An arrow $f : E \to X$ admits a right adjoint if and only if $(fj)\plext j$ exists.
+\end{proposition}
+
+\begin{proof}
+    Since $j$ is dense, and by Lemma \ref{lem:pt_ext_props}, $(fj)\plext j \simeqq f \plext (j \plext j) \simeqq f \plext 1$. Being a $\Phi$-colimit, it is preserved by $f$ and we conclude by Corollary \ref{cor:adjoint_arrow_theorem}.
+\end{proof}
+
+\begin{corollary}
+    \label{cor:cocomp_adj_iff_lext}
+    Let $f : A \to X$ an arrow with $\Phi$-cocompletable domain and $\Phi$-cocomplete codomain. Then $\widetilde f : \coc\Phi A \to X$ admits a right adjoint if and only if $f\plext 1$ exists.
+\end{corollary}
+
+\begin{proposition}
+    Let $A$ a $\Phi$-cocompletable object, $E$ an object. The following are equivalent:
+    \begin{enumerate}
+        \item $E\simeq\coc\Phi A$.
+        \item There exists a dense and fully faithful $\Phi$-atom $j : A \to E$ with $\Phi$-cocomplete codomain for which $j \plext \coce\Phi A$.
+    \end{enumerate}
+\end{proposition}
+
+\begin{proof}
+    Take $j$ to be $\coce\Phi A$ which satisfies the hypotheses for Lemmas \ref{lem:cocomp_ff}, \ref{lem:cocomp_leftext_abs} and Corollary \ref{cor:cocomp_dense}. Conversely, by Corollary \ref{cor:cocomp_adj_iff_lext}, $\coce\Phi A\plext j\dashv j\plext\coce\Phi A$. Since the conditions of Lemma \ref{lem:left_witness_equiv} are satisfied, and $j$ is a $\Phi$-atom, $\coce\Phi A\plext j$ is $j$-absolute.
+\end{proof}
+
+More generally, we get a range a tests for $\Phi$-cocompleteness...
+
+\begin{theorem}
+    \label{th:cocomp_tests}
+    The following are equivalent for an object $A$
+    \begin{enumerate}
+        \item $A$ is $\Phi$-cocomplete.
+        \item $A$ is reflective in a $\Phi$-cocomplete object.
+    \end{enumerate}
+    And if $A$ admits a $\Phi$-cocompletion $\coce\Phi A : A \to \coc\Phi A$, the following are also equivalent
+    \begin{enumerate}[resume]
+        \item For every object $X$ with a $\Phi$-cocompletion $\coce\Phi X$ and each $g : X \to A$, the left extension $\coce\Phi X \plext g : X \to \coc\Phi X$.
+        \item The left extension $\coce\Phi A \plext 1_A : \coc\Phi A \to C$ exists.
+        \item For every weight $\vec p\in\Phi^{\colim}$, $A$ admits the colimit $\colim^{\vec p}A_1$.
+        \item $\coce\Phi A : A \to \coc\Phi A$ admits a left adjoint.
+        \item $A$ is reflective in a $\Phi$-cocompletion.
+    \end{enumerate}
+\end{theorem}
+
+\begin{proof}
+    $(a)\implies (b)\land(c)\land(e)$, $(c)\implies(d)$ and $(f)\implies(g)\implies(b)$ are immediate. $(b)\implies(a)$ by Lemma \ref{lem:refl_adj_colims}, $(e)\implies(d)$ by Lemma \ref{lem:cocomp_colimsat}, and $(d)\implies(e)$ because $\coce\Phi A\plext 1_A$ is the left adjoint.
+    \begin{align*}
+        A(\coce\Phi A\plext 1_A, 1) &\simeqq A(1, 1)\rift \coc\Phi A(\coce\Phi A, 1) &\\
+                                    &\simeqq \coc\Phi A(\coce\Phi 1, \coce\Phi A)\rift\coc\Phi A(\coce\Phi A, 1) & \text{(Lemma \ref{lem:cocomp_ff})}\\
+                                    &\simeqq \coc\Phi A(1, \coce\Phi A) & \text{(Corollary \ref{cor:cocomp_dense})}
+    \end{align*}
+\end{proof}
+
+...And the corresponding characterisation for $\Phi$-cocontinuity:
+
+\begin{corollary}
+    Let $A$ and $B$ $\Phi$-cocompletable objects. The following are equivalent for an arrow $f : A \to B$:
+    \begin{enumerate}
+        \item $f$ is $\Phi$-cocontinuous.
+        \item Given a pseudocommutative square of arrow on the left where the vertical arrows exhibit reflective inclusions, the mate on the right is invertible.
+            \[\begin{tikzcd}
+                B \ar[r, "b", ""{anchor=center,name=t}] & B'\\
+                \ar[u, hook, "r"] A \ar[r, "a"', ""{anchor=center,name=b}] & A' \ar[u, hook, "r'"']
+                \ar[from=t, to=b, phantom, "\simeqq"{anchor=center}]
+            \end{tikzcd}
+            \hspace{5em}
+            \begin{tikzcd}
+                \ar[d, "\ell"'] B \ar[r, "b"] & \ar[dl, Rightarrow] B' \ar[d, "\ell'"]\\
+                A \ar[r, "a"'] & A'
+            \end{tikzcd}\]
+    \end{enumerate}
+    If $A$ admits a $\Phi$-cocompletion $\coce\Phi A : A \to \coc\Phi A$ then the following are equivalent:
+    \begin{enumerate}[resume]
+        \item For every object $X$ admitting a $\Phi$-cocompletion $\coce\Phi X : X \to \coc\Phi X$ and each $g : X \to A$, the left extension $\coce\Phi X \plext g : \coc\Phi X\to A$ is preserved by $f$.
+        \item The left extension $\coce\Phi A\plext 1_A$ is preserved by $f$.
+        \item For every weight $\vec p\in\Phi^{\colim}$, the weighted colimit $\colim^{\vec p}1_A$ is preserved by $f$.
+    \end{enumerate}
+    Furthermore, if $B$ admits a $\Phi$-cocompletion $\coce\Phi B : B \to \coc\Phi B$ then the following are equivalent:
+    \begin{enumerate}[resume]
+        \item As in (b), but $r = \coce\Phi A$, $r' = \coce\Phi B$ and $b = \coc\Phi f := \coce\Phi A\plext (\coce\Phi B\circ a)$.
+        \item As in (b), but $B$ and $B'$ are $\Phi$-cocompletion and $b\simeqq r\plext(r'\circ a)$.
+    \end{enumerate}
+\end{corollary}
+
+\begin{proof}
+    The proof is the similar as in Theorem \ref{th:cocomp_tests}. The hardest is $(d)\implies(f)$, we have
+    $$(\coce\Phi A\plext1_B)\circ(\coce\Phi A\plext(\coce\Phi B\circ a)) \simeqq \coce\Phi A\plext ((\coce\Phi B\plext 1_B)\circ\coce\Phi B\circ a)\simeqq \coce\Phi A\plext a$$
+    Thus the cell witnessing preservation of $\coce\Phi A\plext 1_A$ is the mate.
+\end{proof}
+
+\subsection{Presheaf objects as cocompletions}
+\label{subsec:psh_cocomp}
+
+\begin{theorem}
+    \label{th:psh_cocomp}
+    Let $\Phi$ be a class of weights, $\PP$ a class of distributors and $A$ a $\PP$-admissible object. Suppose that
+    \begin{enumerate}
+        \item For every weight $\vec p\in\Phi$ and distributor $q\in\PP$, the left composite $q\odot_L\vec p$ and is in $\PP^\simeqq$.
+        \item $\pi_A^\PP$ is in $\Phi^{\colim}$.
+        \item $\pi_A^\PP : A \dfrom \psh\PP A$ is lifting.
+    \end{enumerate}
+    Then $\yo_A^\PP : A \to \psh\PP A$ exhibits the $\Phi$-cocompletion of $A$.
+\end{theorem}
+
+\begin{proof}
+    We use Theorem \ref{th:cocomp_chararct}:
+    \begin{enumerate}
+        \item $\psh\PP A$ is $\Phi$-cocomplete by Proposition \ref{prop:psh_colims}.
+        \item $\psh\PP A(\yo_A^\PP, 1)$ is in the colimit saturation since it contains $\pi_A^\PP$ and is replete.
+        \item $\pi_A^\PP$ is lifting and right lifts through $\pi_A^\PP$ are $\Phi$-exact by Lemma \ref{lem:lifting_abs_iff_lift_respect} where $\pi_A^\PP$-absoluteness of $\Phi$-colimits is obtained with Proposition \ref{prop:psh_colims}.
+        \item $\yo_A^\PP$ is dense and fully faithful by Proposition \ref{prop:monic_dense_atom_equiv}
+    \end{enumerate}
+\end{proof}
+
+Restricting to a class of unary weights, we get
+
+\begin{corollary}
+    Let $\PP$ be a class of distributors closed under left-composites and $A$ a $\PP$-admissible object. Then $\psh\PP A$ is $\PP$-cocomplete and every $\PP$-colimit in $\psh\PP A$ is $\PP$-absolute. If $\pi_A^\PP : A \dfrom \psh\PP A$ is lifting, then $\yo_A^\PP$ exhibits the $\PP$-cocompletion of $A$.
+\end{corollary}
+
+\begin{proof}
+    Apply respectively Proposition \ref{prop:psh_colims} and Theorem \ref{th:psh_cocomp}.
+\end{proof}
+
+<++>
+
 \section{Instantiations}
 
 \subsection{Enriched categories}
@@ -1975,11 +2875,10 @@ We want to explicitly describe right lifts of $\cat{V}$-distributors.
     Let $p : Z \dfrom Y, q : Y \dfrom X$ be $\cat{V}$-distributors. If the objects $\ca{P}C(p(-, x), q(-, y))$ for all $x\in\ob(X), y\in\ob(Y)$, they form the right lift $q\rift p : Y \dfrom X$.
 \end{lemma}
 
-<++>
-
 \subsection{Internal and locally internal categories}
+\label{subsec:internal}
 
-We refer to \cite[Chapter 8]{borceux1} and \cite[Chapter 2]{johnstone} for an elementary treatment, and to \cite{betti} for a formal treatment. Overall, this subsection is heavily influenced by the work of Renato Betti, especially \cite{bettiwalters_closedbicats}, \cite{bettiwalters_completness}, \cite{betti}. We use the characterization of internal categories as internal monads in the bicategories of spans.
+We refer to \cite[Chapter 8]{borceux1} and \cite[Chapter 2]{johnstone} for an elementary treatment, and to \cite{betti} for a formal treatment. Overall, this subsection is heavily influenced by the work of Renato Betti, especially \cite{bettiwalters_closedbicats}, \cite{bettiwalters_completness}, \cite{betti}. We first use the characterization of internal categories as internal monads in the bicategories of spans.
 
 \begin{definition}[{\cite[Definition 5.3.1]{leinster}}]
     Let $\mathbb{X}$ be a virtual double category. We construct the virtual double category of horizontal monads $\Mod(\bb{X})$:
@@ -2025,22 +2924,22 @@ $\bb{X}$ having restrictions is a sufficient condition for $\Mod(\bb{X})$ to be 
 
 Returning to internal categories, fix $\cat{E}$ a category with pullbacks. We define $\Dist(\cat{E}) := \Mod(\Span(\cat{E}))$ and unravel the definitions:
 \begin{itemize}
-    \item An object is a monad in $\Span(\cat{E})$, or equivalently in the bicategory $\ca{S}\mathit{pan}(\cat{E})$, that is, an \textbf{category internal to $\cat{E}$}.
+    \item An object is a monad in $\Span(\cat{E})$, or equivalently in the bicategory $\bSpan(\cat{E})$, that is, an \textbf{category internal to $\cat{E}$}.
     \item An arrow is a morphism preserving the monad structure, so an \textbf{internal functor}.
-    \item A distributor is a diagram on $C^\op\times D$, so an \textbf{internal distributor}.
+    \item A distributor $C \dfrom D$ is a diagram on $C^\op\times D$, so an \textbf{internal distributor}.
     \item A cell is an \textbf{internal natural transformation}.
 \end{itemize}
  
 Note that, when $\cat{E}$ has pullback stable reflexive coequalizers, we can compose horizontal arrows. As a sanity check, we will routinely check that the notions are the ones we know in $\Dist(E)$.
 
 \begin{proposition}[{\cite[Proposition 4.1]{day_loccartclosed}}]
-    When $\cat{E}$ has finite limits, $\ca{S}\mathit{pan}\cat{E}$ has all right lifts and extensions (along/through unary weights) if and only if it is locally cartesian closed.
+    When $\cat{E}$ has finite limits, $\bSpan\cat{E}$ has all right lifts and extensions (along/through unary weights) if and only if it is locally cartesian closed.
 \end{proposition}
 
 In particular, when $\cat{E}$ is an elementary topos, we can compose distributors and all rights and extensions exist.
 
 \begin{remark}
-    Note also that in the general case, since $\ca{S}\mathit{pan}(\cat{E})$ is a symmetric bicategory, the existence of right extensions is equivalent to the existence of right liftings.
+    Note also that in the general case, since $\bSpan(\cat{E})$ is a symmetric bicategory, the existence of right extensions is equivalent to the existence of right liftings.
 \end{remark}
 
 \begin{definition}
@@ -2051,7 +2950,7 @@ In particular, when $\cat{E}$ is an elementary topos, we can compose distributor
         \item a \textbf{groupoid} if $\alpha$ is idempotent.
         \item a \textbf{group} if it is both a monoid and a groupoid.
     \end{itemize}
-    Every object of $\ca{S}\mathit{pan}(\cat{E})$, regarded with the trivial monad, is a \textbf{discrete internal category}. Switching the source and target arrows, we get the \textbf{opposite internal category} of $C$.
+    Every object of $\bSpan(\cat{E})$, regarded with the trivial monad, is a \textbf{discrete internal category}. Switching the source and target arrows, we get the \textbf{opposite internal category} of $C$.
 \end{definition}
 
 Starting with something easy, for $f : C \to D$ an internal functor, the cell $\smallfrown_f$ looks like
@@ -2070,16 +2969,88 @@ Starting with something easy, for $f : C \to D$ an internal functor, the cell $\
     \end{tikzcd}\]
 \end{lemma}
 
-\subsection{Fibered Categories}
-\todo{À jeter ?}
+To study internal categories, it is useful to introduce the notion of locally internal categories. We follow \cite{bettiwalters_closedbicats} and start with categories enriched in bicategories:
 
-\cite{borceux2}
+\begin{definition}[{\cite[Definition 1.2]{bettiwalters_closedbicats}}]
+    \index{category!enriched in a bicategory}\index{$\ca B$-category}
+    For $\ca{B}$ a bicategory, a \textbf{$\ca{B}$-enriched category} $X$ comprises of the following data:
+    \begin{itemize}
+        \item Objects $x, y, \cdots$
+        \item For each object $x$, an underlying object $ex$ in $\ca B$.  We say that $x$ is an object over $ex$.
+        \item For each pair $x, y$ of objects, an arrow $X(x, y) : ex \from ey$ in $\ca B$.
+        \item For each object, a unit $1_{ex} \to X(x, x)$.
+        \item A composition given by a cell $X(x, y) \cdot X(y, z) \to X(x, z)$ in $\ca B$.
+    \end{itemize}
+    and such that this data satisfy associativity and identity properties. A \textbf{$\ca{B}$-functor} $F : X \to Y$ is a function on objects preserving the underlying objects and a family of 2-cells
+    $$X(x, y) \to Y(Fx, Fy)$$
+    Satisfying the axioms of functors.
+\end{definition}
+
+\begin{remark}
+    In the case of $\ca{B} := \bSpan(\cat{E})$, a $\ca{B}$-category with a single object is an internal category: the underlying object is the object of objects, the Hom arrow gives the source and target morphisms, the unit gives the identity morphism and the composition is the internal composition.
+\end{remark}
+
+\begin{definition}[{\cite[Definition 1.8]{bettiwalters_closedbicats}}]
+    \label{def:intcat_res}
+    For $X$ a $\ca B$-category, $x$ an object over $u$ and $f : v \to u$ a morphism in $\ca B$. A restriction $x_f$ of $x$ along $f$ is an object over $v$ such that
+    \begin{align*}
+        f \cdot X(x, y) &\simeqq X(x_f, y)\\
+        X(y, x) \cdot f^\op &\simeqq X(y, x_f)
+    \end{align*}
+    $X$ has restrictions if for all $x$ and $f$, $x_f$ exists.
+\end{definition}
+
+We have two characterizations of a locally internal category.
+
+\begin{definition}[{\cite[Definition 1.11, Proposition 1.13 and Proposition 4.3]{bettiwalters_closedbicats}}]
+    A \textbf{locally internal category} is a $\bSpan(\cat{E})$-category with restrictions. This is equivalent to a fibration
+    $$p : \cat F \to \cat E$$
+    Such that the functor $[x, y] : \bSpan(\cat E)(px, py)^\op \to \cat{Set}$ taking $(f, g)$ to $\cat F_w(f^*x, g^*y)$ (where $w$ is the domain of $f$ and $g$) is representable for all $x$ and $y$.
+\end{definition}
+
+Note that in the case of $\bSpan\cat E$, the two equations are equivalent. The definition of module between $\ca B$-categories will coincide with the one of internal categories when viewed as one object $\ca B$-categories.
+
+\begin{definition}
+    Let $X$ and $Y$ be $\ca B$-categories. A \textbf{$\ca B$-distributor} $p : X \dfrom Y$ consists of an arrow $p(x, y) : ex \from ey$ in $\ca B$ for each $x$ object in $X$ and $y$ object in $Y$, with actions of $X$ and $Y$ :
+    \begin{align*}
+        X(x', x) \cdot p(x, y) &\to p(x', y)\\
+        p(x, y) \cdot Y(y, y') &\to p(x, y')
+    \end{align*}
+    With associativity, unity and mixed associativity properties.
+\end{definition}
+
+Using this definition, we can see the isomorphisms of Definition \ref{def:intcat_res} as isomorphisms of distributors, seeing an arrow in $\ca B$ as a distributors between discrete internal categories.
+
+\begin{lemma}
+    Functors between $\bSpan(\cat E)$-categories preserve restrictions.
+\end{lemma}
+
+\begin{proof}
+    Let $f : u \to v$ a map, $x$ an object over $v$ and $F : X \to Y$ a $\bSpan\cat E$-functor:
+    $$Y(1, Fx_f) \simeqq Y(1, F) \cdot Y(1, x) \cdot f^\op \simeqq Y(1, (Fx)_f)$$
+\end{proof}
+
+As remarked in \cite{bettiwalters_completness}, when $\ca B$ is locally finitely complete and cocomplete, composites of the form $X \dfrom A \dfrom Y$ with $A$ having a finite number of objects (in particular, when $A$ is an internal category) always exist. Moreover, the composition of $p : X \dfrom Y$ and $q : Y \dfrom Z$, when it exists, is given by the coequalizer on the two actions in $\ca B(ex, ez)$:
+
+\[\begin{tikzcd}
+    \displaystyle{\sum_{y', y''}} p(x, y') \cdot Y(y', y'') \cdot q(y'', z) \ar[r, shift left] \ar[r, shift right]
+    & \displaystyle{\sum_y} p(x, y) \cdot q(y, z)
+\end{tikzcd}\]
+
+When considering $\bSpan(\cat Set)$-categories (e.g. small categories), this is exactly the coend $\int^{y\in Y} q(y, z) \times p(x, y)$. We delay the explicit description of right extensions to the construction of presheaf objects.
+
+
 
 \subsection{\texorpdfstring{$\infty$}{∞}-catégories}
 
 \cite{riehl_verity}
 \todo{problème des two-sided isofibrations discretes dans A\backslash Fib(K)/B}
 \todo{remplacer par les \texorpdfstring{$\infty$}{∞}-équipements de \cite{ruit2025formalcategorytheoryinftyequipments} ?}
+
+\subsection{Fibered Categories}
+\todo{À jeter ?}
+
+\cite{borceux2} \cite{benaboudistributorsfibrations}
 
 \clearpage
 \appendix
@@ -2104,15 +3075,15 @@ We resume many results used in the calculus of extensions. We work in a virtual 
 \end{multicols}
 
 \begin{center}
-    Definition \ref{def:kan}
+    Definition \ref{def:pointwise}
 \end{center}
 
 \begin{multicols}{2}
     \begin{itemize}
         \item $Y(j \plext f, 1) \simeq Y(f, 1) \rift X(j, 1)$
-        \item $Y(f\plift j, 1) \simeq Z(j, 1) \rext Z(f, 1)$
+        \item $Y(f\plift j, 1) \simeq Z(f, 1) \rext Z(j, 1) \simeq Z(j, f)$
         \item $Y(1, j\prext f) \simeq X(1, j) \rext Y(1, f)$
-        \item $Y(1, f\prift j) \simeq Z(1, f) \rift Z(1, j)$
+        \item $Y(1, f\prift j) \simeq Z(1, j) \rift Z(1, f) \simeq Z(f, j)$
     \end{itemize}
 \end{multicols}
 
