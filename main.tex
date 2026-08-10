@@ -15,6 +15,7 @@
 \usepackage[backend=biber,style=alphabetic]{biblatex}  % citations
 \usepackage{imakeidx}                                  % index
 \usepackage{hyperref}
+\usepackage{newunicodechar}
 
 \usepackage{todonotes} %TODO: enlever une fois fini
 
@@ -23,6 +24,8 @@
 % Fonts
 \setmainfont{fbb}
 \setmathfont{Libertinus Math}
+%FIXME: Trouver mieux que STIX Two Math
+\setmathfont{STIX Two Math}[range={\obslash, \oslash, \sharp, \flat}]
 
 % Shortcuts for math fonts
 \newcommand{\bb}[1]{\mathbb{#1}}
@@ -36,7 +39,7 @@
 \newcommand{\flip}[1]{\text{\rotatebox[origin=c]{-180}{$#1$}}}
 
 % Shortcuts
-% FIXME: blacktriangleleft and right too short
+% FIXME: blacktriangleleft and right too short, cf setmathfont
 \newcommand{\PP}{{\bb P}}
 \newcommand{\To}{\Rightarrow}
 \newcommand{\coce}[2]{{\hat{#1}}_{#2}}
@@ -62,8 +65,12 @@
 \newcommand{\rift}{\mathbin{\blacktriangleleft}}
 \newcommand{\set}[1]{\left\{#1\right\}}
 \newcommand{\simeqq}{\cong}
+\newcommand{\tp}[1]{\langle#1\rangle}
+\newcommand{\unit}{{\tp{}}}
 
 % Operators
+\DeclareMathOperator{\Alg}{\cat Alg}
+\DeclareMathOperator{\Opalg}{\cat Opalg}
 \DeclareMathOperator{\bSpan}{\ca{S}\mathit{pan}}
 \DeclareMathOperator{\Dist}{\bb{D}\textbf{ist}}
 \DeclareMathOperator{\Fun}{Fun}
@@ -143,7 +150,7 @@
 % memoize config
 \mmzset{prefix=diagrams/,mkdir,auto={tikzcd}{memoize,verbatim}}
 
-% Frames for math env (FIXME)
+% Frames for math env
 \usetikzlibrary{calc}
 \tikzset{
     envframe/.style={%
@@ -235,6 +242,12 @@
 
 \subsection{Outline of the thesis}
 
+We introduce in a self-contained way the methods of formal category theory from \cite{arkor2024formaltheoryrelativemonads}, \cite{arkor2024nervetheoremrelativemonads}, \cite{arkor2025idempotencerelativemonads}, \cite{arkor2025relativemonadicity} and \cite{arkor2026presheavescocompletionsformalcategory}; and apply the theory of formal preasheaves to the study of the Isbell adjunction, in particular generalizing most of the results in \cite{averyleinster}.
+
+No prerequisites on formal category theory are needed, as the framework is entirely described in the following pages. However, a solid knowledge of category theory (as studied in \cite{riehl_context} for example) is advised, and a basic knowledge of enriched categories (as studied in \cite{kelly}) and $\infty$-categories (an informal introduction suffices, we mention \cite{groth2015shortcourseinftycategories} and the first chapters of \cite{cnossen} but many more exist) is a plus for Section \ref{sec:instances}.
+
+\underline{What is not in this thesis:} We avoid the discussion of the many flavours of skew multicategory/multiactegory used in \cite{arkor2024formaltheoryrelativemonads} and enhanced in \cite{rogers26monoid} as they are not needed for most of the results (and this thesis was already too long). The central results in \cite{arkor2024nervetheoremrelativemonads} do not appear as they require exact virtual equipments. The formal theory of fibered categories also do not appear, due to a lack of time. Finally, (co)ends do not appear: when I started working on the formalization of coends, I stumbled upon \cite{coend_nickel}. I chose to pursue other results, and avidly await Jana Nickel and Nathanael Arkor's article on the subject. %FIXME
+
 \subsection{Conventions}
 
 We will use Sans Serif for 1-categories: \cat{A}, \cat{B}, \cat{C}..., calligraphy for 2-categories or bicategories: $\ca{H}, \ca{J}, \ca{K}$..., blackboard bold for virtual double categories: $\bb{X}, \bb{Y}$... Usually, objects will be in capital letters $A, B, C$, lower case for arrows $f, g, h$ (although horizontal arrows/loose-cells will use letters $p, q, r, s$...) and Greek letters for cells $\alpha, \beta, \phi, \psi$...
@@ -243,7 +256,7 @@ As this thesis was first written in French, tight and loose cells are called ver
 
 Also, a greater attention to detail than usual will be paid to the dualization of definitions and results in this thesis, as they usually are key notions.
 
-In accordance to N. Arkor and D. McDermott's articles, horizontal arrows will be denoted from right to left: $A \dfrom B$.
+In accordance to N. Arkor and D. McDermott's articles, horizontal arrows will be denoted from right to left ($A \dfrom B$) in diagrams \textit{and in text} for consistency.
 
 \subsection{Acknowledgments}
 
@@ -254,6 +267,8 @@ Justin Carel, Hadrien Chalandon-Goskrzynski, Ugo Fialo
 Marta Vigano
 
 \section{Formal Category Theory}
+
+We start with the basic notions, in particular "where" we do formal category, followed by "how" or "with what". This section takes from \cite{arkor2024formaltheoryrelativemonads} modernized with \cite{arkor2026presheavescocompletionsformalcategory}, in particular adapting the results for arbitrary weights. A few notions related to (co)limits are also from \cite{arkor2025relativemonadicity} as they are needed to establish a monadicity theorem in Subsection \ref{subsec:rel_monadicity}.
 
 \subsection{Virtual Double Categories}
 
@@ -602,6 +617,7 @@ When the restrictions exists, we have a useful result:
 \end{theorem}
 
 \begin{corollary}[{\cite[Corollaries 7.21 and 7.22]{cs10}}]
+    \label{cor:bending}
     There's a bijection between cells with frames
     \[\begin{tikzcd}
         A \ar[d, "k"'] & \ar[l, loose, "p"'] D & \ar[l, loose, "{E(f, 1)}"'] E \ar[d, "k"]\\
@@ -850,14 +866,24 @@ However, this is not the only interaction between arrows and (co)limits:
 
 \begin{definition}
     \index{limit!lifting}\index{colimit!lifting}
-    An arrow $g : X \to Z$ \textbf{lifts} $\vec p$-colimits when if $(d, \lambda)$ is a colimiting $\vec p$-cocone for $gf$, there exists a limiting $\vec p$-cocone $(c, \alpha)$ for $f$ such that $(gf, g\alpha)$ is isomorphic to
+    An arrow $g : X \to Z$ \textbf{lifts} $\vec p$-colimits when, if $(d, \lambda)$ is a colimiting $\vec p$-cocone for $gf$, there exists a colimiting $\vec p$-cocone $(c, \alpha)$ for $f$ such that $(gc, g\alpha)$ is colimiting. Dually, it lifts limits when $(d, \lambda)$ is a limiting $\vec p$-cone for $gf$, there exists a limiting $\vec p$-cone $(c, \alpha)$ for $f$ such that $(gc, g\alpha)$ is limiting.
+
+    It \textbf{stricly lifts} $\vec p$-colimits (reps. $\vec p$-limits) when $(gf, g\alpha) = (d, \lambda)$, and \textbf{uniquely} if the $\vec p$-cocone $(c, \alpha$ is unique with this property.
 \end{definition}
-\todo{Fix the definition}
 
 \begin{definition}
     \index{limits!creation}\index{colimits!creation}
-    An arrow $g : X \to Z$ \textbf{creates} (non-strictly) $\vec p$-colimits if it both lifts and reflects $\vec p$-colimits. Dually, an arrow $g : X \to Z$ \textbf{creates} (non-strictly) $\vec p$-limits if it both lifts and reflects $\vec p$-limits.
+    An arrow $g : X \to Z$ (resp. strictly) \textbf{creates} $\vec p$-colimits if it both (resp. strictly) lifts and reflects $\vec p$-colimits. Dually, an arrow $g : X \to Z$ (resp. strictly) \textbf{creates} $\vec p$-limits if it both (resp. strictly) lifts and reflects $\vec p$-limits.
 \end{definition}
+
+\begin{remark}
+    Unravelling the definition, an arrow $g : X \to Z$ non-strictly creates $\vec p$-colimits if, for $f : Z \to W, \vec p : Z \dfrom \cdots \dfrom Y$ such that $\colim^{\vec p}gf$ exists we have:
+    \begin{enumerate}
+        \item For every $\vec p$-cocone $(c, \lambda)$ for $f$, the $\vec p$-cocone $(gc, g\lambda)$ is a $\vec p$-colimit of $gf$ if and only if $(c, \lambda)$ is colimiting.
+        \item $W$ admits the colimit $\colim^{\vec p}f$.
+    \end{enumerate}
+    The property is unique and strict if for a colimiting $\vec p$-cocone $(d, \lambda)$, there is a unique colimiting $\vec p$-cocone $(c, \alpha)$ such that $d = gc$ and $\lambda = g\alpha$.
+\end{remark}
 
 \begin{definition}
     \index{colimit!$j$-absolute} \index{limit!$j$-absolute}
@@ -1247,6 +1273,10 @@ The definition and many results in this section make sense in an arbitrary virtu
     \begin{align*}
         \mu(\mu, e_t) &= \mu(e_t, \mu) & \mu(\eta, e_t) &= \mu(e_t, \eta) = e_t
     \end{align*}
+    A \textbf{loose monad morphism} from $(t, \mu, \eta)$ to $(t', \mu', \eta')$ both with base $A$ is a cell $\tau : t \To t'$ such that
+    \begin{align*}
+        \tau\eta &= \eta' & \tau\mu &= \mu'(\tau, \tau)
+    \end{align*}
 \end{definition}
 
 We will come back to loose monads in Subsection \ref{subsec:internal}.
@@ -1303,6 +1333,29 @@ We will see later (Corollary \ref{cor:adj_defs_same}) that the two notions coinc
 \begin{remark}
     We also speak of \textit{$j$-relative adjunction}.
 \end{remark}
+
+The root $j$ breaks the symmetry of the adjunction. Dualizing, we get a different notion, that of relative coadjunction.
+
+\begin{definition}
+    \index{coadjunction!relative}\index{coroot}\index{coadjoint!right-}\index{coadjoint!left-}
+    \begin{wrapfigure}{r}{0.5\textwidth}
+        \centering
+        \begin{tikzcd}
+            Z \ar[dr, "r"', ""{anchor=south,name=radj}] \ar[rr, "i"] && V\\
+            & X \ar[ur, "\ell"', ""{anchor=south,name=ladj}] &\\
+            \ar[from=radj, to=ladj, phantom, "\vdash"{anchor=center}]
+        \end{tikzcd}
+    \end{wrapfigure}
+    A \textbf{relative coadjunction} $r \vdash^i \ell$ comprises of the following data:
+    \begin{itemize}
+        \item A \textbf{coroot} $i : Z \to V$.
+        \item A \textbf{relative left-coadjoint} $\ell : X \to V$.
+        \item A \textbf{relative right-coadjoint} $r : Z \to X$.
+        \item An isomorphism $\sharp : V(\ell, i) \simeq X(1, r) : \flat$. %FIXME: not great looking with Libertinus :c
+    \end{itemize}
+\end{definition}
+
+It is possible to dualise results for relative coadjunctions. Note also that the distinction disappears when the (co)root is the identity, meaning $\ell\dashv_1 r$ if and only if $r\vdash^1\ell$.
 
 As for classical adjunctions, there's multiple characterizations using unit and counit cells.
 
@@ -1537,9 +1590,11 @@ Once again, we need an extra condition regarding the root when considering the r
     For (a), we have by $j$-absoluteness $E(j, l\plext\ell, j)\simeq E(j, j)\odot_L C(\ell, 1)$ and by fullfaithfulness $E(j, j)\odot_L C(\ell, 1) \simeqq A(1, 1)\odot_L C(\ell, 1) \simeqq C(\ell, 1)$ as required. For (b), we use Lemma \ref{lem:dense_abs_iff_iso}.
 \end{proof}
 
+There are two notions of morphisms of relative adjunction corresponding to each adjoint. As most of the properties regarding relative adjunctions, the left kind is kinder than the right which requires the right properties. Relative adjoint morphisms will induce morphisms of relative monads in Subsection \ref{subsec:rmonad}.
+
 \begin{definition}
     \index{adjunction!left morphism}
-    Let $j : A \to E$ be an arrow and $\ell\dashv_j r, \ell'\dashv_jr'$ $j$-relative adjunctions. A \textbf{left morphism} from $\ell\dashv_jr$ to $\ell'\dashv_j r'$ consists of
+    Let $j : A \to E$ be an arrow, $\ell\dashv_j r$ and $\ell'\dashv_jr'$ $j$-relative adjunctions. A \textbf{left morphism} from $\ell\dashv_jr$ to $\ell'\dashv_j r'$ consists of
     \[\begin{tikzcd}
         &C'\ar[ddr, "r'", bend left]&\\
         &\ar[u, "c"{description}] C \ar[dr, "r"]\\
@@ -1559,35 +1614,182 @@ Once again, we need an extra condition regarding the root when considering the r
 \end{definition}
 
 \begin{example}
-    For any arrow $j : A \to E$ and $j$-relative adjunction $\ell\dashv_j r$, $(r, \eta)$ forms a left morphism from $\ell\dashv_j r$ to $j\dashv_j \id_E$. The latter is then terminal in $\cat{RAdj}_L(j)$.
+    For any arrow $j : A \to E$ and $j$-relative adjunction $\ell\dashv_j r$, $(r, \eta)$ forms a unique left morphism from $\ell\dashv_j r$ to $j\dashv_j \id_E$. The latter is hence terminal in $\cat{RAdj}_L(j)$.
 \end{example}
 
-The root $j$ breaks the asymmetry of the adjunction. Dualizing, we get a different notion, that of relative coadjunction.
+Thankfully \textit{for left morphisms}, the cell is uniquely determined by the arrow $c$. We write $\underline{\bb X}/E$ for the (1-)category of slices over an object $E$.
+
+\begin{lemma}
+    \label{lem:rradj_ff}
+    Let $j : A \to E$ be an arrow. The functor $\cat{RAdj}_L(j) \to \underline{\bb X}/E$ sending a $j$-adjunction to its right adjoint and a left morphism to its arrow is fully faithful.
+\end{lemma}
+
+\begin{proof}
+    Given a morphism $c : C \to C'$ such that $r=r'c$, we define $\lambda$ as the following cell
+    \[\begin{tikzcd}
+        \ar[d, equal] A & \ar[l, loose, "{C(\ell, 1)}"', ""{anchor=center, name=t1}] \ar[d, equal] C & \ar[l, loose, "{C'(c, 1)}"', ""{anchor=center, name=t2}] C' \ar[dd, equal]\\
+        \ar[d, equal] A & \ar[l, loose, "{E(j, r)}"', ""{anchor=center, name=m}] C \ar[d, equal] & \\
+        \ar[d, equal] A & \ar[l, loose, "{C'(\ell', c)}"', ""{anchor=center, name=b1}] C & \ar[l, loose, "{C'(c, 1)}"', ""{anchor=center, name=b2}] C' \ar[d, equal]\\
+        A &{}& \ar[ll, loose, "{C'(\ell', 1)}"] C'
+        \ar[from=t1, to=m, phantom, "\sharp"{anchor=center}] \ar[from=t2, to=b2, phantom, "="{anchor=center}]
+        \ar[from=m, to=b1, phantom, "{\flat'(1, c)}"{anchor=center}]\\
+        \ar[from=3-2, to=4-2, phantom, "{\smallsmile_c(\ell', 1)}"{anchor=center}]
+    \end{tikzcd}\]
+    This cell is induced by the compatibility conditions and is therefore unique.
+\end{proof}
+
+We now shift to right morphisms.
 
 \begin{definition}
-    \index{coadjunction!relative}\index{coroot}\index{coadjoint!right-}\index{coadjoint!left-}
-    \begin{wrapfigure}{r}{0.5\textwidth}
-        \centering
-        \begin{tikzcd}
-            Z \ar[dr, "r"', ""{anchor=south,name=radj}] \ar[rr, "i"] && V\\
-            & X \ar[ur, "\ell"', ""{anchor=south,name=ladj}] &\\
-            \ar[from=radj, to=ladj, phantom, "\vdash"{anchor=center}]
-        \end{tikzcd}
-    \end{wrapfigure}
-    A \textbf{relative coadjunction} $r \vdash_i \ell$ comprises of the following data:
-    \begin{itemize}
-        \item A \textbf{coroot} $i : Z \to V$.
-        \item A \textbf{relative left-coadjoint} $\ell : X \to V$.
-        \item A \textbf{relative right-coadjoint} $r : Z \to X$.
-        \item An isomorphism $\sharp : V(\ell, i) \simeq X(1, r) : \flat$. %FIXME: not great looking with Libertinus :c
-    \end{itemize}
+    \index{adjunction!right morphism}
+    Let $j : A \to E$ be an arrow, $\ell\dashv_j r$ and $\ell'\dashv_jr'$ $j$-relative adjunctions. A \textbf{right morphism} from $\ell\dashv_jr$ to $\ell'\dashv_j r'$ consists of
+    \[\begin{tikzcd}
+        &C'\ar[ddr, "r'", bend left, ""{anchor=center,name=a}]&\\
+        &\ar[u, "c"{description}] C \ar[dr, "r"]\\
+        A \ar[uur, bend left, "\ell'"] \ar[ur, "\ell"] \ar[rr, "j"'] && E
+        \ar[from=2-2, to=a, Rightarrow, "\rho", shorten=2mm]
+    \end{tikzcd}\]
+    \begin{enumerate}
+        \item An arrow $c : C \to C'$ such that $\ell' = c\ell$.
+        \item A cell $\rho : r \To r'c$.
+    \end{enumerate}
+    Rendering the following diagram commutative
+    \[\begin{tikzcd}
+        \ar[d, "{\smallfrown_c(\ell, 1)}"'] C(\ell, 1) \ar[r, "\sharp"] & E(j, r) \ar[d, "{E(j, \rho})"]\\
+        C'(\ell', c) \ar[r, "{\sharp'(1, c)}"'] & E(j, r'c)
+    \end{tikzcd}\]
+    It is \textbf{strict} when $\rho$ is the identity. We write $\cat{RAdj}_R(j)$ the category of $j$-relative adjunctions and right morphisms.
 \end{definition}
 
-\begin{remark}
-    In the case where the root or the coroot is the identity, adjunctions and coadjunctions coincide.
-\end{remark}
+\begin{example}
+    For any fully faithful arrow $j : A \to E$ and $j$-adjunction $\ell\dashv_j r$, the pair $(\ell, \eta)$ forms a unique right morphism from $\id_A\dashv_j j$ to $\ell\dashv_j r$. The latter is hence initial in $\cat{RAdj}_R(j)$.
+\end{example}
+
+As noted above, unicity of $\rho$ is not immediate and requires an hypothesis on the root. We write $A/\underline{\bb X}$ for the (1-)category of coslices under $A$.
+
+\begin{lemma}
+    \label{lem:lradj_ff}
+    Let $j : A \to E$ be a dense arrow. Then the functor $\cat{RAdj}_R(j) \to A/\underline{\bb X}$ sending a $j$-adjunction to its left adjoint and a right morphism to its arrow is fully faithful.
+\end{lemma}
+
+\begin{proof}
+    The compatibility condition for $\rho$ states that the following square commutes
+    \[\begin{tikzcd}
+        \ar[d, "{\smallfrown_c(\ell, 1)}"'] C(\ell, 1) & \ar[l, "\flat"'] E(j, r) \ar[d, "{E(j, \rho)}"]\\
+        C'(\ell', c) \ar[r, "{\sharp'(1, c)}"'] & E(j, r'c)
+    \end{tikzcd}\]
+    The cell above uniquely determines $E(j, \rho)$. When $j$ is dense, this uniquely determines $\rho$ by \ref{lem:res_dense_fid}.
+\end{proof}
+
+Most of the properties regarding resolution of relative monads will rely on the intersection of the two notions, which we introduce here.
+
+\begin{definition}
+    A \textbf{strict morphism} of relative adjunction is a strict left (or equivalently right) morphism of relative adjunctions. We write $\cat{RAdj}(j)$ the category of $j$-adjunctions and strict morphisms.
+\end{definition}
+
+We conclude this Subsection by giving a few tools to construct new relative adjunctions from existing ones.
+
+\begin{proposition}
+    \label{prop:radj_precomp}
+    Let $\ell\dashv_jr$ a relative adjunction and $\ell' : A\to B$ an arrow.
+    \[\begin{tikzcd}
+        &&C\ar[dr, "r"]&\\
+        A \ar[r, "\ell'"] & B \ar[ur, "\ell"] \ar[rr, "j"'] &{}& D
+        \ar[from=1-3, to=2-3, phantom, "\dashv"{anchor=center}]
+    \end{tikzcd}
+    \hspace{1em}
+    \implies
+    \hspace{1em}
+    \begin{tikzcd}
+        &C\ar[dr, "r"]&\\
+        A \ar[ur, "\ell\ell'"] \ar[rr, "j\ell'"'] &{}& D
+        \ar[from=1-2, to=2-2, phantom, "\dashv"{anchor=center}]
+    \end{tikzcd}\]
+    Then $(\ell\circ\ell')\dashv_{j\ell'}r$ and this assignment extends to functors
+    \begin{align*}
+        (-\circ\ell') &: \cat{RAdj}_L(j) \to \cat{RAdj}_L(j\ell')\\
+        (-\circ\ell') &: \cat{RAdj}_R(j) \to \cat{RAdj}_R(j\ell')
+    \end{align*}
+\end{proposition}
+
+\begin{proof}
+    Using $\ell\dashv_j r$, we have $C(\ell\ell', 1) \simeqq D(j\ell', r)$.
+
+    Given a left morphism $(c, \lambda)$ (resp. right morphism $(c, \rho)$) from $\ell_1\dashv_jr_1$ to $\ell_2\dashv_jr_2$, the pairs $(c, \lambda\ell')$ (resp. $(c, \rho)$) define left (resp. right) morphisms from $\ell_1\ell'\dashv_{j\ell'}r_1$ to $\ell_2\ell'\dashv_{j\ell'}r_2$. The compatibility condition follows from the condition on $(c, \lambda)$ (resp. $(c, \rho)$). Functoriality is immediate.
+\end{proof}
+
+The case of postcomposition on the right adjoint will be a corollary of the pasting law for relative adjunctions.
+
+\begin{proposition}[Pasting law]
+    \label{prop:radj_pasting}
+    Consider the following configuration of arrows
+    \[\begin{tikzcd}
+        &C \ar[dr, "r"] &&\\
+        && \ar[dr, "r'", ""{anchor=center,name=r_}] D &\\
+        A \ar[uur, "\ell"] \ar[urr, "\ell'", ""{anchor=center,name=l_}] \ar[rrr, "j"'] &&& E\\
+        \ar[from=l_, to=r_, phantom, "\dashv", shift right]
+    \end{tikzcd}\]
+    The left triangle is a relative adjunction $\ell\dashv_{\ell'}r$ if and only if the outer triangle is a relative adjunction $\ell\dashv_jr'r$. In this case, $(r, \eta)$ exhibits a left morphism of $j$-adjunction $(\ell\dashv_jr'r) \to (\ell'\dashv_jr)$ where $\eta$ is the unit of $\ell'\dashv_jr'$, and this assignment extends to functors
+    \begin{align*}
+        (r'\circ-) &: \cat{RAdj}_L(\ell') \to \cat{RAdj}_L(j)\\
+        (r'\circ-) &: \cat{RAdj}_R(\ell') \to \cat{RAdj}_R(j)
+    \end{align*}
+\end{proposition}
+
+\begin{proof}
+    Using $\ell'\dashv_jr'$, we have $D(\ell', r) \simeqq E(j, r'r)$. The condition that the left (resp. outer) triangle be a relative adjunction asserts that the left (resp. right) side be isomorphic to $C(\ell, 1)$. $(r, \eta)$ exhibiting a left morphism follows by definition.
+
+    Given a left morphism $(c, \lambda)$ (resp. right morphism $(c, \rho)$) from $\ell_1\dashv_{\ell'}r_1$ to $\ell_2\dashv_{\ell'}r_2$, the pairs $(c, \lambda)$ (resp. $(c, r'\rho)$) is a left (resp. right) from $\ell_1\dashv_{j'}r'r_1$ to $\ell_2\dashv_{j'}r'r_2$. The compatibility condition follows from the condition on $(c, \lambda)$ (resp. $(c, \rho)$). Functoriality is immediate.
+\end{proof}
+
+\begin{corollary}
+    Let $\ell\dashv_j r$ a relative adjunction and $r' : E \to D$ a fully faithful arrow.
+    \[\begin{tikzcd}
+        &C\ar[dr, "r"]&&\\
+        A \ar[ur, "\ell"] \ar[rr, "j"'] &{}& B \ar[r, "r'", hook] & D
+        \ar[from=1-2, to=2-2, phantom, "\dashv"{anchor=center}]
+    \end{tikzcd}
+    \hspace{1em}
+    \implies
+    \hspace{1em}
+    \begin{tikzcd}
+        &C\ar[dr, "r'r"]&\\
+        A \ar[ur, "\ell"] \ar[rr, "r'j"'] &{}& D
+        \ar[from=1-2, to=2-2, phantom, "\dashv"{anchor=center}]
+    \end{tikzcd}\]
+    Then $\ell\dashv_{r'j}r'r$ and this assignment extends to functors
+    \begin{align*}
+        (r'\circ-) &: \cat{RAdj}_L(j) \to \cat{RAdj}_L(r'j)\\
+        (r'\circ-) &: \cat{RAdj}_R(j) \to \cat{RAdj}_R(r'j)
+    \end{align*}
+\end{corollary}
+
+\begin{proof}
+    Apply Proposition \ref{prop:radj_pasting} with $\ell' := j$ and $j := r'j$.
+\end{proof}
+
+\begin{corollary}
+    Let $\ell\dashv_j r$ and $j\ell'\dashv_{j'} r'$ be relative adjunctions as below:
+    \[\begin{tikzcd}
+        && C \ar[dr, "r"] &&\\
+        & B \ar[ur, "\ell"] \ar[rr, "j"{description}] &{}& D \ar[dr, "r'", ""{anchor=center, name=r_}] &\\
+        A \ar[ur, "\ell'"] \ar[urrr, "j\ell'"{description}, ""{anchor=center,name=jl_}] \ar[rrrr, "j'"'] &&&& E\\
+        \ar[from=1-3, to=2-3, phantom, "\dashv"{anchor=center}]
+        \ar[from=jl_, to=r_, phantom, "\dashv"{anchor=center}]
+    \end{tikzcd}\]
+    Then $\ell\ell'\dashv_{j'} r'r$ and $(r, \eta\ell')$ is a left morphism $(\ell\ell'\dashv_{j'}r'r) \to (j\ell'\dashv_{j'}r')$. This extends to functors
+    \begin{align*}
+        (r'\circ-\circ\ell') &: \cat{RAdj}_L(j) \to \cat{RAdj}_L(j')\\
+        (r'\circ-\circ\ell') &: \cat{RAdj}_R(j) \to \cat{RAdj}_R(j')
+    \end{align*}
+\end{corollary}
+
+\begin{proof}
+    The result is a combination of Proposition \ref{prop:radj_precomp} by precomposing $\ell\dashv_jr$ by $\ell'$ and Proposition \ref{prop:radj_pasting} by pasting $\ell\ell'\dashv_{j\ell'} r$ along $j\ell'\dashv_{j'}r'$.
+\end{proof}
 
 \subsection{Relative monads}
+\label{subsec:rmonad}
 
 \begin{definition}
     \index{relative monad}\index{monad!relative}
@@ -1659,16 +1861,184 @@ The root $j$ breaks the asymmetry of the adjunction. Dualizing, we get a differe
         E(t, t) \ar[dr, "{E(t, \tau)}"'] && \ar[dl, "{E(\tau, t')}"] E(t', t')\\
                                          & E(t, t')
     \end{tikzcd}\]
+    We write $\cat{RMnd}(j)$ for the (1-)category of $j$-relative monads and morphisms.
 \end{definition}
 
+\begin{example}
+    For any arrow $j : A \to E$, $(j, e_{E(j, j)}, e_j)$ forms a $j$-relative monad. %TODO: initiale dans RMod(j)
+\end{example}
 
-\section{Algebras and opalgebras}
+A large class of relative adjunctions is given by the ones induced by relative adjunctions. Note that, not every relative monad necessarily induce a relative adjunction as it requires an object acting as a category of algebras. This is one of the subject of Section \ref{sec:alg_idem_mon}.
 
-In the classical settings, two categories of algebras are usually studied: the Eilenberg-Moore category ("all the algebras") and the Kleisli category ("free algebras"). Internal notions in virtual equipment exists: algebras and opalgebras. While the first ones are known to the reader, the latter are less so. Although in the classical setting free algebras and opalgebras coincide, in the formal setting the latter notion is of importance.
+\begin{theorem}
+    \label{th:radj_rmon}
+    Every relative adjunction $\ell\dashv_jr$ induces a relative monad $\land_j(\ell \dashv_jr)$ with underlying cell $rl$ and this assignment extends to functors
+    \begin{align*}
+        \obslash_j &: \cat{RAdj}_L(j) \to \cat{RMnd}_L(j)^\op\\
+        \oslash_j  &: \cat{RAdj}_R(j) \to \cat{RMnd}_R(j)
+    \end{align*}
+\end{theorem}
+
+\begin{proof}
+    We define $\eta$ as in Proposition \ref{prop:equiv_radj_car} and $\dag$ as the cell
+    \[\begin{tikzcd}[sep=huge]
+        \ar[d, equal] A & \ar[l, loose, "{E(j, r\ell)}"', ""{anchor=center,name=t}] A \ar[d, equal] \\
+        \ar[d, equal] A & \ar[l, loose, "{C(\ell, \ell)}", ""{anchor=center,name=m}] C \ar[d, equal] \\
+        A & \ar[l, loose, "{E(r\ell, r\ell)}", ""{anchor=center,name=b}] A
+        \ar[from=t, to=m, phantom, "{\flat(1, \ell)}"{anchor=center}]
+        \ar[from=m, to=b, phantom, "{\smallfrown_r(\ell, \ell)}"{anchor=center}]
+    \end{tikzcd}\]
+    %TODO: Finir la preuve (?)
+\end{proof}
+
+We are in fact interested in when a relative monad is induced by a relative adjunction. Most of the results will come in Section \ref{sec:alg_idem_mon}, but we introduce a few not needing (op)algebras.
+
+\begin{definition}
+    Let $j : A \to E$ an arrow and $T$ a $j$-monad. A resolution of $T$ is a $j$-adjunction $\ell\dashv_jr$ for which $T$ is equal to $\land_j(\ell\dashv_jr)$. A morphism of resolutions of $T$ from $\ell\dashv_jr$ to $\ell'\dashv_jr'$ is an arrow $c : C \to C'$ such that the following diagram commutes
+    \[\begin{tikzcd}
+        & C \ar[dd, "c"{description}] \ar[dr, "r"] &\\
+        A \ar[ur, "\ell"] \ar[dr, "\ell'"'] && E\\
+        & C' \ar[ur, "r'"']
+    \end{tikzcd}\]
+    We write $\cat{Res}(T)$ for the category of resolutions of $T$ and their morphisms.
+\end{definition}
+
+\begin{lemma}
+    Let $\ell\dashv_jr$ and $\ell'\dashv_jr'$ be relative adjunctions. An arrow $c : C \to C'$ satisfying $c\ell = \ell'$ and $rc = r'$ is a strict morphism from $\ell\dashv_jr$ to $\ell'\dashv_jr'$ if and only if $\land_j(\ell\dashv_jr) = \land_j(\ell'\dashv_jr')$.
+\end{lemma}
+
+\begin{proof}
+    Both relative monads are equal on their underlying cells, the compatibility condition for a strict morphism is equivalent to $\eta = \eta'$ and $\dag = \dag'$ using Theorem \ref{th:radj_rmon}.
+\end{proof}
+
+\begin{lemma}
+    \label{lem:reso_lmon}
+    Let $\ell\dashv_jr$ be a resolution of a relative monad $T$. The loose-monad induced by $C(1, \ell)\dashv E(j, r)$ is isomorphic to $E(j, T)$.
+\end{lemma}
+
+\begin{proof}
+    The underlying distributor of each is $E(j, r\ell)$, and the units and extension coincide by diagrammatic reasoning.
+\end{proof}
+
+\begin{corollary}
+    Let $\ell\dashv_jr$ a resolution of $T$. The distributor $C(\ell, \ell)$ is isomorphic to $E(j, T)$.
+\end{corollary}
+
+\begin{proof}
+    By Lemma \ref{lem:reso_lmon}, $E(j, T)$ is induced by $C(1, \ell) \dashv E(j, r)$, however $E(j, r) \simeqq C(\ell, 1)$. Therefore, $E(j, T)$ is isomorphic to the loose monad induced by $C(1, \ell)\dashv C(\ell, 1)$ which is $C(\ell, \ell)$.
+\end{proof}
+
+\begin{corollary}
+    Let $(\ell_2\ell_1\dashv_j r$ a relative adjunction with unit $\eta$. The unit then exhibits a relative adjunction $\ell_1\dashv_jr\ell_2$ if and only if the identity $e_{\ell_2\ell_2}$ exhibits a relative adjunction $\ell_1\dashv_{\ell_2\ell_1}\ell_2$. In this case, the induced $j$-monads are identical.
+    \[\begin{tikzcd}
+        B \ar[r, "\ell_2"] & C \ar[dr, "r"] &\\
+        A \ar[u, "\ell_1"] \ar[ur, "\ell_2\ell_1"{description}] \ar[rr, "j"'] &{}& E
+        \ar[from=1-2, to=2-2, phantom, "\dashv"]
+    \end{tikzcd}
+    \hspace{1em}=\hspace{1em}
+    \begin{tikzcd}
+        & B \ar[dr, "r\ell_2"] &\\
+        A \ar[ur, "\ell_1"] \ar[rr, "j"'] &{}& E
+        \ar[from=1-2, to=2-2, phantom, "\dashv"]
+    \end{tikzcd}\]
+\end{corollary}
+
+\begin{proof}
+    We use Proposition \ref{prop:radj_pasting} with that fact that the unit of $\ell_1\dashv_jr\ell_2$ forming a left morphism between the two relative monads is the identity.
+\end{proof}
+
+As with relative adjunctions, we can precompose a relative monad by an arrow:
+
+\begin{proposition}
+    \label{prop:rmnd_precomp}
+    Let $j : B \to D$ an arrow, $T = (t, \dag, \eta)$ a $j$-monad and $\ell :  A \to B$ an arrow. Then $t\ell$ may be equipped with the structure of a $j\ell$-monad, and this assignment extends to a functor $\cat{RMnd}(j) \to \cat{RMnd}(j\ell)$ rendering the following diagram commutative
+    \[\begin{tikzcd}
+        \ar[d, "(-\circ\ell)^\op"'] \cat{RAdj}_L(j)^\op \ar[r, "\obslash_j"] & \cat{RMnd}(j) \ar[d, "(-\circ\ell)"{description}] & \ar[l, "\oslash_j"'] \cat{RAdj}_R(j) \ar[d, "(-\circ\ell)"]\\
+        \cat{RAdj}_L(j\ell)^\op \ar[r, "\obslash_{j\ell}"'] & \cat{RMnd}(j\ell) & \ar[l, "\oslash_{j\ell}"] \cat{RAdj}_R(j\ell)
+    \end{tikzcd}\]
+\end{proposition}
+
+\begin{proof}
+    The unit is given by $\eta\ell$ and the extension operator by $\dag(\ell, \ell)$ and the relative monad laws follow from those of $T$. Given a $j$-monad morphism $\tau : T \to T'$, the cell $\tau\ell$ forms a $j\ell$-monad morphism $T\ell\to T'\ell$, and the laws follows from those of $\tau$. Functoriality is immediate and commutativity follows from the definition.
+\end{proof}
+
+And paste a relative monad along a left adjoint:
+
+\begin{proposition}
+    \label{prop:rmnd_paste}
+    Let $\ell\dashv_j r$ a relative adjunction and $T = (t, \dag, \eta)$ be a $\ell$-monad.
+    \[\begin{tikzcd}%FIXME
+        & D \ar[dr, "r'"] &\\
+        A \ar[ur, "\ell"{description}, ""{anchor=center,name=l}] \ar[ur, "t", bend left=50, "t", ""{anchor=center,name=t}] \ar[rr, "j"'] &{}& E
+        \ar[from=l, to=t, Rightarrow, "\eta"'] \ar[from=1-2, to=2-2, phantom, "\dashv"{anchor=center}]
+    \end{tikzcd}\]
+    Then $r't$ may be equipped with the structure of a $j$-monad for which $r'\eta$ is a $j$-monad morphism $\land_j(\ell\dashv_jr) \to r'T$ and this assignment extends to a functor $\cat{RMnd}(\ell) \to \cat{RMnd}(j)$ rendering the following diagram commutative
+    \[\begin{tikzcd}
+        \ar[d, "(r\circ-)^\op"'] \cat{RAdj}_L(\ell)^\op \ar[r, "\obslash_\ell"] & \cat{RMnd}(\ell) \ar[d, "(r\circ-)"{description}] & \ar[l, "\oslash_\ell"'] \cat{RAdj}_R(\ell) \ar[d, "(r\circ-)"]\\
+        \cat{RAdj}_L(j)^\op \ar[r, "\obslash_{j}"'] & \cat{RMnd}(j) & \ar[l, "\oslash_{j}"] \cat{RAdj}_R(j)
+    \end{tikzcd}\]
+\end{proposition}
+
+\begin{proof}
+    We define the extension and unit operators as below
+    \[\begin{tikzcd}[sep=huge]
+        \ar[d, equal] A & \ar[l, loose, "{E(j, rt)}"', ""{anchor=center,name=t}] A \ar[d, equal]\\
+        \ar[d, equal] A & \ar[l, loose, "{D(\ell, t)}"', ""{anchor=center,name=mt}] A \ar[d, equal]\\
+        \ar[d, equal] A & \ar[l, loose, "{D(t, t)}"', ""{anchor=center,name=mb}] A \ar[d, equal]\\
+        A & \ar[l, loose, "{E(rt, rt)}", ""{anchor=center, name=b}] A
+        \ar[from=t, to=mt, phantom, "{\flat(1, t)}"{anchor=center}]
+        \ar[from=mt, to=mb, phantom, "\dag"{anchor=center}]
+        \ar[from=mb, to=b, phantom, "{\flat(t, t)}"{anchor=center}]
+    \end{tikzcd}
+    \hspace{3em}
+    \begin{tikzcd}[sep=huge]
+        A \ar[d, "j"'] \ar[r, equal, ""{anchor=center,name=t1}] & A\ar[d, "r\ell"] \ar[r, equal, ""{anchor=center,name=t2}] & A \ar[d, "rt"]\\
+        A \ar[r, loose, equal, ""{anchor=center,name=b1}] & A \ar[r, loose, equal, ""{anchor=center,name=b2}] & A
+        \ar[from=t1, to=b1, phantom, "\eta'"] \ar[from=t2, to=b2, phantom, "\eta"]
+    \end{tikzcd}\]
+    The unit and associativity laws follows from those of $T$ and the $\sharp-\flat$ isomorphism. Functoriality is immediate. The squares agree on objects and the following diagram commutes
+    \[\begin{tikzcd}
+        \ar[d, "\land_\ell"'] \cat{RAdj}_L(\ell) \ar[r, "{(r\circ-)}"] & \cat{RAdj}(j) \ar[d, "\land_j"]\\
+        \cat{RMnd}(\ell) \ar[r, "{(r \circ -)}"] & \cat{RMnd}(j)
+    \end{tikzcd}\]
+    In fact, the assignments agree on the underlying cell and on the unit; and the $\sharp-\flat$ isomorphism gives the equality on the extension operators.
+\end{proof}
+
+Using both Propositions \ref{prop:rmnd_precomp} and \ref{prop:rmnd_paste}, we get:
+
+\begin{corollary}
+    Let $j\ell\dashv_{j'}r$ be a relative adjunction and let $(t, \dag, \eta)$ be a $j$-monad.
+    \[\begin{tikzcd}
+        & B \ar[r, "j"{description}] \ar[r, "t", bend left=50] & D \ar[dr, "r", ""{anchor=center,name=r_}] &\\
+        A \ar[ru, "\ell"] \ar[rru, "j\ell"{description}, ""{anchor=center,name=jl}] \ar[rrr, "j"'] &&& E
+        \ar[from=jl, to=r_, phantom, "\dashv"{anchor=center}]
+    \end{tikzcd}\]
+    Then $rt\ell$ may be equipped with the structure of a $j$-monad for which $r\eta\ell$ is a $j$-monad morphism $rj\ell \to rt\ell$. This assignment extends to a functor $\cat{RMnd}(j) \to \cat{RMnd}(j')$ rendering the following diagram commutative.
+    \[\begin{tikzcd}
+        \ar[d, "(r\circ-\circ\ell)^\op"'] \cat{RAdj}_L(j)^\op \ar[r, "\obslash_j"] & \cat{RMnd}(j) \ar[d, "(r\circ-\circ\ell)"{description}] & \ar[l, "\oslash_j"'] \cat{RAdj}_R(\ell) \ar[d, "(r\circ-\circ\ell)"]\\
+        \cat{RAdj}_L(j')^\op \ar[r, "\obslash_{j'}"'] & \cat{RMnd}(j') & \ar[l, "\oslash_{j'}"] \cat{RAdj}_R(j')
+    \end{tikzcd}\]
+\end{corollary}
+
+\begin{proof}
+    Precompose $t$ by $\ell$ using Proposition \ref{prop:rmnd_precomp} and paste $t\ell$ along $j\ell\dashv_{j'}r$ using Proposition \ref{prop:rmnd_paste}.
+\end{proof}
+
+
+\section{Constructions and properties of relative monads}
+\label{sec:alg_idem_mon}
+
+In this Section, we focus of the properties of relative monads, following \cite[Section 6]{arkor2024formaltheoryrelativemonads}, \cite{arkor2025idempotencerelativemonads}, \cite{arkor2025relativemonadicity}. Starting with the construction of the right notions of algebras and categories of algebras in a virtual equipment, we continue with idempotency before concluding with a monadicity theorem.
 
 \subsection{(op)Algebras and (op)algebras object}
 
+In the classical settings, two categories of algebras are usually studied: the Eilenberg-Moore category ("all the algebras") and the Kleisli category ("free algebras"). Internal notions in virtual equipment exist: algebras and opalgebras. While the first ones are known to the reader, the latter are less so. Although in the classical setting free algebras and opalgebras coincide, in the formal setting the latter notion is of importance.
+
+This subsection is based on \cite[Section 6]{arkor2024formaltheoryrelativemonads}.
+
 \begin{definition}
+    \label{def:alg}
+    \index{$T$-algebra} \index{$T$-algebra!morphism} \index{$T-\Alg_B$}
     \begin{wrapfigure}{r}{0.47\textwidth}
         \vspace{-\baselineskip}
         \[\begin{tikzcd}[sep=large]
@@ -1702,20 +2072,641 @@ In the classical settings, two categories of algebras are usually studied: the E
     \end{tikzcd}
     \hspace{1em}=\hspace{1em}
     \begin{tikzcd}[sep=large]
-        \ar[d, equal] A & \ar[l, loose, "{E(j, t)}"'] A \ar[d, equal] & \ar[l, loose, "{E(j, e)}"', ""{anchor=center, name=t}] D \ar[d, equal]\\
-        \ar[d, equal] A & \ar[l, loose, "{E(j, t)}"'] A & \ar[l, loose, "{E(t, e)}"', ""{anchor=center, name=m}] D\ar[d, equal]\\
+        \ar[d, equal] A & \ar[l, loose, "{E(j, t)}"', ""{anchor=center,name=t1}] A \ar[d, equal] & \ar[l, loose, "{E(j, e)}"', ""{anchor=center, name=t2}] D \ar[d, equal]\\
+        \ar[d, equal] A & \ar[l, loose, "{E(j, t)}"', ""{anchor=center,name=m1}] A & \ar[l, loose, "{E(t, e)}"', ""{anchor=center, name=m2}] D\ar[d, equal]\\
         \ar[d, equal] A &{}& \ar[ll, loose, "{E(j, e)}"] D \ar[d, equal]\\
         A &{}& \ar[ll, loose, "{E(t, e)}"] D
-        \ar[from=t, to=m, phantom, "\rtimes"{anchor=center}]
+        \ar[from=t1, to=m1, phantom, "="{anchor=center}] \ar[from=t2, to=m2, phantom, "\rtimes"{anchor=center}]
         \ar[from=2-2, to=3-2, phantom, "{\smallsmile_t(j, e)}"{anchor=center}]
         \ar[from=3-2, to=4-2, phantom, "\rtimes"{anchor=center}]
     \end{tikzcd}\]
-    A $T$-algebra morphism from $(e, \rtimes)$ to $(e', \rtimes')$ is a cell $\varepsilon : e \To e'$ such that
+    A $T$-algebra morphism from $(e, \rtimes)$ to $(e', \rtimes')$ with common domain $D$ is a cell $\varepsilon : e \To e'$ such that
     \[\begin{tikzcd}
         \ar[d, "{E(j, \varepsilon)}"'] E(j, e) \ar[r, "\rtimes"] & E(t, e) \ar[d, "{E(t, \varepsilon)}"]\\
         E(j, e') \ar[r, "\rtimes'"'] & E(t, e')
     \end{tikzcd}\]
+    We write $T-\Alg_D$ for the category of $T$-algebras with domain $D$ and their morphisms. This category is contravariantely functorial in $D$ and $T$.
 \end{definition}
+
+\begin{remark}
+    \label{rem:ralg_act}
+    Note that, using Corollary \ref{cor:bending}, we can \textit{bend} the arrows and rewrite the extension operator as $\lambda : E(1, t), E(j, e) \To E(1, e)$. This gives a link between the description as action in the multiactegory used in \cite[Theorem 6.15]{arkor2024formaltheoryrelativemonads}.
+\end{remark}
+
+We now introduce the other notion:
+
+\begin{definition}
+    \label{def:opalg}
+    \index{$T$-opalgebra} \index{$T$-opalgebra!morphism} \index{$T-\Opalg_B$}
+    \begin{wrapfigure}{r}{0.47\textwidth}
+        \vspace{-\baselineskip}
+        \[\begin{tikzcd}[sep=large]
+            \ar[d, equal] A & \ar[l, equal, ""{anchor=center,name=t}] A \ar[d, equal]\\
+            \ar[d, equal] A & \ar[l, loose, "{E(j, j)}"', ""{anchor=center,name=mt}] A \ar[d, equal]\\
+            \ar[d, equal] A & \ar[l, loose, "{E(j, t)}"', ""{anchor=center,name=mb}] A \ar[d, equal]\\
+            A & \ar[l, loose, "{B(a, a)}", ""{anchor=center,name=b}] A
+            \ar[from=t, to=mt, phantom, "\smallfrown_j"{anchor=center}]
+            \ar[from=mt, to=mb, phantom, "{E(j, \eta)}"{anchor=center}]
+            \ar[from=mb, to=b, phantom, "\ltimes"{anchor=center}]
+        \end{tikzcd}
+        \hspace{1em}=\hspace{1em}
+        \begin{tikzcd}
+            \ar[d, equal] A & \ar[l, equal, ""{anchor=center, name=t}] A\ar[d, equal]\\
+            A & \ar[l, loose, "{B(a, a)}", ""{anchor=center, name=b}] A
+            \ar[from=t, to=b, phantom, "\smallfrown_a"{anchor=center}]
+        \end{tikzcd}\]
+    \end{wrapfigure}
+    Let $T$ be a relative monad. An \textbf{opalgebra for $T$} consists of:
+    \begin{enumerate}
+        \item An object $B$, the \textbf{codomain}
+        \item An arrow $a : A \to B$, the \textbf{underlying arrow}
+        \item A cell $\ltimes : E(j, t) \To B(a, a)$
+    \end{enumerate}
+    Satisfying the following equations:
+    \vspace{3\baselineskip}
+    \[\begin{tikzcd}[sep=large]
+        \ar[d, equal] A & \ar[l, loose, "{E(j, t)}"', ""{anchor=center, name=t1}] A \ar[d, equal] & \ar[l, loose, "{E(j, t)}"', ""{anchor=center, name=t2}] A \ar[d, equal]\\
+        \ar[d, equal] A & \ar[l, loose, "{B(a, a)}"', ""{anchor=center, name=m1}] A & \ar[l, loose, "{B(a, a)}"', ""{anchor=center, name=m2}] A \ar[d, equal]\\
+        A &{}& \ar[ll, loose, "{B(a, a)}", ""{anchor=center, name=b}] A
+        \ar[from=t1, to=m1, phantom, "\ltimes"{anchor=center}] \ar[from=t2, to=m2, phantom, "\ltimes"{anchor=center}]
+        \ar[from=2-2, to=3-2, phantom, "{\smallsmile_a(a, a)}"{anchor=center}]
+    \end{tikzcd}
+    \hspace{1em}=\hspace{1em}
+    \begin{tikzcd}[sep=large]
+        \ar[d, equal] A & \ar[l, loose, "{E(j, t)}"', ""{anchor=center,name=t1}] A \ar[d, equal] & \ar[l, loose, "{E(j, t)}"', ""{anchor=center, name=t}] A \ar[d, equal]\\
+        \ar[d, equal] A & \ar[l, loose, "{E(j, t)}"', ""{anchor=center,name=m1}] A & \ar[l, loose, "{E(t, t)}"', ""{anchor=center, name=m}] A\ar[d, equal]\\
+        \ar[d, equal] A &{}& \ar[ll, loose, "{E(j, t)}"] A \ar[d, equal]\\
+        A &{}& \ar[ll, loose, "{B(a, a)}"] A
+        \ar[from=t1, to=m1, phantom, "="{anchor=center}] \ar[from=t2, to=m2, phantom, "\dag"{anchor=center}]
+        \ar[from=2-2, to=3-2, phantom, "{\smallsmile_t(j, t)}"{anchor=center}]
+        \ar[from=3-2, to=4-2, phantom, "\ltimes"{anchor=center}]
+    \end{tikzcd}\]
+    A $T$-opalgebra morphism from $(a, \ltimes)$ to $(a', \ltimes')$ with common codomain $B$ is a cell $\alpha : a \To a'$ such that
+    \[\begin{tikzcd}
+        \ar[d, "\ltimes'"'] E(j, e) \ar[r, "\ltimes"] & B(a, a) \ar[d, "{B(a, \alpha)}"]\\
+        B(a', a') \ar[r, "{B(\alpha, a')}"'] & B(a, a')
+    \end{tikzcd}\]
+    We write $T-\Opalg_B$ for the category of $T$-opalgebras with codomain $B$ and their morphisms. This category is covariantely functorial in $B$ and $T$.
+\end{definition}
+
+\begin{remark}
+    \label{rem:ropalg_act}
+    Once again, using Corollary \ref{cor:bending} we can bend the arrows and write the extension operator as $\rho : B(1, a), E(j, t) \To B(1, a)$. This gives a link between the description as action in the multiactegory used in \cite[Theorem 6.22]{arkor2024formaltheoryrelativemonads}.
+\end{remark}
+
+We can express $T$-opalgebras in terms of loose monad morphism:
+
+\begin{lemma}
+    \label{lem:opalg_lmnd_mor}
+    Let $j : A \to E$ be an arrow and $T$ a $j$-monad. A $T$-opalgebra is an arrow $a : A \to B$ and a loose monad morphism $E(j, T) \to B(a, a)$.
+\end{lemma}
+
+\begin{proof}
+    Follows from $T$-opalgebra laws (compare the diagrams).
+\end{proof}
+
+The first immediate example of a $T$-algebra and a $T$-opalgebra is when a relative monad is induced by a relative adjunction.
+
+\begin{proposition}
+    \label{prop:radj_alg_opalg}
+    Let $\ell\dashv_jr$ a $j$-relative adjunction and $T$ the induced $j$-monad. The left $j$-adjoint forms a $T$-opalgebra and the right $j$-adjoint forms a $T$-algebra.
+\end{proposition}
+
+\begin{proof}
+    We define the two extensions $\ltimes : E(j, r\ell) \To C(\ell, \ell)$ and $\rtimes : E(j, r) \To E(r\ell, r)$ as $\flat(1, \ell)$ and $\smallfrown_r(\ell, 1)\circ\flat$ and the proofs of compatibility are as in \ref{th:radj_rmon}.
+\end{proof}
+
+As with relative adjunctions and relative monads, we can construct new algebras and opalgebras by pre and postcomposition. And as before, precomposition ("on the left") works without hypothesis while postcomposition ("on the right") requires one.
+
+\begin{proposition}
+    Let $j : A \to E$ an arrow and $T$ a $j$-monad. Let $\ell : X \to A$ an arrow. Every $T$-opalgebra induces a $T\ell$-opalgebra and every $T$-algebra induces a $T\ell$-algebra, and this assignment extends to functors
+    \begin{align*}
+        (-\circ\ell) &: T-\Opalg_C \to T\ell-\Opalg_C\\
+        (-\circ\ell) &: T-\Alg_C \to T\ell-\Alg_C
+    \end{align*}
+    natural in $T$ and $C$. This assignment is also compatible with resolutions in the following sense:
+    \[\begin{tikzcd}
+        \ar[d, "{(-\circ\ell)}"'] T-\Opalg_C & \lar \cat{Res}(T)_C \ar[d, "{(-\circ\ell)}"] \rar & T-\Alg_C \ar[d, "{(-\circ\ell)}"]\\
+        T\ell-\Opalg_C & \lar \cat{Res}(T\ell)_C \rar & T\ell-\Alg_C
+    \end{tikzcd}\]
+    Where the unlabelled  arrows are given by \ref{prop:radj_alg_opalg}
+\end{proposition}
+
+\begin{proof}
+    Given a $T$-opalgebra $(b, \ltimes)$ (resp. $T$-algebra $(d, \rtimes)$) we have a cell $E(j\ell, t\ell=\To C(b\ell, b\ell)$ (resp. $E(j\ell, d) \To E(t\ell, d)$) by precomposing $\ell$ in the both (resp. the first) arguments. The fact that these define $T\ell$-algebra and opalgebra is a simple verification analogous to the proof in \ref{prop:rmnd_precomp}. Functoriality is immediate and the diagram commutes by definition of opalgebras and algebras.
+\end{proof}
+
+\begin{proposition}
+    Let $\ell\dashv_jr$ and $T = (t, \dag, \eta)$ an $\ell$-monad. Every $T$-opalgebra induces a $rT$-opalgebra and every $T$-algebra induces a $rT$-algebra, and this assignment extends to functors
+    \begin{align*}
+        (r\circ-) &: T-\Opalg_C \to rT-\Opalg_C\\
+        (r\circ-) &: T-\Alg_C \to rT-\Alg_C
+    \end{align*}
+    natural in $T$ and $C$. This assignment is also compatible with resolutions in the following sense:
+    \[\begin{tikzcd}
+        \ar[d, "{(r\circ-)}"'] T-\Opalg_C & \lar \cat{Res}(T)_C \ar[d, "{}(r\circ-)"] \rar & T-\Alg_C \ar[d, "{(r\circ-)}"]\\
+        T\ell-\Opalg_C & \lar \cat{Res}(T\ell)_C \rar & T\ell-\Alg_C
+    \end{tikzcd}\]
+\end{proposition}
+
+\begin{proof}
+    Given a $T$-opalgebra $(a : A \to B, \ltimes)$, define a cell $E(j, rt) \simeqq D(\ell, t) \To C(a, a)$ by applying the relative adjunction. For a $T$-algebra $(e, \rtimes)$ we define $E(j, re) \To E(rt, re)$ by $\smallfrown_r\rtimes(\flat, =)$. Once again the verifications that these cells define $rT$-algebra and opalgebra are analogous to \ref{prop:rmnd_paste} and functoriality and commutativity of the diagram are immediate and by definition respectively.
+\end{proof}
+
+\begin{corollary}
+    In fact, $(r\circ-) : T-\Opalg_C \to rT-\Opalg_C$ is invertible.
+\end{corollary}
+
+We now want to assemble algebras and opalgebras into their own internal objects. To write the definition, we need a more general definition of morphism between (op)algebras. In particular, we want to remove the constraint of the (co)domain and for that we parametrize ("grade") the morphism with distributors.
+
+\begin{definition}
+    \index{$T$-algebra!graded morphism} \index{$T$-algebra!ungraded morphism}
+    Let $(e : D \to E, \rtimes), (e' : D'\to E, \rtimes')$ be $T$-algebras. A \textbf{$\vec p$-graded $T$-algebra morphism} from $(e, \rtimes)$ to $(e', \rtimes')$ is a cell
+    $$\varepsilon : E(1, e), \vec p \To E(1, e')$$
+    Such that
+    \[\begin{tikzcd}
+        \ar[d, equal] E & \ar[l, loose, "{E(1, t)}"'] A & \ar[l, loose, "{E(j, e)}"'] \ar[d, equal] D & \ar[l, loose, "p_1"'] \cdots & \ar[l, loose, "p_n"'] D' \ar[d, equal]\\
+        \ar[d, equal] E &{}& \ar[ll, loose, "{E(1, e)}"] D & \ar[l, loose, "p_1"'] \cdots & \ar[l, loose, "p_n"'] D' \ar[d, equal]\\
+        E &&{}&& \ar[llll, loose, "{E(1, e')}", ""{anchor=center,name=b}] D'
+        \ar[from=1-2, to=2-2, phantom, "\lambda"{anchor=center}] \ar[from=1-4, to=2-4, phantom, "="{anchor=center}]
+        \ar[from=2-1, to=2-5, phantom, ""{anchor=center,name=m}]
+        \ar[from=m, to=b, phantom, "\varepsilon"{anchor=center}]
+    \end{tikzcd}
+    \hspace{1em}=\hspace{1em}
+    \begin{tikzcd}
+        \ar[d, equal] E & \ar[l, loose, "{E(1, t)}"', ""{anchor=center,name=t1}] A \ar[d, equal] & \ar[l, loose, "{E(j, 1)}"', ""{anchor=center,name=t2}] \ar[d, equal] E & \ar[l, loose, "{E(1, e)}"'] D & \ar[l, loose, "p_1"'] \cdots & \ar[l, loose, "p_n"'] D' \ar[d, equal]\\
+        \ar[d, equal] E & \ar[l, loose, "{E(1, t)}", ""{anchor=center,name=m1}] A & \ar[l, loose, "{E(j, 1)}", ""{anchor=center,name=m2}] E &&& \ar[lll, loose, "{E(1, e')}", ""{anchor=center,name=m3}] D' \ar[d, equal]\\
+            E &&&&& \ar[lllll, loose, "{E(1, e')}", ""{anchor=center,name=b}] D'
+            \ar[from=1-3, to=1-6, phantom, ""{anchor=center,name=t3}]
+            \ar[from=2-1, to=2-6, phantom, ""{anchor=center,name=m}]
+            \ar[from=t1, to=m1, phantom, "="{anchor=center}] \ar[from=t2, to=m2, phantom, "="{anchor=center}] \ar[from=t3, to=m3, phantom, "\varepsilon"{anchor=center}]
+            \ar[from=m,to=b,phantom,"\lambda'"{anchor=center}]
+    \end{tikzcd}\]
+    Where $\lambda$ is as in Remark \ref{rem:ralg_act}. When $n=0$, such a morphism is \textbf{ungraded}.
+\end{definition}
+
+In particular, an ungraded $T$-algebra morphism is exactly a $T$-algebra morphism as given in Definition \ref{def:alg}.
+
+\begin{remark}
+    Once again bending the arrows (using Corollary \ref{cor:bending}), an alternative description is as a cell
+    $$\varepsilon : \vec p \To E(e, e')$$
+    Such that
+    \[\begin{tikzcd}[sep=large]
+        \ar[d, equal] A & \ar[l, loose, "{E(j, e)}"', ""{anchor=center,name=t1}] D \ar[d, equal] & \ar[l, loose, "p_1"'] \cdots & \ar[l, loose, "p_n"'] D' \ar[d, equal]\\
+        \ar[d, equal] A & \ar[l, loose, "{E(t, e)}"', ""{anchor=center,name=m1}] D &{}& \ar[ll, loose, "{E(e, e')}"] D' \ar[d, equal]\\
+        A &&& \ar[lll, loose, "{E(t, e')}", ""{anchor=center,name=b}] D
+        \ar[from=2-1, to=2-4, phantom, ""{anchor=center,name=m2}]
+        \ar[from=t1, to=m1, phantom, "\rtimes"{anchor=center}] \ar[from=1-3, to=2-3, phantom, "\varepsilon"{anchor=center}]
+        \ar[from=m2, to=b, phantom, "{\smallsmile_e(t, e')}"{anchor=center}]
+    \end{tikzcd}
+    \hspace{1em}=\hspace{1em}
+    \begin{tikzcd}[sep=large]
+        \ar[d, equal] A & \ar[l, loose, "{E(j, e)}"', ""{anchor=center,name=t1}] D \ar[d, equal] & \ar[l, loose, "p_1"'] \cdots & \ar[l, loose, "p_n"'] D' \ar[d, equal]\\
+        \ar[d, equal] A & \ar[l, loose, "{E(t, e)}"', ""{anchor=center,name=m1}] D &{}& \ar[ll, loose, "{E(e, e')}"] D' \ar[d, equal]\\
+        \ar[d, equal] A &&& \ar[lll, loose, "{E(j, e')}", ""{anchor=center,name=b}] D \ar[d, equal]\\
+        A &&& \ar[lll, loose, "{E(t, e')}", ""{anchor=center,name=bb}]
+        \ar[from=2-1, to=2-4, phantom, ""{anchor=center,name=m2}]
+        \ar[from=t1, to=m1, phantom, "\rtimes"{anchor=center}] \ar[from=1-3, to=2-3, phantom, "\varepsilon"{anchor=center}]
+        \ar[from=m2, to=b, phantom, "{\smallsmile_e(j, e')}"{anchor=center}]
+        \ar[from=b, to=bb, phantom, "\rtimes'"{anchor=center}]
+    \end{tikzcd}\]
+\end{remark}
+
+\begin{example}
+    The extension operator of a $T$-algebra $(e, \rtimes)$ is a $E(j, e)$-graded $T$-algebra morphism from $(t, \dag)$ to $(e, \rtimes)$.
+\end{example}
+
+We now axiomatize the category of algebras. Note that the following definition is stronger than the 2-categorical one, using generalized objects.
+
+\begin{definition}
+    \label{def:alg_obj}
+    Let $T$ be a relative monad. A \textbf{$T$-algebra} $(u_T : \Alg(T) \to E, \rtimes_T)$ is an \textbf{algebra object} for $T$ when
+    \begin{enumerate}
+        \item For every $T$-algebra $(e : D \to E, \rtimes)$ there is a unique arrow $\unit_{(e, \rtimes)} : D \to \Alg(T)$ such that $u_T\unit_{(e, \rtimes)} = e$ et $\rtimes_T(1, \unit_{(e, \rtimes)}) = \rtimes$.
+        \item For every graded $T$-algebra morphism $\varepsilon : E(1, e), \vec p \To E(1, e')$ there is a unique cell $\unit_\varepsilon : \Alg(T)(1, \unit_{(e, \rtimes)}), \vec p \To \Alg(1, \unit_{(e', \rtimes')})$ such that $\varepsilon = E(1, u_T), \unit_\varepsilon$.
+    \end{enumerate}
+\end{definition}
+
+Note that in the second condition we are using the fact that $u_T\unit_{(e, \rtimes)} = e$ from the first condition. Since $\rtimes_T(1, \unit_{(e, \rtimes)}) = \rtimes$, the second condition implies that there is a bijection between graded $T$-algebra morphisms $E(1, e), \vec p \To E(1, e')$ and cells $\Alg(T)(1, \unit_{(e, \rtimes)}), \vec p \To \Alg(T)(1, \unit_{(e', \rtimes')})$
+
+\begin{remark}
+    When $T$ has an algebra object, there is an arrow $f_T := \unit_{(t, \dag)} : A \to \Alg(T)$ induced by the $T$-algebra $(t, \dag)$.
+\end{remark}
+
+Algebra objects, as intended, induce resolutions:
+
+\begin{lemma}
+    \label{lem:rmnd_alg_obj_res}
+    Let $T$ be a relative monad admitting an algebra object. Then $T$ admits a resolution.
+    \[\begin{tikzcd}
+        & \Alg(T) \ar[dr, "u_T"] &\\
+        A \ar[ur, "f_T"] \ar[rr, "j"'] &{}& E
+        \ar[from=1-2, to=2-2, phantom, "\dashv"{anchor=center}]
+    \end{tikzcd}\]
+\end{lemma}
+
+\begin{proof}
+    We denote $\eta : j \To u_Tf_T$ the unit of $T$ and note that $\rtimes_T$ induces a cell $\unit_\rtimes : E(j, u_T) \To \Alg(T)(f_T, 1)$. We prove that the data of those two forms a $j$-adjunction.
+    \[
+    \begin{tikzcd}
+        \ar[d, equal] A & \ar[l, equal, ""{anchor=center,name=t1}] A \ar[d, "f_T"] & \ar[l, loose, "{E(j, u_T)}"', ""{anchor=center,name=t2}] \Alg(T) \ar[d, equal]\\
+        A & \ar[l, loose, "{E(j, u_T)}", ""{anchor=center,name=b1}] \Alg(T) & \ar[l, loose, equal, ""{anchor=center,name=b2}] \Alg(T)
+        \ar[from=t1, to=b1, phantom, "\eta"{anchor=center}] \ar[from=t2, to=b2, phantom, "\unit_\rtimes"{anchor=center}]
+    \end{tikzcd}
+    \hspace{1em}=\hspace{1em}
+    \begin{tikzcd}
+        \ar[d, equal] A & \ar[l, equal, ""{anchor=center,name=t1}] A \ar[d, equal] & \ar[l, loose, "{E(j, u_T)}"', ""{anchor=center,name=t2}] \Alg(T) \ar[d, equal] \\
+        \ar[d, equal] A & \ar[l, loose, "{E(j, u_Tf_T)}", ""{anchor=center,name=m1}] A & \ar[l, loose, "{E(j, u_T)}"', ""{anchor=center,name=m2}] \Alg(T) \ar[d, equal] \\
+        A &{}& \ar[ll, loose, "{E(j, u_T)}"] \Alg(T)
+        \ar[from=t1, to=m1, phantom, "\eta"{anchor=center}] \ar[from=t2, to=m2, phantom, "="{anchor=center}]
+        \ar[from=2-2, to=3-2, phantom, "{E(j, u_T),\unit_{\rtimes_T}}"]
+    \end{tikzcd}
+    \]
+    $$
+    =\hspace{1em}
+    \begin{tikzcd}
+        \ar[d, equal] A & \ar[l, equal, ""{anchor=center,name=t1}] A \ar[d, equal] & \ar[l, loose, "{E(j, u_T)}"', ""{anchor=center,name=t2}] \Alg(T) \ar[d, equal]\\
+        \ar[d, equal] A & \ar[l, loose, "{E(j, u_Tf_T)}", ""{anchor=center,name=m1}] A & \ar[l, loose, "{E(j, u_T)}", ""{anchor=center,name=m2}] \Alg(T) \ar[d, equal]\\
+        A &{}& \ar[ll, loose, "{E(j, u_T)}"] \Alg(T)
+        \ar[from=t1, to=m1, phantom, "\eta"{anchor=center}] \ar[from=t2, to=m2, phantom, "="{anchor=center}]
+        \ar[from=2-2, to=3-2, phantom, "{\rtimes_T(j, 1)}"{anchor=center}]
+    \end{tikzcd}
+    \hspace{1em}=\hspace{1em}
+    \begin{tikzcd}
+        \ar[d, equal] A & \ar[l, loose, "{E(j, u_T)}"', ""{anchor=center, name=t}] E \ar[d, equal]\\
+        A & \ar[l, loose, "{E(j, f_T)}"', ""{anchor=center, name=b}] E
+        \ar[from=t, to=b, phantom, "="{anchor=center}]
+    \end{tikzcd}
+    $$
+    Where the first equality is by bending $f_T$, the second by definition of $\unit_{\rtimes_T}$ and the last is the unit law of $(u_T, \rtimes_T)$. Then, using the definition of $\unit_{\rtimes_T}$ we have
+    \[\begin{tikzcd}[sep=large]
+        \ar[d, equal] E & \ar[l, loose, "{E(1 ,u_Tf_T)}"', ""{anchor=center,name=t1}] A \ar[d, equal] & \ar[l, equal, ""{anchor=center,name=t2}] A \ar[d, equal]\\
+        \ar[d, equal] E & \ar[l, loose, "{E(1, u_Tf_T)}", ""{anchor=center,name=m1}] A & \ar[l, loose, "{E(j, u_Tf_T)}", ""{anchor=center,name=m2}] A \ar[d, equal]\\
+        A &{}& \ar[ll, loose, "{E(1, u_Tf_T)}"]
+        \ar[from=t1, to=m1, phantom, "="{anchor=center}] \ar[from=t2, to=m2, phantom, "\eta"{anchor=center}]
+        \ar[from=2-2, to=3-2, phantom, "{E(1, u_T),\unit_{\rtimes_T}}"{anchor=center}]
+    \end{tikzcd}
+    \hspace{1em}=\hspace{1em}
+    \begin{tikzcd}[sep=large]
+        \ar[d, equal] E & \ar[l, loose, "{E(1 ,u_Tf_T)}"', ""{anchor=center,name=t1}] A \ar[d, equal] & \ar[l, equal, ""{anchor=center,name=t2}] A \ar[d, equal]\\
+        \ar[d, equal] E & \ar[l, loose, "{E(1, u_Tf_T)}", ""{anchor=center,name=m1}] A & \ar[l, loose, "{E(j, u_Tf_T)}", ""{anchor=center,name=m2}] A \ar[d, equal]\\
+        E &{}& \ar[ll, loose, "{E(1, u_Tf_T)}"] A
+        \ar[from=t1, to=m1, phantom, "="{anchor=center}] \ar[from=t2, to=m2, phantom, "\eta"{anchor=center}]
+        \ar[from=2-2, to=3-2, phantom, "\rtimes_T"{anchor=center}]
+    \end{tikzcd}
+    \]
+    Bending $t$ and using $\rtimes_T(1, f_T) = \dag$, the corresponding cell is
+    \[\begin{tikzcd}[sep=large]
+        \ar[d, equal] A & \ar[l, equal, ""{anchor=center,name=t}] A \ar[d, equal]\\
+        \ar[d, equal] A & \ar[l, loose, "{E(j, j)}", ""{anchor=center,name=mt}] A \ar[d, equal]\\
+        \ar[d, equal] A & \ar[l, loose, "{E(j, u_Tf_T)}", ""{anchor=center,name=mb}] A \ar[d, equal]\\
+        A & \ar[l, loose, "{E(t, u_Tf_T)}", ""{anchor=center,name=b}] A
+        \ar[from=t, to=mt, phantom, "\smallfrown_j"{anchor=center}]
+        \ar[from=mt, to=mb, phantom, "{E(j, \eta)}"{anchor=center}]
+        \ar[from=mb, to=b, phantom, "{\rtimes_T(1, f_T)}"{anchor=center}]
+    \end{tikzcd}
+    \hspace{1em}=\hspace{1em}
+    \begin{tikzcd}[sep=large]
+        \ar[d, equal] A & \ar[l, equal, ""{anchor=center,name=t}] A \ar[d, equal]\\
+        \ar[d, equal] A & \ar[l, loose, "{E(j, j)}", ""{anchor=center,name=mt}] A \ar[d, equal]\\
+        \ar[d, equal] A & \ar[l, loose, "{E(j, t)}", ""{anchor=center,name=mb}] A \ar[d, equal]\\
+        A & \ar[l, loose, "{E(t, t)}", ""{anchor=center, name=b}] A
+        \ar[from=t, to=mt, phantom, "\smallfrown_j"{anchor=center}]
+        \ar[from=mt, to=mb, phantom, "{E(j, \eta)}"{anchor=center}]
+        \ar[from=mb, to=b, phantom, "\dag"{anchor=center}]
+    \end{tikzcd}
+    \hspace{1em}=\hspace{1em}
+    \begin{tikzcd}
+        \ar[d, equal]A & \ar[l, equal, ""{anchor=center,name=t}] A \ar[d, equal]\\
+        A & \ar[l, loose, "{E(t, t)}", ""{anchor=center,name=b}] A
+        \ar[from=t, to=b, phantom, "\smallfrown_t"{anchor=center}]
+    \end{tikzcd}\]
+    Bending $t$ once again, we get $1_{E(1, u_Tf_T)}$. Since $1_T$ is an algebra endomorphism on $(t, \dag)$, by uniqueness the cell above s induced by $1_{\Alg(T)}$ by postcomposing $1_{E(1, u_T)}$; hence $f_T\dashv_ju_T$. Finally, the operator is given by
+    \[\begin{tikzcd}[sep=huge]
+        \ar[d, equal] A & \ar[l, loose, "{E(j, u_Tf_T)}"', ""{anchor=center,name=t}] A \ar[d, equal]\\
+        \ar[d, equal] A & \ar[l, loose, "{\Alg(T)(f_T, f_T)}", ""{anchor=center,name=m}] A \ar[d, equal]\\
+        A & \ar[l, loose, "{E(u_Tf_T, u_Tf_T)}", ""{anchor=center,name=b}] A
+        \ar[from=t, to=m, phantom, "\unit_{\rtimes_T}"{anchor=center}]
+        \ar[from=m, to=b, phantom, "{\smallfrown_{u_T}(f_T, f_T)}"{anchor=center}]
+    \end{tikzcd}
+    \hspace{1em}=\hspace{1em}
+    \begin{tikzcd}[sep=huge]
+        \ar[d, equal] A & \ar[l, equal] A \ar[d, "f_T"] & \ar[l, equal] A \ar[d, equal] & \ar[l, loose, "{E(j, u_Tf_T)}"', ""{anchor=center,name=t}] A \ar[d, equal]\\
+        \ar[d, equal] A & \ar[l, loose, "{\Alg(T)(f_T, 1)}", ""{anchor=center,name=m1}] \Alg(T) \ar[d, equal] & \ar[l, loose, "{\Alg(T)(1, f_T)}"] A & \ar[l, loose, "{E(j, u_Tf_T)}", ""{anchor=center,name=m2}] A \ar[d, equal]\\
+        A & \ar[l, loose, "{E(u_Tf_T, u_T)}", ""{anchor=center,name=b}] \Alg(T) &{}& \ar[ll, loose, "{\Alg(T)(1, f_T)}"] A
+        \ar[from=t, to=m2, phantom, "="{anchor=center}]
+        \ar[from=m1, to=b, phantom, "{\smallfrown_{u_T}(f_T, 1)}"] \ar[from=2-3, to=3-3, phantom, "{\unit_{\rtimes_T}(1, f_T)}"{anchor=center}]
+    \end{tikzcd}\]
+    Using the definition of $\unit_{\rtimes_T}$ and $\rtimes_T(1, f_T) = \dag$, we get
+    \[
+        \begin{tikzcd}[sep=huge]
+        \ar[d, equal] A & \ar[l, equal] A \ar[d, "f_T"] & \ar[l, equal] A \ar[d, equal] & \ar[l, loose, "{E(j, u_Tf_T)}"', ""{anchor=center,name=t}] A \ar[d, equal]\\
+        \ar[d, equal] A & \ar[l, loose, "{\Alg(T)(f_T, 1)}"] \Alg(T) \ar[d, "u_T"] & \ar[l, loose, "{\Alg(T)(1, f_T)}"] A & \ar[l, loose, "{E(j, u_Tf_T)}", ""{anchor=center,name=m2}] A \ar[d, equal]\\
+        A & \ar[l, loose, "{E(u_Tf_T, 1)}", ""{anchor=center,name=b}] E &{}& \ar[ll, loose, "{\Alg(T)(1, u_Tf_T)}"] A
+        \ar[from=t, to=m2, phantom, "="{anchor=center}]
+        \ar[from=2-3, to=3-3, phantom, "{\rtimes_T(1, f_T)}"{anchor=center}]
+    \end{tikzcd}
+    \hspace{1em}=\hspace{1em} 
+    \begin{tikzcd}
+        \ar[d, equal] A & \ar[l, loose, "{E(j, t)}"', ""{anchor=center,name=t}] A \ar[d, equal]\\
+        A & \ar[l, loose, "{E(t, t)}", ""{anchor=center,name=b}] A
+        \ar[from=t, to=b, phantom, "\dag"{anchor=center}]
+    \end{tikzcd}\]
+    Therefore, we have a resolution $f_T\dashv_ju_T$ of $T$.
+\end{proof}
+
+We now state the main result of the subsection.
+
+\begin{theorem}
+    \label{th:partial_adj_radj_rmnd}
+    Let $j : A \to E$ an arrow. The functor $\obslash : \cat{RAdj}_L(j) \to \cat{RMnd}(j)^\op$ admits a partial right adjoint section defined on the $j$-monads admitting algebra objects.
+    $$\begin{tikzcd}[sep=huge]
+        \cat{RAdj}_L(j) \ar[r, bend left=15, "\obslash_j", ""{anchor=center, name=t}] & \ar[l, bend left=15, dashed, "{f_{(-)}\dashv_ju_{(-)}}", ""{anchor=center,name=b}] \cat{RMnd}(j)^\op
+        \ar[from=t, to=b, adj]
+    \end{tikzcd}$$
+    And a left morphism is strict if and only if its transpose is the identity $j$-monad morphism.
+\end{theorem}
+
+\begin{proof}
+    It suffices to construct a section on objects and on homsets. Using \ref{lem:rmnd_alg_obj_res}, we get a partial assignment on objects. Let $T$ and $T'$ be $j$-monads such that $T$ admits a resolution $\ell\dashv_jr$ and $T'$ admits an algebra algebra object. We construct an inverse to
+    $$(\obslash_j)_{(\ell\dashv_jr), (f_{T'}\dashv_ju_{T'})} : \cat{RAdj}_L(j)(\ell\dashv_jr, f_{T'}\dashv_ju_{T'}) \to \cat{RMnd}(j)(T', T)$$
+    Since $r$ and $t$ form $T$-algebras, a $j$-monad morphism $\tau : T' \to T$ induces a $T$-algebra structure on each. The universal property of %FIXME: finir
+\end{proof}
+
+\begin{corollary}
+    Let $j : A \to E$ an arrow. The partial functor $u_{(-)} : \cat{RMnd}(j)^\op \to \underline{\bb X}/E$ is fully faithful.
+\end{corollary}
+
+\begin{proof}
+    Apply Lemma \ref{lem:rradj_ff} and Theorem \ref{th:partial_adj_radj_rmnd} and compose the functors.
+\end{proof}
+
+\begin{corollary}
+    \label{cor:rmnd_res_term}
+    For $T$ a $j$-relative monad admitting an algebra object, the resolution $f_T\dashv_ju_T$ is terminal in $\cat{Res}(T)$.
+\end{corollary}
+
+\begin{proof}
+    Let $\ell\dashv_jr$ be another resolution of $T$. By the Theorem \ref{th:partial_adj_radj_rmnd}, strict morphisms from $\ell\dashv_jr$ to $f_T\dashv_ju_T$ correspond to the identity morphism on $T$, hence are unique.
+\end{proof}
+
+Finally, algebra objects for the trivial $j$-monad always exist, since they are trivial:
+
+\begin{proposition}
+    \label{prop:triv_rmnd_alg}
+    Let $j : A \to E$ an arrow, then $(\id_E, 1_{E(j, 1)})$ exhibits an algebra object for the trivial $j$-monad.
+\end{proposition}
+
+\begin{proof}
+    Let $(e : D \to E, \rtimes)$ a $j$⁻algebra. $e$ exhibits a unique arrow $\unit_{(e, \rtimes)} : D \to E$. Moreover, every graded algebra morphism factors through the unity on $E$.
+\end{proof}
+
+We shift to opalgebra objects and introduce the according notions.
+
+\begin{definition}
+    \index{$T$-opalgebra!graded morphism} \index{$T$-opalgebra!ungraded morphism}
+    Let $(a : A \to B, \ltimes)$ and $(a : A \to B', \ltimes')$ be $T$-opalgebras. A \textbf{$\vec p$-graded $T$-opalgebra morphism} from $(a, \ltimes)$ to $(a', \ltimes')$ is a cell
+    $$\alpha : \vec p, B(1, a) \To B'(1, a')$$
+    Such that
+    \[\begin{tikzcd}
+        \ar[d, equal] B' & \ar[l, loose, "p_1"'] \cdots & \ar[l, loose, "p_n"'] B \ar[d, equal] & \ar[l, loose, "{B(1, a)}"'] A & \ar[l, loose, "{E(j, t)}"'] A \ar[d, equal] \\
+        \ar[d, equal] & \ar[l, loose, "p_1"'] \cdots & \ar[l, loose, "p_n"'] B &{}& \ar[ll, loose, "{B(1, a)}"] A \ar[d, equal]\\
+        B' &&&& \ar[llll, loose, "{B'(1, a')}"]
+        \ar[from=1-2, to=2-2, phantom, "="{anchor=center}] \ar[from=1-4, to=2-4, phantom, "\rho"{anchor=center}]
+        \ar[from=2-1, to=2-5, phantom, ""{anchor=center,name=m}] \ar[from=3-1, to=3-5, phantom, ""{anchor=center,name=b}]
+        \ar[from=m, to=b, phantom, "\alpha"{anchor=center}]
+    \end{tikzcd}
+    \hspace{1em}=\hspace{1em}
+    \begin{tikzcd}
+        \ar[d, equal] B' & \ar[l, loose, "p_1"'] \cdots & \ar[l, loose, "p_n"'] B & \ar[l, loose, "{B(1, a)}"'] B \ar[d, equal] & \ar[l, loose, "{E(j, t)}"', ""{anchor=center,name=t2}] A \ar[d, equal] \\
+        \ar[d, equal] B' &&& \ar[lll, loose, "{B'(1, a')}"] A & \ar[l, loose, "{E(j, t)}", ""{anchor=center,name=m2}] A \ar[d, equal]\\
+        B' &&&& \ar[llll, loose, "{B'(1, a')}"]
+        \ar[from=1-1, to=1-4, phantom, ""{anchor=center,name=t1}] \ar[from=2-1, to=2-4, phantom, ""{anchor=center,name=m1}]
+        \ar[from=2-1, to=2-5, phantom, ""{anchor=center,name=m3}] \ar[from=3-1, to=3-5, phantom, ""{anchor=center,name=b}]
+        \ar[from=t1, to=m1, phantom, "\alpha"{anchor=center}] \ar[from=t2, to=m2, phantom, "="{anchor=center}]
+        \ar[from=m3, to=b, phantom, "\rho'"{anchor=center}]
+    \end{tikzcd}\]
+    Where $\rho$ is as in Remark \ref{rem:ropalg_act}. When $n=0$, such a morphism is \textbf{ungraded}.
+\end{definition}
+
+\begin{example}
+    As for $T$-algebras, the extension operator $\ltimes : E(j, t) \To B(a, a)$ is a $(B(1, a), E(j, 1))$-graded $T$-opalgebra morphism from $(t, \dag)$ to $(a, \ltimes)$.
+\end{example}
+
+\begin{definition}
+    \label{def:opalg_obj}
+    Let $T$ be a relative monad. A \textbf{$T$-opalgebra} $(k_T : A \to \Opalg(T), \ltimes_T)$ is an \textbf{opalgebra object} for $T$ when
+    \begin{enumerate}
+        \item For every $T$-opalgebra $(a : A \to B, \ltimes)$ there is a unique arrow $[]_{(a, \ltimes)} : \Opalg(T) \to B$ such that $[]_{(a, \ltimes)}k_T= a$ et $[]_{(a, \ltimes)}\ltimes_T = \ltimes$.
+        \item For every graded $T$-opalgebra morphism $\alpha : \vec p, B(1, a) \To B'(1, a')$ there is a unique cell $[]_\alpha : \vec p, \Opalg(T)(1, []_{(a, \ltimes)}) \To B'(1, []_{(a', \ltimes')})$ such that $\alpha = []_\alpha(1, k_T)$.
+    \end{enumerate}
+\end{definition}
+
+\begin{remark}
+    When $T$ has an opalgebra object, there is an arrow $v_T := []_{(t, \dag)} : \Opalg(T) \to E$ induced by the $T$-opalgebra $(t, \dag)$.
+\end{remark}
+
+Opalgebras also induce resolutions:
+
+\begin{lemma}
+    Let $T$ be a relative monad admitting an opalgebra object. Then $T$ admits a resolution.
+    \[\begin{tikzcd}
+        & \Opalg(T) \ar[dr, "v_T"] &\\
+        A \ar[ur, "k_T"] \ar[rr, "j"'] &{}& E
+        \ar[from=1-2, to=2-2, phantom, "\dashv"{anchor=center}]
+    \end{tikzcd}\]
+\end{lemma}
+
+\begin{proof}
+    We denote $\eta : j \To v_Tk_T$ the unit of $T$ and note that $\ltimes$ induces a cell $[]_{\ltimes_T} : \Opalg(T)(1, k_t), E(j, v_T)\To \Opalg(T)(1, 1)$. We prove that the data of those two forms a $j$-adjunction. First, using respectively the definition of $[]_{\ltimes_T}$, bending $v_T$, $v_t\ltimes_T=\dag$ and the unit law for $T$, we have:
+    \[\begin{tikzcd}[sep=large]
+        \ar[d, equal] A & \ar[l, equal, ""{anchor=center,name=t1}] A \ar[d, "k_T"'] & \ar[l, loose, "{E(j, v_Tk_T)}"', ""{anchor=center,name=t2}] A \ar[d, equal]\\
+        A & \ar[l, loose, "{E(j, v_T)}", ""{anchor=center,name=b1}] \Opalg(T) & \ar[l, loose, "{\Opalg(T)(1, k_T)}", ""{anchor=center,name=b2}] A
+        \ar[from=t1, to=b1, phantom, "\eta"{anchor=center}] \ar[from=t2, to=b2, phantom, "{[]_{\ltimes_T}(1, k_T)}"{anchor=center}]
+    \end{tikzcd}
+    \hspace{1em}=\hspace{1em}
+    \begin{tikzcd}[sep=large]
+        \ar[d, equal] A & \ar[l, equal, ""{anchor=center,name=t1}] A \ar[d, "k_T"'] & \ar[l, loose, "{E(j, v_Tk_T)}"', ""{anchor=center,name=t2}] A \ar[d, equal]\\
+        A & \ar[l, loose, "{E(j, v_T)}", ""{anchor=center,name=b1}] \Opalg(T) & \ar[l, loose, "{\Opalg(T)(1, k_T)}", ""{anchor=center,name=b2}] A
+        \ar[from=t1, to=b1, phantom, "\eta"{anchor=center}] \ar[from=t2, to=b2, phantom, "\ltimes_T"{anchor=center}]
+    \end{tikzcd} \]
+    \[\begin{tikzcd}[sep=huge]
+        \ar[d, equal] A & \ar[l, loose, "{E(j, t)}"', ""{anchor=center, name=t}] A \ar[d, equal]\\
+        \ar[d, equal] A & \ar[l, loose, "{\Opalg(T)(k_T, k_T)}"', ""{anchor=center, name=mt}] A \ar[d, equal]\\
+        \ar[d, equal] A & \ar[l, loose, "{E(t, t)}", ""{anchor=center,name=mb}] A \ar[d, equal]\\
+        A & \ar[l, loose, "{E(j, t)}", ""{anchor=center,name=b}]
+        \ar[from=t, to=mt, phantom, "\ltimes_T"{anchor=center}]
+        \ar[from=mt, to=mb, phantom, "{\smallfrown_{v_T}(k_T, k_T)}"{anchor=center}]
+        \ar[from=mb, to=b, phantom, "{E(\eta, 1)}"{anchor=center}]
+    \end{tikzcd}
+    \hspace{1em}=\hspace{1em}
+    \begin{tikzcd}[sep=huge]
+        \ar[d, equal] A & \ar[l, loose, "{E(j, t)}"', ""{anchor=center,name=t}] A \ar[d, equal]\\
+        \ar[d, equal] A & \ar[l, loose, "{E(t, t)}", ""{anchor=center,name=m}] A \ar[d, equal]\\
+        A & \ar[l, loose, "{E(j, t)}", ""{anchor=center,name=b}] A
+        \ar[from=t, to=m, phantom, "\dag"{anchor=center}]
+        \ar[from=m, to=b, phantom, "{E(\eta, 1)}"{anchor=center}]
+    \end{tikzcd}
+    \hspace{1em}=\hspace{1em}
+    \begin{tikzcd}[sep=huge]
+        \ar[d, equal] A & \ar[l, loose, "{E(j, t)}"', ""{anchor=center,name=t}] A \ar[d, equal]\\
+        A & \ar[l, loose, "{E(j, t)}", ""{anchor=center,name=b}] A
+        \ar[from=t, to=b, phantom, "="{anchor=center}]
+    \end{tikzcd}\]
+    Then, bending $k_T$, using the definition of $[]_{\ltimes_T}$ and the unit law for the opalgebra $(k_T, \ltimes_T)$, we have:
+    \[\begin{tikzcd}[sep=huge]
+        \ar[d, equal] A & \ar[l, loose, "{\Opalg(T)(k_T, 1)}"', ""{anchor=center,name=t}] \Opalg(T) \ar[d, equal]\\
+        \ar[d, equal] A & \ar[l, loose, "{E(j, v_T)}"', ""{anchor=center,name=m}] \Opalg(T) \ar[d, equal]\\
+        A & \ar[l, loose, "{\Opalg(T)(k_T, 1)}", ""{anchor=center,name=b}] \Opalg(T)
+        \ar[from=t, to=m, phantom, "\eta"{anchor=center}]
+        \ar[from=m, to=b, phantom, "{[]_{\ltimes_T}}"{anchor=center}]
+    \end{tikzcd}
+    \hspace{1em}=\hspace{1em}
+    \begin{tikzcd}[sep=huge]
+        \ar[d, equal] A & \ar[l, equal] A \ar[d, "k_T"'] & \ar[l, equal] A \ar[d, equal] & \ar[l, loose, "{\Opalg(T)(k_T, 1)}"', ""{anchor=center,name=t3}] \Opalg(T) \ar[dd, equal] \\
+        \ar[d, equal] A & \ar[l, loose, "{\Opalg(T)(k_T, 1)}"', ""{anchor=center,name=mt1}] \Opalg(T) \ar[d, equal] & \ar[l, loose, "{\Opalg(T)(1, k_T)}"', ""{anchor=center,name=mt2}] A \ar[d, equal] & \\
+        \ar[d, equal] A & \ar[l, loose, "{E(j, v_T)}"', ""{anchor=center,name=mb1}] \Opalg(T) \ar[d, equal] & \ar[l, loose, "{\Opalg(T)(1, k_T)}", ""{anchor=center,name=mb2}] A & \ar[l, loose, "{\Opalg(T)(k_T, 1)}", ""{anchor=center,name=mb3}] \Opalg(T) \ar[d, equal] &&\\
+        A & \ar[l, loose, "{\Opalg(T)(k_T, 1)}", ""{anchor=center,name=b1}] \Opalg(T) && \ar[ll, loose, equal, ""{anchor=center, name=b2}] \Opalg(T)
+        \ar[from=t3, to=mb3, phantom, "="{anchor=center}]
+        \ar[from=mt1, to=mb1, phantom, "\eta"{anchor=center}] \ar[from=mt2, to=mb2, phantom, "="{anchor=center}]
+        \ar[from=mb1, to=b1, phantom, "{[]_{\ltimes_T}}"{anchor=center}] \ar[from=3-3, to=b2, phantom, "\smallsmile_{k_T}"{anchor=center}]
+    \end{tikzcd}\]
+    \[=\hspace{1em}
+    \begin{tikzcd}[sep=huge]
+        \ar[d, equal] A & \ar[l, equal, ""{anchor=center,name=t1}] A \ar[d, equal] & \ar[l, loose, "{\Opalg(T)(k_T, 1)}"', ""{anchor=center,name=t2}] \Opalg(T) \ar[dd, equal]\\
+        \ar[d, equal] A & \ar[l, loose, "{E(j, t)}", ""{anchor=center,name=mt}] A \ar[d, equal] & \\
+        \ar[d, equal] A & \ar[l, loose, "{\Opalg(T)(k_T, k_T)}"', ""{anchor=center,name=mb1}] A & \ar[l, loose, "{\Opalg(T)(k_T, 1)}"', ""{anchor=center,name=mb2}] \Opalg(T) \ar[d, equal]\\
+        A && \ar[ll, loose, "{\Opalg(T)(k_T, 1)}", ""{anchor=center,name=b}] \Opalg(T)
+        \ar[from=t1, to=mt, phantom, "\eta"{anchor=center}] \ar[from=t2, to=mb2, phantom, "="{anchor=center}]
+        \ar[from=mt, to=mb1, phantom, "\ltimes_T"{anchor=center}]
+        \ar[from=3-2, to=b, phantom, "{\smallsmile_{k_T}(k_T, 1)}"{anchor=center}]
+    \end{tikzcd}
+    \hspace{1em}=\hspace{1em}
+    \begin{tikzcd}[sep=huge]
+        \ar[d, equal] A & \ar[l, loose, "{\Opalg(T)(k_T, 1)}"', ""{anchor=center,name=t}] \Opalg(T) \ar[d, equal]\\
+        A & \ar[l, loose, "{\Opalg(T)(k_T, 1)}", ""{anchor=center,name=b}] \Opalg(T)
+        \ar[from=t, to=b, phantom, "="{anchor=center}]
+    \end{tikzcd}\]
+    Hence $k_T \dashv_j v_T$. The operator is given by
+    \[\begin{tikzcd}[sep=large]
+        \ar[d, equal] A & \ar[l, loose, "{E(j, v_T)}"', ""{anchor=center,name=t1}] \Opalg(T) \ar[d, equal] & \ar[l, loose, "{\Opalg(T)(1, k_T)}"', ""{anchor=center,name=t2}] A\ar[d, equal] \\
+        A & \ar[l, loose, "{\Opalg(T)(k_T, 1)}", ""{anchor=center,name=b1}] \Opalg(T) & \ar[l, loose, "{E(v_T, v_Tk_T)}", ""{anchor=center,name=b2}] A
+        \ar[from=t1, to=b1, phantom, "{[]_{\ltimes_T}}"{anchor=center}] \ar[from=t2, to=b2, phantom, "{\smallfrown_{v_T}(1, k_T)}"{anchor=center}]
+    \end{tikzcd}
+    \hspace{1em}=\hspace{1em}
+    \begin{tikzcd}[sep=huge]
+        \ar[d, equal] A & \ar[l, loose, "{E(j, t)}"', ""{anchor=center,name=t}] A \ar[d, equal]\\
+        \ar[d, equal] A & \ar[l, loose, "{\Opalg(T)(k_T, v_T)}"', ""{anchor=center,name=m}] A \ar[d, equal]\\
+        A & \ar[l, loose, "{E(v_Tk_T, v_Tk_T)}", ""{anchor=center,name=b}] A
+        \ar[from=t, to=m, phantom, "\ltimes_T"{anchor=center}] \ar[from=m, to=b, phantom, "{\smallfrown_{v_T}(k_T, k_T)}"{anchor=center}]
+    \end{tikzcd}
+    \hspace{1em}=\hspace{1em}
+    \begin{tikzcd}[sep=huge]
+        \ar[d, equal] A & \ar[l, loose, "{E(j, t)}"', ""{anchor=center,name=t}] A \ar[d, equal]\\
+        A & \ar[l, loose, "{E(t, t)}", ""{anchor=center,name=b}] A
+        \ar[from=t, to=b, phantom, "="{anchor=center}]
+    \end{tikzcd}\]
+    Therefore, $k_T\dashv_jv_T$ is a resolution of $T$.
+\end{proof}
+
+\begin{corollary}
+    Let $T$ be a relative monad admitting an opalgebra object $(k_T, \ltimes_T)$. Then $\ltimes_T$ is invertible.
+\end{corollary}
+
+\begin{proof}
+    Since $k_T\dashv_jv_T$, $\Opalg(T)(k_T, k_T) \simeqq E(j, v_Tk_T) = E(j, t)$ and by construction this cell is $\ltimes_T$.
+\end{proof}
+
+\begin{theorem}
+    \label{th:partial_radj_adj_rmnd}
+    $\oslash_j : \cat{RAdj}_R(j) \to \cat{Rmnd}(j)$ admits a partial left adjoint section defined the $j$-monads admitting opalgebra objects
+    \[\begin{tikzcd}[sep=huge]
+        \cat{RAdj}_R(j) \ar[r, bend right=15, "\oslash_j"', ""{anchor=center,name=b}] & \ar[l, dashed, bend right=15, "{k_{(-)}\dashv_jv_{(-)}}"', ""{anchor=center, name=t}] \cat{RMnd}(j)^\op
+        \ar[from=t, to=b, adj]
+    \end{tikzcd}\]
+    And a right morphism is strict if and only if its transpose is the identity $j$-monad morphism.
+\end{theorem}
+
+\begin{proof}
+    %TODO
+\end{proof}
+
+\begin{corollary}
+    The partial functor $k_{(-)} : \cat{RMnd}(j) \to A/\underline{\bb X}$ is fully faithful.
+\end{corollary}
+
+\begin{proof}
+    Apply Lemma \ref{lem:lradj_ff} and Theorem \ref{th:partial_radj_adj_rmnd} and compose the functors.
+\end{proof}
+
+\begin{corollary}
+    \label{cor:rmnd_res_init}
+    For $T$ a relative monad admitting an opalgebra object, the resolution $k_T \dashv v_T$ is initial in $\cat{Res}(T)$.
+\end{corollary}
+
+\begin{proof}
+    Let $\ell\dashv_jr$ be another resolution of $T$. By the Theorem \ref{th:partial_radj_adj_rmnd}, strict morphisms from $k_T\dashv_jv_T$ to $\ell\dashv_jr$ correspond to the identity morphism on $T$, hence are unique.
+\end{proof}
+
+Combining Corollaries \ref{cor:rmnd_res_termi} and \ref{cor:rmnd_res_init}, we get
+
+\begin{corollary}
+    For $T$ a relative monad admitting both an algebra and an opalgebra object, there is a unique arrow $i_T : \Opalg(T) \to \Alg(T)$ rendering the following diagrams commutative:
+    \[\begin{tikzcd}
+        {\Opalg(T)} \ar[r, "i_T"] & {\Alg(T)}\\
+        A \ar[u, "k_T"] \ar[ur, "f_T"']
+    \end{tikzcd}
+    \hspace{3em}
+    \begin{tikzcd}
+        {\Opalg(T)} \ar[r, "i_T"] \ar[dr, "u_T"'] & {\Alg(T)} \ar[d, "u_T"]\\
+                                                  & E
+    \end{tikzcd}\]
+\end{corollary}
+
+\begin{proof}
+    The arrow is $[]_{f_T\dashv_ju_T}$ or equivalently $\unit_{k_T\dashv_jv_T}$.
+\end{proof}
+
+As for algebra, we can describe opalgebra objects for the trivial relative monad... when the root is faithful.
+
+\begin{proposition}
+    \label{prop:triv_rmnd_opalg}
+    For $j : A\to E$ a fully faithful arrow, $(1_A, \ltimes_j := \smallfrown_j^{-1})$ forms an opalgebra object for the trivial $j$-monad.
+\end{proposition}
+
+\begin{proof}
+    By Lemma \ref{lem:opalg_lmnd_mor}, $(1_A, \ltimes_j)$ forms a $j$-opalgebra. Moreover, it is an opalgebra object: for a $j$-opalgebra $(a, \ltimes)$, define $[]_{(a, \ltimes)} := a$ and for a $\vec p$-graded algebra morphism $\alpha$, define $[]_\alpha := \alpha$. This data satisfies the required properties, thus $(1_A, \ltimes_j)$ is an opalgebra object.
+\end{proof}
+
+When the root isn't fully faithful however, the situation is a bit more complicated. And interesting: if an opalgebra object exists, it may be non trivial but its underlying arrow still has several useful "surjectivity" properties. This has yet to be researched, as \cite{arkor2024formaltheoryrelativemonads} notes. The article however states that, in $\Dist$, it is known that an opalgebra object is exactly the \textit{full image factorization} of the root into a bijective-on-objects arrow followed by a fully faithful arrow.
+
+$\Dist$ also has the nice property of being \textit{exact}. We will not dive too deep on exact virtual equipments and refer the interested reader to \cite{arkor2024nervetheoremrelativemonads}. However, it implies that every loose monad is induced by an arrow and in that case we can reduce the search for an opalgebra object to the trivial monad:
+
+\begin{proposition}
+    Let $T$ be a $j$-monad such that $E(j, T)$ is induced by $\ell : A\to C$. The isomorphism $E(j, T) \simeqq C(\ell, \ell)$ induces a bijection between $T$-opalgebras and $\ell$-opalgebras and their graded morphisms. $T$ hence admits an opalgebra object if and only if the trivial $\ell$-monad admits one, in which case we have a commutative diagram
+    \[\begin{tikzcd}
+        \Opalg(\ell) \ar[rr, "\simeqq"] && \Opalg(T)\\
+        & \ar[ul, "k_\ell"] A \ar[ur, "k_T"'] &\\
+    \end{tikzcd}\]
+\end{proposition}
+
+\begin{proof}
+    By Lemma \ref{lem:opalg_lmnd_mor}, $T$-opalgebras are arrows $a : A \to B$ equipped with a loose monad morphism $E(j, T) \To B(a, a)$ while $\ell$-opalgebras are arrows $a : A \to B$ with $C(\ell, \ell) \To B(a, a)$. Therefore, the isomorphism $E(j, T) \simeqq C(\ell, \ell)$ induces a bijection between opalgebras and their graded morphisms and the opalgebras object satisfy the same universal property, hence are isomorphic.
+\end{proof}
+
+\subsection{Idempotent relative monads}
+
+
+\subsection{Relative monadicity}
+\label{subsec:rel_monadicity}
+
+In this subsection, we follow \cite{arkor2025relativemonadicity} and establish a monadicity theorem for relative monads with dense root. Since one of the hypothesis is the creation of pointwise extension, we have a strict and a non-strict version.
+
+
+
+
+
+
 
 \section{(Co)presheaves objects and (co)completions}
 \label{sec:presheaves}
@@ -1968,7 +2959,6 @@ We can study the relationship between a $\PP$-presheaf and a $\PP$-copresheaf ob
 \end{proof}
 
 %FIXME: à enlever en compensant au dessus
-\newpage
 This adjunction also restricts through inclusions of class of horizontal cells $\PP\subseteq\PP'$:
 
 \begin{theorem}
@@ -2724,6 +3714,7 @@ Restricting to a class of unary weights, we get
 <++>
 
 \section{Instantiations}
+\label{sec:instances}
 
 \subsection{Enriched categories}
 \label{subsec:enriched}
