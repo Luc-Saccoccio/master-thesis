@@ -19,7 +19,7 @@
 
 \usepackage{todonotes} %TODO: enlever une fois fini
 
-\makeindex
+\makeindex[intoc]
 
 % Fonts
 \setmainfont{fbb}
@@ -247,6 +247,7 @@ We introduce in a self-contained way the methods of formal category theory from 
 No prerequisites on formal category theory are needed, as the framework is entirely described in the following pages. However, a solid knowledge of category theory (as studied in \cite{riehl_context} for example) is advised, and a basic knowledge of enriched categories (as studied in \cite{kelly}) and $\infty$-categories (an informal introduction suffices, we mention \cite{groth2015shortcourseinftycategories} and the first chapters of \cite{cnossen} but many more exist) is a plus for Section \ref{sec:instances}.
 
 \underline{What is not in this thesis:} We avoid the discussion of the many flavours of skew multicategory/multiactegory used in \cite{arkor2024formaltheoryrelativemonads} and enhanced in \cite{rogers26monoid} as they are not needed for most of the results (and this thesis was already too long). The central results in \cite{arkor2024nervetheoremrelativemonads} do not appear as they require exact virtual equipments. The formal theory of fibered categories also do not appear, due to a lack of time. Finally, (co)ends do not appear: when I started working on the formalization of coends, I stumbled upon \cite{coend_nickel}. I chose to pursue other results, and avidly await Jana Nickel and Nathanael Arkor's article on the subject. %FIXME
+\todo{À réecrire en partie}
 
 \subsection{Conventions}
 
@@ -462,7 +463,7 @@ Moreover, we know distributors on small categories can be composed using a coend
     In the cases where we only verify the property for $l = 0$ and $f = \id$ (resp. $n = 0$ and $g = \id$), we speak of \textbf{left-opcartesian cell} (resp. right-) and \textbf{left-composite} (resp. right-), noted $\odot_L$ (resp. $\odot_R$).
 \end{definition}
 
-The universal property gives an identity or a composite (eventually left- or right-biased) and associativity (idem) up to an inversible cell; when the formers exists. In the case of the composite, asking for equality is too strict. In the case of identity however, there's often a 'canonical choice'.
+The universal property gives an identity or a composite (eventually left- or right-biased) and associativity (idem) up to an invertible cell; when the formers exists. In the case of the composite, asking for equality is too strict. In the case of identity however, there's often a 'canonical choice'.
 
 \begin{definition}
     \index{virtual double category!normal}
@@ -546,7 +547,7 @@ Moreover, when considering distributors, it is possible to restrict them: from a
 \end{definition}
 
 \begin{remark}
-    Once again, the universal property gives restriction up to an inversible cell.
+    Once again, the universal property gives restriction up to an invertible cell.
 \end{remark}
 
 When the restrictions exists, we have a useful result:
@@ -877,6 +878,7 @@ However, this is not the only interaction between arrows and (co)limits:
 \end{definition}
 
 \begin{remark}
+    \label{rem:co_lim_creation}
     Unravelling the definition, an arrow $g : X \to Z$ non-strictly creates $\vec p$-colimits if, for $f : Z \to W, \vec p : Z \dfrom \cdots \dfrom Y$ such that $\colim^{\vec p}gf$ exists we have:
     \begin{enumerate}
         \item For every $\vec p$-cocone $(c, \lambda)$ for $f$, the $\vec p$-cocone $(gc, g\lambda)$ is a $\vec p$-colimit of $gf$ if and only if $(c, \lambda)$ is colimiting.
@@ -884,6 +886,21 @@ However, this is not the only interaction between arrows and (co)limits:
     \end{enumerate}
     The property is unique and strict if for a colimiting $\vec p$-cocone $(d, \lambda)$, there is a unique colimiting $\vec p$-cocone $(c, \alpha)$ such that $d = gc$ and $\lambda = g\alpha$.
 \end{remark}
+
+Note that, when the relevant (co)limits exist, strict and non-strict creation imply preservation. Assuming conservativity, we have the converse:
+
+\begin{definition}
+    An arrow $g : Y \to Z$ is \textbf{conservative} if for each parallel pair $f_1, f_2 : X \to Y$ and cell $\phi : f_1 \To f_2$, invertibility of $g\phi$ implies invertibility of $\phi$.
+\end{definition}
+
+\begin{lemma}
+    \label{lem:cons_create}
+    Let $p : Y \dfrom \cdots \dfrom Z$ a weight and $g : W \to X$. For any arrow $f : Y \to W$, if $W$ admits the colimit $\colim^{\vec p}f$ and $g$ preserves it, then $g$ non-strictly creates $\colim^{\vec p}gf$. Dually, for $f : Z \to Z$, if $\colim^{\vec p}f$ exists and $g$ preserves it, $g$ non-strictly creates $\colim^{\vec p}gf$.
+\end{lemma}
+
+\begin{proof}
+    By conservativity, a cell $\phi : \colim^{\vec p}f \To w$ is invertible if and only if $g\phi : g\colim^{\vec p}f \simeq \colim^{\vec p}gf \To gw$ is. Therefore, the associated $p$-cocone is colimiting if and only if $g\phi$ is.
+\end{proof}
 
 \begin{definition}
     \index{colimit!$j$-absolute} \index{limit!$j$-absolute}
@@ -1175,6 +1192,12 @@ Absoluteness also characterises full faithfulness of weighted colimits:
 
 \begin{lemma}
     Let $p : Y \dfrom Z, f : Y \to X$ such that $\colim^pf$ exists. Any three of the following conditions implies the fourth
+    \begin{enumerate}
+        \item $p$ is dense.
+        \item $f$ is fully faithful.
+        \item $\colim^{\vec p}f$ is $f$-absolute.
+        \item $\colim^{\vec p}f$ is fully faithful.
+    \end{enumerate}
 \end{lemma}
 
 \begin{proof}
@@ -1309,8 +1332,6 @@ Intuitively, we have two possible definitions for adjunctions: either we use an 
 
 We will see later (Corollary \ref{cor:adj_defs_same}) that the two notions coincide. We delay the definition of an adjunction, which we will get as a special case of a relative adjunction.
 
-% TODO: texte de transition
-
 \begin{definition}
     \index{adjunction!relative}\index{root}\index{adjoint!right-}\index{adjoint!left-}
     \begin{wrapfigure}{r}{0.5\textwidth}
@@ -1325,8 +1346,8 @@ We will see later (Corollary \ref{cor:adj_defs_same}) that the two notions coinc
     \begin{itemize}
         \item A \textbf{root} $j : A \to E$.
         \item A \textbf{(relative) left adjoint} $\ell : A \to C$.
-        \item A \textbf{(relatif) right adjoint} $r : C \to E$.
-        \item An isomorphism $\sharp : C(\ell, 1) \simeq E(j, r) : \flat$. %FIXME: not great looking with Libertinus :c
+        \item A \textbf{(relative) right adjoint} $r : C \to E$.
+        \item An isomorphism $\sharp : C(\ell, 1) \simeq E(j, r) : \flat$.
     \end{itemize}
 \end{definition}
 
@@ -1351,7 +1372,7 @@ The root $j$ breaks the symmetry of the adjunction. Dualizing, we get a differen
         \item A \textbf{coroot} $i : Z \to V$.
         \item A \textbf{relative left-coadjoint} $\ell : X \to V$.
         \item A \textbf{relative right-coadjoint} $r : Z \to X$.
-        \item An isomorphism $\sharp : V(\ell, i) \simeq X(1, r) : \flat$. %FIXME: not great looking with Libertinus :c
+        \item An isomorphism $\sharp : V(\ell, i) \simeq X(1, r) : \flat$.
     \end{itemize}
 \end{definition}
 
@@ -1502,7 +1523,6 @@ We also recover a conservation of (co)limits.
     \end{itemize}
 \end{proposition}
 
-% FIXME: ajouter lemmes justifiant les isos
 \begin{proof}
     Let $j: A \to E$ be a root and $\ell \dashv_j r$ a $j$-adjunction.
     \begin{itemize}
@@ -1626,7 +1646,7 @@ Thankfully \textit{for left morphisms}, the cell is uniquely determined by the a
 
 \begin{proof}
     Given a morphism $c : C \to C'$ such that $r=r'c$, we define $\lambda$ as the following cell
-    \[\begin{tikzcd}
+    \[\begin{tikzcd}[sep=large]
         \ar[d, equal] A & \ar[l, loose, "{C(\ell, 1)}"', ""{anchor=center, name=t1}] \ar[d, equal] C & \ar[l, loose, "{C'(c, 1)}"', ""{anchor=center, name=t2}] C' \ar[dd, equal]\\
         \ar[d, equal] A & \ar[l, loose, "{E(j, r)}"', ""{anchor=center, name=m}] C \ar[d, equal] & \\
         \ar[d, equal] A & \ar[l, loose, "{C'(\ell', c)}"', ""{anchor=center, name=b1}] C & \ar[l, loose, "{C'(c, 1)}"', ""{anchor=center, name=b2}] C' \ar[d, equal]\\
@@ -1680,6 +1700,32 @@ As noted above, unicity of $\rho$ is not immediate and requires an hypothesis on
     \end{tikzcd}\]
     The cell above uniquely determines $E(j, \rho)$. When $j$ is dense, this uniquely determines $\rho$ by \ref{lem:res_dense_fid}.
 \end{proof}
+
+We can elaborate on this result:
+
+\begin{proposition}
+    \label{prop:radj_rm_iff_abslext}
+    Let $j : A \to E$ a dense arrow and let $\ell\dashv_jr$ a $j$-adjunction. Consider arrow $c : C \to C'$ and $r' : C' \to E$, a cell $\rho : r \To r'c$ and define $\ell' := c\ell$.
+    \[\begin{tikzcd}
+        &C'\ar[ddr, "r'", bend left, ""{anchor=center,name=a}]&\\
+        &\ar[u, "c"{description}] C \ar[dr, "r"]\\
+        A \ar[uur, bend left, "\ell'"] \ar[ur, "\ell"] \ar[rr, "j"'] && E
+        \ar[from=2-2, to=a, Rightarrow, "\rho", shorten=2mm]
+    \end{tikzcd}\]
+    Then $\rho$ exhibits $r'$ as the $j$-absolute left extension $c \plext r$ if and only if $\ell'\dashv_jr'$ and $(c, \rho)$ is a right morphism of $j$-adjunctions.
+\end{proposition}
+
+\begin{proof}
+    First note that
+    $$C'(\ell', 1) \simeqq C'(c\ell, 1) \simeq C(\ell, 1) \odot C'(c, 1) \simeqq E(j, r) \odot C'(c, 1)$$
+    Suppose that $\rho$ exhibits $r'$ as the $j$-absolute left extension $c \plext r$. Then, using $j$-absoluteness:
+    $$C'(\ell', 1) \simeqq E(j, r) \odot C'(c, 1) \simeqq E(j, c\plext r)$$
+    Therefore $\ell'\dashv_jr'$ by Lemma \ref{lem:dense_abs_iff_iso} and $(c, \rho)$ is a right morphism. Conversely:
+    $$E(j, r') \simeqq C'(\ell', 1) \simeqq E(j, r) \odot C'(c, 1)$$
+    Once again by Lemma \ref{lem:dense_abs_iff_iso}, $\rho$ hence exhibits $r'$ as the $j$-absolute left extension $c\plext r$.
+\end{proof}
+
+<++>
 
 Most of the properties regarding resolution of relative monads will rely on the intersection of the two notions, which we introduce here.
 
@@ -1978,6 +2024,7 @@ And paste a relative monad along a left adjoint:
         \cat{RAdj}_L(j)^\op \ar[r, "\obslash_{j}"'] & \cat{RMnd}(j) & \ar[l, "\oslash_{j}"] \cat{RAdj}_R(j)
     \end{tikzcd}\]
 \end{proposition}
+\todo{flèche cassée???}
 
 \begin{proof}
     We define the extension and unit operators as below
@@ -2415,7 +2462,7 @@ Algebra objects, as intended, induce resolutions:
     Therefore, we have a resolution $f_T\dashv_ju_T$ of $T$.
 \end{proof}
 
-We now state the main result of the subsection.
+We now state the main result of the Subsection.
 
 \begin{theorem}
     \label{th:partial_adj_radj_rmnd}
@@ -2432,6 +2479,7 @@ We now state the main result of the subsection.
     $$(\obslash_j)_{(\ell\dashv_jr), (f_{T'}\dashv_ju_{T'})} : \cat{RAdj}_L(j)(\ell\dashv_jr, f_{T'}\dashv_ju_{T'}) \to \cat{RMnd}(j)(T', T)$$
     Since $r$ and $t$ form $T$-algebras, a $j$-monad morphism $\tau : T' \to T$ induces a $T$-algebra structure on each. The universal property of %FIXME: finir
 \end{proof}
+\todo{finir et expliquer}
 
 \begin{corollary}
     Let $j : A \to E$ an arrow. The partial functor $u_{(-)} : \cat{RMnd}(j)^\op \to \underline{\bb X}/E$ is fully faithful.
@@ -2630,6 +2678,7 @@ Opalgebras also induce resolutions:
 \begin{proof}
     %TODO
 \end{proof}
+\todo{commencer, finir et expliquer}
 
 \begin{corollary}
     The partial functor $k_{(-)} : \cat{RMnd}(j) \to A/\underline{\bb X}$ is fully faithful.
@@ -2694,21 +2743,198 @@ $\Dist$ also has the nice property of being \textit{exact}. We will not dive too
     By Lemma \ref{lem:opalg_lmnd_mor}, $T$-opalgebras are arrows $a : A \to B$ equipped with a loose monad morphism $E(j, T) \To B(a, a)$ while $\ell$-opalgebras are arrows $a : A \to B$ with $C(\ell, \ell) \To B(a, a)$. Therefore, the isomorphism $E(j, T) \simeqq C(\ell, \ell)$ induces a bijection between opalgebras and their graded morphisms and the opalgebras object satisfy the same universal property, hence are isomorphic.
 \end{proof}
 
-\subsection{Idempotent relative monads}
-
-
 \subsection{Relative monadicity}
 \label{subsec:rel_monadicity}
 
-In this subsection, we follow \cite{arkor2025relativemonadicity} and establish a monadicity theorem for relative monads with dense root. Since one of the hypothesis is the creation of pointwise extension, we have a strict and a non-strict version.
+In this subsection, we follow \cite{arkor2025relativemonadicity} and establish a monadicity theorem for relative monads with dense root. Since one of the hypothesis is the creation of pointwise extension, we have a strict and a non-strict version. Monadicity theorems characterize when a functor is \textit{monadic}, that is when it admits a left adjoint and the adjunction is induced by the monad it induces. We relativize the notions:
+
+\begin{definition}
+    \label{def:monadic}
+    \index{arrow!$j$-monadic}
+    An arrow $r : D \to E$ is strictly (resp. non-strictly) \textbf{$j$-monadic} if it admits a left $j$-adjoint and the induced $j$-monad admits an algebra object such that the comparison arrow $\unit_{\ell\dashv_jr} : D \to \Alg(T)$ is an isomorphism (resp. equivalence)
+    \[\begin{tikzcd}
+        \ar[dr, "r"'] D \ar[rr, "\unit_{\ell\dashv_jr}"] && \Alg(T) \ar[dl, "u_T"]\\
+                                                         & E &
+    \end{tikzcd}\]
+\end{definition}
+
+Remark that, because of Proposition \ref{prop:radj_rm_iff_abslext}, $u_T$ is a certain colimit. Therefore, if $r$ creates this limit we get the inverse of $\unit_{\ell\dashv_jr}$ as the lifting. The theorem will therefore not construct but detect since we have to assume the existence of an algebra object. In most contexts however, this is not a problem (for instance, in categories enriched in a closed complete monoidal category).
+
+We first establish of few results on the creation of (co)limits for algebra objects:
+
+\begin{proposition}
+    \label{prop:uT_create_jabs_colim}
+    Let $j : A \to E$ an arrow and $T$ a $j$-monad admitting an algebra object $(u_T, \rtimes_T)$. Then $u_T : \Alg(T) \to E$ strictly creates $j$-absolute colimits.
+\end{proposition}
+
+\begin{proof}
+    Let $p : Y \dfrom \cdots \dfrom Z$ a weight, and $f : Y \to \Alg(T)$ an arrow such that a $j$-absolute colimit $\colim^{\vec p}u_Tf, \lambda)$ exists. $u_Tf$ exhibits a $T$-algebra with the cell $\rtimes_T(1, f) : E(j, u_Tf) \To E(t, u_Tf)$. First, we construct a cell $\rtimes : E(j, \colim^{\vec p}u_Tf) \To E(t, \colim^{\vec p}u_Tf)$ such that $\colim^{\vec p}u_Tf$ is a $T$-algebra:
+    By $j$-absoluteness, the cell is left-opcartesian:
+    \[\begin{tikzcd}[sep=large]
+        \ar[d, equal] A & \ar[l, loose, "{E(j, u_Tf)}"', ""{anchor=center,name=t}] Y \ar[d, equal] & \ar[l, loose, "p_1"'] \cdots & \ar[l, loose, "p_m"'] Z \ar[d, equal]\\
+        \ar[d, equal] A & \ar[l, loose, "{E(j, u_Tf)}"', ""{anchor=center,name=m}] Y & {} & \ar[ll, loose, "{E(u_Tf, \colim^{\vec p}u_Tf)}"'] Z \ar[d, equal]\\
+        A &&& \ar[lll, loose, "{E(j, \colim^{\vec p}u_Tf)}", ""{anchor=center,name=b}] Z
+        \ar[from=t, to=m, phantom, "="{anchor=center}] \ar[from=1-3, to=2-3, phantom, "\lambda"{anchor=center}]
+        \ar[from=2-1, to=2-4, phantom, ""{name=1}] \ar[from=1, to=b, phantom, "{\smallsmile_{u_Tf}(j, \colim^{\vec p}u_Tf)}"{anchor=center}]
+    \end{tikzcd}\]
+    Therefore we have a unique factorization
+    \[\begin{tikzcd}[sep=large]
+        \ar[d, equal] A & \ar[l, loose, "{E(j, u_Tf)}"', ""{anchor=center,name=t}] Y \ar[d, equal] & \ar[l, loose, "p_1"'] \cdots & \ar[l, loose, "p_n"'] Z \ar[d, equal]\\
+        \ar[d, equal] A & \ar[l, loose, "{E(t, u_Tf)}"', ""{anchor=center,name=m1}] Y &{}& \ar[ll, loose, "{E(u_Tf, \colim^{\vec p}u_Tf)}"'] Z \ar[d, equal]\\
+        A &&& \ar[lll, loose, "{E(t, \colim^{\vec p}u_Tf)}"] Z
+        \ar[from=t, to=m1, phantom, "\rtimes_T"{anchor=center}] \ar[from=1-3, to=2-3, phantom, "\lambda"{anchor=center}]
+        \ar[from=2-1, to=2-4, phantom, ""{anchor=center,name=m2}] \ar[from=3-1, to=3-4, phantom, ""{anchor=center,name=b}]
+        \ar[from=m2, to=b, phantom, "{\smallsmile_{u_Tf}(t, \colim^{\vec p}u_Tf)}"{anchor=center}]
+    \end{tikzcd}
+    \hspace{1em}=\hspace{1em}
+    \begin{tikzcd}[sep=large]
+        \ar[d, equal] A & \ar[l, loose, "{E(j, u_Tf)}"', ""{anchor=center,name=t}] Y \ar[d, equal] & \ar[l, loose, "p_1"'] \cdots & \ar[l, loose, "p_m"'] Z \ar[d, equal]\\
+        \ar[d, equal] A & \ar[l, loose, "{E(j, u_Tf)}"', ""{anchor=center,name=m}] Y & {} & \ar[ll, loose, "{E(u_Tf, \colim^{\vec p}u_Tf)}"'] Z \ar[d, equal]\\
+        \ar[d, equal] A &&& \ar[lll, loose, "{E(j, \colim^{\vec p}u_Tf)}", ""{anchor=center,name=b}] Z \ar[d, equal]\\
+        A &&& \ar[lll, loose, "{E(t, \colim^{\vec p}u_Tf)}", ""{anchor=center,name=bb}] Z
+        \ar[from=t, to=m, phantom, "="{anchor=center}] \ar[from=1-3, to=2-3, phantom, "\lambda"{anchor=center}]
+        \ar[from=2-1, to=2-4, phantom, ""{name=1}] \ar[from=1, to=b, phantom, "{\smallsmile_{u_Tf}(j, \colim^{\vec p}u_Tf)}"{anchor=center}]
+        \ar[from=b, to=bb, phantom, "\rtimes"{anchor=center}]
+    \end{tikzcd}\]
+    The induced cell $\rtimes$ makes $\colim^{\vec p}u_Tf$ into a $T$-algebra, where the laws follow from those of $\rtimes_T$. Moreover, this equation above makes $\lambda$ into a $\vec p$-graded morphism, and $\rtimes$ is the unique algebra structure for which $\lambda$ is such a morphism. \\
+    The universal property of $\Alg(T)$ induces a unique arrow $\colim^{\vec p}f : Y \to \Alg(T)$ and a cell $\lambda' : \vec p \To \Alg(T)(f, \colim^{\vec p}f)$ satisfying
+    \begin{align*}
+        \colim^{\vec p}u_Tf &= u_T\colim^{\vec p}f & \rtimes &= \rtimes_T(1, \colim^{\vec p}f) & \lambda &= u_T\lambda'
+    \end{align*}
+    Using Remark \ref{rem:co_lim_creation}, this corresponds to the strict version of condition (a) where uniqueness follows by uniqueness of $\rtimes$. We conclude by showing that $(\colim^{\vec p}f, \lambda')$ is a colimiting $\vec p$-cocone. We want a bijection between cells $\vec q \To \Alg(T)(\colim^{\vec p}f, 1)$ and $\vec p, \vec q \To \Alg(T)(f, 1)$ by pasting. This is equivalent to having a bijection between $T$-algebra morphisms $\vec q \To E(\colim^{\vec p}u_Tf, u_T)$ and $\vec p, \vec q \To E(f, u_T)$ by pasting, and this is given by the fact $(\colim^{\vec p}u_Tf, \lambda)$ is a colimiting $\vec p$-cocone.
+\end{proof}
+
+For limits, the situation is simpler.
+
+\begin{proposition}
+    \label{prop:uT_create_lim}
+    Let $j : A\to E$ an arrow and $T$ a $j$-monad admitting an algebra object. Then $u_T : \Alg(T) \to E$ strictly creates limits.
+\end{proposition}
+
+\begin{proof}
+    Let $p : Y \dfrom \cdots \dfrom Z$ a weight, $f : Z \to \Alg(T)$ an arrow such that there exists a limiting $\vec p$-cone $(\lim^{\vec p}u_Tf, \mu)$. The arrow $\lim^{\vec p}u_Tf$ forms a $T$-algebra by equipping it with th cell
+    $$\rtimes: E(j, \lim{}^{\vec p}u_Tf) \simeqq \vec p\rext (j, u_Tf) \xRightarrow[]{\vec p \rext \rtimes_T(1, f)} \vec p\rext E(t, u_Tf) \simeqq E(t, \lim{}^{\vec p}u_Tf)$$
+    The isomorphisms are constructed by the universal property of the limit, and the laws follows from the algebra laws of $\rtimes_T$. $\rtimes$ is the unique algebra structure such that $\mu : \vec p \To E(\lim{}^{\vec p}u_Tf, u_Tf)$ is a $\vec p$-graded algebra morphism from $\lim{}^{\vec p}u_Tf$ to $u_Tf$. Therefore the $\vec p$-cone $(\lim{}^{\vec p}u_Tf, \mu)$ lifts uniquely through $u_T$ as $\vec p$-cone $(\lim{}^{\vec p}f, \mu')$ and the fact this $\vec p$-cone is limiting is proven the same way as before.
+\end{proof}
+
+To prove the monadicity theorem, we need a lemma regarding pointwise extensions.
+
+\begin{lemma}
+    \label{lem:plext_res_retract}
+    Let $j : A\to E$ a dense arrow, $T$ a $j$-monad and $\ell\dashv_jr$ a resolution of $T$. If $r$ strictly creates $j$-absolute left extension of $r$ then every morphism of resolution with domain $(\ell\dashv_jr)$ admits a retraction.
+\end{lemma}
+
+\begin{proof}
+    Let $c : (\ell\dashv_jr) \to (\ell'\dashv_jr')$ a morphism of resolutions of $T$. $r' \simeqq c\plext r$ by Proposition \ref{prop:radj_rm_iff_abslext} and this pointwise left extension is $j$-absolute so is strictly created by $r$. There is therefore a unique pair $(d' : C' \to C, \eta : 1_c\To dc)$ such that $rd=r', r\eta=1_r$. Furthermore, $\eta$ exhibits $d$ as the left extension $c\plext 1_C$. The identity cell $1_r$ trivially exhibits $r$ as the $j$-absolute extension $1_C\plext r$, therefore is strictly created by $r$. This gives a pair $(x : C \to C, \xi : 1_C\To x$ such that $rx=r, r\xi=1_r$. $(1_C, 1_{1_C})$ is such a pair but so is $(dc, \eta)$ hence $dc = 1_C$. This implies that $d$ is a morphism of resolutions and a retraction in the category of resolution.
+\end{proof}
+
+A special case is when the category of resolutions admits a terminal object. Note that the terminal object need not be an algebra object.
+
+\begin{corollary}
+    Let $j : A\to E$ a dense arrow, $T$ a $j$-monad admitting a terminal resolution $f \dashv_ju$ and $\ell\dashv_jr$ another resolution. If $r$ strictly creates $j$-absolute left pointwise extension of $r$, $\ell\dashv_jr$ is a terminal resolution of $T$?
+\end{corollary}
+
+\begin{proof}
+    By Lemma \ref{lem:plext_res_retract}, the unique morphism $(\ell\dashv_jr)\to(f\dashv_ju$ is a split monomorphism, therefore an isomorphism.
+\end{proof}
+
+We can now prove the (strict) monadicity theorem.
+
+\begin{theorem}
+    \label{th:strict_monadicity}
+    Let $j : A \to E$ a dense arrow. An arrow $r : D \to E$ is strictly $j$-monadic if and only if $r$ admits a left adjoint, the induced monad admits an algebra object and $r$ strictly creates $j$-absolute pointwise left extensions of $r$.
+\end{theorem}
+
+\begin{proof}
+    If $r$ is strictly $j$-monadic, then by definition it admits a left adjoint for which the induced monad admits an algebra object. By Proposition \ref{prop:uT_create_jabs_colim}, $r$ being the composite of an isomorphism and $u_T$ implies that it strictly creates $j$-absolute pointwise left extensions of $r$.\\
+    Conversely, $r$ and $u_T$ both strictly create $j$-absolute pointwise left extensions of $r$, so $\unit_{\ell\dashv_jr}$ and $\unit_{\ell\dashv_jr}\plext 1_D$ exhibit $D$ and $\Alg(T)$ as retracts of one another by Lemma \ref{lem:plext_res_retract}, hence $\unit_{\ell\dashv_jr}$ is invertible.
+\end{proof}
+
+It is often more convenient to consider the cases where $r$ strictly creates $j$-absolute colimits, but the sharper result of the theorem will be useful.
+
+\begin{corollary}
+    Let $j : A \to E$ a dense arrow. An arrow $r : D \to E$ is strictly $j$-monadic if and only if $r$ admits a left adjoint, the induced monad admits an algebra object and $r$ strictly creates $j$-absolute colimits.
+\end{corollary}
+
+Using the monadicity theorem, we can compare algebra object for monads with different roots.
+
+\begin{proposition}
+    Let $j : A \to E, j' : E \to I$ arrows and $T$ a $j'j$-monad admitting an algebra object. If $j'$ is dense, then $u_T$ is strictly $j'$ monadic if and only if it admits a left $j'$-adjoint and the induced $j'$-monad admits an algebra object.
+\end{proposition}
+
+\begin{proof}
+    We prove the if direction, the only if direction being evident. Every $j'$-absolute pointwise left extension of $r$ is a $j'j$-absolute pointwise left extension of $r$, precomposing with $j$ by Proposition \ref{prop:radj_precomp}. Since $u_T$ strictly creates $j'j$-absolute pointwise left extensions of $r$, it strictly creates $j'$-absolute pointwise left extensions of $r$. We conclude by Theorem \ref{th:strict_monadicity}.
+\end{proof}
+
+We now study the non-strict version of the theorem. First, we establish analogues of Propositions \ref{prop:uT_create_jabs_colim} and \ref{prop:uT_create_lim}.
+
+\begin{lemma}
+    \label{lem:uT_cons}
+    Let $j : A \to E$ an arrow and $T$ a $j$-monad admitting an algebra object. Then $u_T$ is conservative.
+\end{lemma}
+
+\begin{proof}
+    Let $f_1, f_2 : Z\to\Alg(T)$ be arrows and $\phi : f_1\To f_2$ such that $u_T\phi$ is invertible. $u_T\phi$ being an algebra morphism, so is its inverse, which factors through $u_T$ by the universal property of $\Alg(T)$.
+\end{proof}
+
+\begin{proposition}
+    \label{prop:uT_nscreate_co_lim}
+    Let $j : A \to E$ an arrow and $T$ a $j$-monad admitting an algebra object. Then $u_T$ non-strictly creates limits and $j$-absolute colimits.
+\end{proposition}
+
+\begin{proof}
+    We combine Lemmas \ref{lem:cons_create} and \ref{lem:uT_cons}, and Propositions \ref{prop:uT_create_jabs_colim} and \ref{prop:uT_create_lim}.
+\end{proof}
+
+The proof of the non-strict monadicity theorem will be very similar to the one in the strict case. In fact it \textit{almost} suffices to relax the creation of limits. The core lemma of the proof is also relaxed:
+
+\begin{lemma}
+    \label{lem:plext_res_pseudo_retract}
+    Let $j : A \to E$ be a dense arrow, $T$ a $j$-monad and $\ell\dashv_jr$ a resolution such that $r$ non-strictly creates $j$-absolute pointwise left extensions of $r$. Then, for every arrow $c : C \to C'$ such that the diagram on the left is pseudo-commutative, it admits a pseudo-retraction $c\plext 1_C$ rendering the diagram on the right pseudocommutative:
+    \[\begin{tikzcd}
+        & \ar[dd, "c"{description}] C \ar[dr, "r"] &\\
+        A \ar[ur, "\ell"] \ar[dr, "\ell'"'] &{}& E\\
+        & C' \ar[ur, "r'"']
+        \ar[from=2-1, to=2-2, phantom, "\simeqq"{anchor=center}] \ar[from=2-2, to=2-3, phantom, "\simeqq"{anchor=center}]
+    \end{tikzcd}
+    \hspace{3em}
+    \begin{tikzcd}
+        & C \ar[dr, "r"] &\\
+        A \ar[ur, "\ell"] \ar[dr, "\ell'"'] &{}& E\\
+        & \ar[uu, "c\plext 1_C"{description}] C' \ar[ur, "r'"']
+        \ar[from=2-1, to=2-2, phantom, "\simeqq"{anchor=center}] \ar[from=2-2, to=2-3, phantom, "\simeqq"{anchor=center}]
+    \end{tikzcd}\]
+\end{lemma}
+
+\begin{proof}
+    Using $\ell'\simeqq c\ell$, we have $c\ell\dashv_jr'$. By density of $j$, there is a unique right morphism $(c, \rho) : (\ell\dashv_jr) \to c\ell\dashv_jr'$. Hence by Proposition \ref{prop:radj_rm_iff_abslext}, $\rho$ exhibits $r'$ as the $j$-absolute pointwise left extension $c\plext r$. Replacing the equalities with isomorphisms in the proof of Lemma \ref{lem:plext_res_retract}, we get the result.
+\end{proof}
+
+\begin{theorem}
+    \label{th:non_strict_monadicity}
+    Let $j : A \to E$ a dense arrow. An arrow $r : D \to E$ is non-strictly $j$-monadic if and only if $r$ admits a left adjoint, the induced monad admits an algebra object and $r$ non-strictly creates $j$-absolute pointwise left extensions of $r$.
+\end{theorem}
+
+\begin{proof}
+    If $r$ is non-strictly $j$-monadic then it admits a left $j$-adjoint for which the induced $j$-monad has an algebra object. By Proposition \ref{prop:uT_nscreate_co_lim}, $r$ being the composite of an equivalence and $u_T$ implies that it non-strictly creates $j$-absolute pointwise left extensions of $r$.\\
+    Conversely, $r$ and $u_T$ both non-strictly create $j$-absolute pointwise left extensions of $r$, so $\unit_{\ell\dashv_jr}$ and $\unit_{\ell\dashv_jr}\plext 1_D$ exhibit $D$ and $\Alg(T)$ as pseudo-retracts of one another by Lemma \ref{lem:plext_res_pseudo_retract}, hence $\unit_{\ell\dashv_jr}$ is an equivalence.
+\end{proof}
+
+We also get the corollary and the proposition regarding algebras with different roots, the proof are similar and therefore not included.
+
+\begin{corollary}
+    Let $j : A \to E$ a dense arrow. An arrow $r : D \to E$ is non-strictly $j$-monadic if and only if $r$ admits a left adjoint, the induced monad admits an algebra object and $r$ non-strictly creates $j$-absolute colimits.
+\end{corollary}
+
+\begin{proposition}
+    Let $j : A \to E, j' : E \to I$ be arrows such that $j'$ is dense. A non-strictly $j'j$-monadic arrow $r : D \to E'$ is non-strictly $j'$-monadic if and only if it admits a left $j'$-adjoint and the induced $j'$-monad admits an algebra object.
+\end{proposition}
 
 
+\subsection{Idempotent relative monads}
 
 
-
-
-
-\section{(Co)presheaves objects and (co)completions}
+\section{(Co)presheaves objects and Isbell Duality}
 \label{sec:presheaves}
 
 \subsection{Presheaves in a virtual equipment}
@@ -2906,7 +3132,6 @@ We can study the relationship between a $\PP$-presheaf and a $\PP$-copresheaf ob
     \index{Isbell Duality}
     \label{th:isbell_duality}
     Let $A$ be an object $\PP$-admissible and $\PP$-coadmissible. Suppose that $\psh\PP A(1, \yo_A^\PP)$ and $\copsh\PP A(\oy_A^\PP, 1)$ are in $\PP^\cong$. Then there's an adjunction
-    %FIXME repletion ?
     \[\begin{tikzcd}
         \ca{O} : \psh\PP A \ar[r, bend left=15, ""{name=O, below}] & \ar[l, bend left=15, ""{name=Spec, above}] \copsh\PP A : \Spec \ar[from=O, to=Spec, adj]
     \end{tikzcd}\]
@@ -2958,7 +3183,6 @@ We can study the relationship between a $\PP$-presheaf and a $\PP$-copresheaf ob
     \end{align*}
 \end{proof}
 
-%FIXME: à enlever en compensant au dessus
 This adjunction also restricts through inclusions of class of horizontal cells $\PP\subseteq\PP'$:
 
 \begin{theorem}
@@ -3523,6 +3747,7 @@ We establish of few properties that will be used when linking cocompletions and 
     %FIXME: exact or cocontinuous ?
     Every rift lift through $\coc\Phi A(\coce\Phi A, 1)$ is $\Phi$-exact, and we conclude by \ref{lem:lifting_abs_iff_lift_respect}.
 \end{proof}
+\todo{exact ou cocontinue ? typo dans \cite{arkor2026presheavescocompletionsformalcategory} ?}
 
 \begin{proposition}
     Let $\coce\Phi A : A \to \coc\Phi A$ a $\Phi$-cocompletion. For $f : \coc\Phi A \to X$, the following are equivalent:
@@ -3711,7 +3936,6 @@ Restricting to a class of unary weights, we get
     Apply respectively Proposition \ref{prop:psh_colims} and Theorem \ref{th:psh_cocomp}.
 \end{proof}
 
-<++>
 
 \section{Instantiations}
 \label{sec:instances}
@@ -3719,7 +3943,8 @@ Restricting to a class of unary weights, we get
 \subsection{Enriched categories}
 \label{subsec:enriched}
 
-%FIXME: Rewrite everything
+\todo{tout à refaire ou presque}
+
 Many constructions rely on the existence of additional structure of the homsets of categories: additive or linear categories, dg-categories, 2-categories... It is possible to axiomatize this approach: we \textit{enrich} a category. Although it is possible, as was done in the article \cite{arkor2026presheavescocompletionsformalcategory}, to enrich a category in a virtual bicategory (or even a virtual double category), we choose to stick to monoidal categories (as was done in \cite{arkor2024formaltheoryrelativemonads}) as it is more common although less general.
 
 Most of the theory of enriched category theory can be found in \cite{kelly}.
@@ -3868,6 +4093,8 @@ We want to explicitly describe right lifts of $\cat{V}$-distributors.
 
 \subsection{Internal and locally internal categories}
 \label{subsec:internal}
+
+\todo{focus sur les préfaisceaux -> loc internes, faciles à construire}
 
 We refer to \cite[Chapter 8]{borceux1} and \cite[Chapter 2]{johnstone} for an elementary treatment, and to \cite{betti} for a formal treatment. Overall, this subsection is heavily influenced by the work of Renato Betti, especially \cite{bettiwalters_closedbicats}, \cite{bettiwalters_completness}, \cite{betti}. We first use the characterization of internal categories as internal monads in the bicategories of spans.
 
@@ -4035,11 +4262,11 @@ When considering $\bSpan(\cat Set)$-categories (e.g. small categories), this is 
 \subsection{\texorpdfstring{$\infty$}{∞}-catégories}
 
 \cite{riehl_verity}
-\todo{problème des two-sided isofibrations discretes dans A\backslash Fib(K)/B}
-\todo{remplacer par les \texorpdfstring{$\infty$}{∞}-équipements de \cite{ruit2025formalcategorytheoryinftyequipments} ?}
+\todo{problème des homotopy coherent monads}
+\todo{mentionner les \texorpdfstring{$\infty$}{∞}-équipements de \cite{ruit2025formalcategorytheoryinftyequipments} comme potentielle solution ?}
 
 \subsection{Fibered Categories}
-\todo{À jeter ?}
+\todo{À jeter !?}
 
 \cite{borceux2} \cite{benaboudistributorsfibrations}
 
@@ -4047,6 +4274,7 @@ When considering $\bSpan(\cat Set)$-categories (e.g. small categories), this is 
 \appendix
 
 \section{Extension calculus cheatsheet}
+\todo{À étendre, il en manque}
 
 We resume many results used in the calculus of extensions. We work in a virtual equipment $\bb{X}$, and every type is implicit.
 
