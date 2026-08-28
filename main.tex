@@ -70,19 +70,23 @@
 
 % Operators
 \DeclareMathOperator{\Alg}{\cat Alg}
-\DeclareMathOperator{\Opalg}{\cat Opalg}
-\DeclareMathOperator{\bSpan}{\ca{S}\mathit{pan}}
+\DeclareMathOperator{\Cart}{\cat Cart}
 \DeclareMathOperator{\Dist}{\bb{D}\textbf{ist}}
+\DeclareMathOperator{\Fib}{Fib}
 \DeclareMathOperator{\Fun}{Fun}
 \DeclareMathOperator{\Hom}{Hom}
 \DeclareMathOperator{\Lan}{Lan}
 \DeclareMathOperator{\Mod}{\bb{M}\textbf{od}}
+\DeclareMathOperator{\Opalg}{\cat Opalg}
 \DeclareMathOperator{\Span}{\bb{S}\textbf{pan}}
 \DeclareMathOperator{\Spec}{Spec}
+\DeclareMathOperator{\bSpan}{\ca{S}\mathit{pan}}
 \DeclareMathOperator{\cart}{cart}
+\DeclareMathOperator{\coCart}{\cat coCart}
 \DeclareMathOperator{\cod}{cod}
 \DeclareMathOperator{\colim}{colim}
 \DeclareMathOperator{\co}{co}
+\DeclareMathOperator{\hFun}{hFun}
 \DeclareMathOperator{\id}{id}
 \DeclareMathOperator{\ob}{ob}
 \DeclareMathOperator{\opcart}{opcart}
@@ -250,8 +254,9 @@ No prerequisites on formal category theory are needed, as the framework is entir
 \todo{À réecrire en partie}
 
 \subsection{Conventions}
+\label{subsec:conventions}
 
-We will use Sans Serif for 1-categories: \cat{A}, \cat{B}, \cat{C}..., calligraphy for 2-categories or bicategories: $\ca{H}, \ca{J}, \ca{K}$..., blackboard bold for virtual double categories: $\bb{X}, \bb{Y}$... Usually, objects will be in capital letters $A, B, C$, lower case for arrows $f, g, h$ (although horizontal arrows/loose-cells will use letters $p, q, r, s$...) and Greek letters for cells $\alpha, \beta, \phi, \psi$...
+We will use Sans Serif for 1-categories: \cat{A}, \cat{B}, \cat{C}..., calligraphy for 2-categories or bicategories but also $\infty$-cosmos: $\ca{H}, \ca{J}, \ca{K}$..., blackboard bold for virtual double categories: $\bb{X}, \bb{Y}$... Usually, objects will be in capital letters $A, B, C$, lower case for arrows $f, g, h$ (although horizontal arrows/loose-cells will use letters $p, q, r, s$...) and Greek letters for cells $\alpha, \beta, \phi, \psi$...
 
 As this thesis was first written in French, tight and loose cells are called vertical arrows (or just arrows) and horizontal arrows (or distributors) as in a double category, and we reserve the term "cell" for 2-cells. Every occurrence of "vertical" (resp. "horizontal") can be replaced with tight (resp. "loose") to recover the vocabulary of Arkor and McDermott.
 
@@ -263,11 +268,12 @@ In accordance to N. Arkor and D. McDermott's articles, horizontal arrows will be
 
 Arkor et McDermott for articles (+ discussion on Zulip with Arkor), Jana K. Nickel for handwritten notes on conjoint/companion, Morgan Rogers as a tutor, Jonas Frey for discussion on collage
 
-Justin Carel, Hadrien Chalandon-Goskrzynski, Ugo Fialo
+Justin Carel, Hadrien Chalandon-Goskrzynski, Ugo Fialo, Rafael Escabias (tbd, proof-reading)
 
 Marta Vigano
 
 \section{Formal Category Theory}
+\label{sec:fct}
 
 We start with the basic notions, in particular "where" we do formal category, followed by "how" or "with what". This section takes from \cite{arkor2024formaltheoryrelativemonads} modernized with \cite{arkor2026presheavescocompletionsformalcategory}, in particular adapting the results for arbitrary weights. A few notions related to (co)limits are also from \cite{arkor2025relativemonadicity} as they are needed to establish a monadicity theorem in Subsection \ref{subsec:rel_monadicity}.
 
@@ -553,7 +559,7 @@ Moreover, when considering distributors, it is possible to restrict them: from a
 When the restrictions exists, we have a useful result:
 
 \begin{theorem}[{\cite[Theorem 7.16]{cs10}}]\label{th:comp_rest}
-    Let $p : B \dfrom C$, $f : A \to B$ and $g : D \to C$. Then $B(f, 1) \odot p \odot C(1, g)$ is isomorph to $p(f, g)$ when one of the sides exists.
+    Let $p : B \dfrom C$, $f : A \to B$ and $g : D \to C$. Then $B(f, 1) \odot p \odot C(1, g)$ is isomorphic to $p(f, g)$ when one of the sides exists.
 \end{theorem}
 
 \begin{notation}
@@ -603,6 +609,7 @@ When the restrictions exists, we have a useful result:
 \end{notation}
 
 \begin{theorem}[{\cite[Theorem 7.20]{cs10}}]
+    \label{th:spider}
     From those two cells and factorization, we get a bijection between cells with frames
     \[\begin{tikzcd}
         A \ar[d, "f"'] & \ar[l, loose, "p"', ""{anchor=center,name=t}] C \ar[d, "g"]\\
@@ -674,6 +681,7 @@ When the restrictions exists, we have a useful result:
 We can then, up to equivalence, work in a strict virtual equipment.
 
 \subsection{Extensions, liftings and (co)limits}
+\label{subsec:ext_lift_colims}
 
 We work in a virtual equipment $\bb{X}$. Right extensions and lifts will be a very important, probably the most important tool in a virtual equipment, subsuming every notion. A lot of results develop a \textit{calculus of extensions} (and lifts!), replacing both reasoning internal to categories and coend calculus to an extent. A lot of results in Section \ref{sec:presheaves} were proven using coend calculus, and can be proven in a virtual equipment similarly with extension calculus.
 
@@ -970,7 +978,7 @@ In particular, the left pointwise extension of $f$ through $j$ is the $X(j, 1)$-
     \label{lem:pt_ext_props}
     Let $f : Z \to Y, j : Z \to X$ be vertical arrows such that $j \plext f : X \to Y$ exists.
     \begin{enumerate}
-        \item $1_Z \plext f$ exists and is isomorph to $f$.
+        \item $1_Z \plext f$ exists and is isomorphic to $f$.
         \item Let $j' : X \to X'$ be another vertical arrow. If either side exists, then:
             $$(j'\circ j)\plext f \simeq j' \plext (j\plext f)$$
         \item For all $x : X' \to X, y : Y' \to Y$
@@ -4260,15 +4268,311 @@ When considering $\bSpan(\cat Set)$-categories (e.g. small categories), this is 
 
 
 \subsection{\texorpdfstring{$\infty$}{∞}-catégories}
+\label{subsec:inf_cats}
 
-\cite{riehl_verity}
+We resume here a few results from \cite{riehl_verity} using virtual equipments, establish a few limits to the use of virtual equipments to study $\infty$-categories and mention alternatives frameworks. We assume that the reader is familiar with the theory of quasicategories, although we will not use much of the theory since we focus on a synthetic description. In the few proofs reproduced, most technical details are left out: the interested reader is referred to Riehl and Verity's book. It is also admitted that most constructions we want to do (slice and arrow $\infty$-cosmoï, simplicial (co)limits...), we can.
+
+As mentioned in the Conventions (Subsection \ref{subsec:conventions}), our distributors go from right to left. This requires some changes when considering the formalism of two-sided fibrations, which means there might be some issues or errors with the following presentation, but also that those possible issues are without serious consequences since the whole section is more about the ideas than the technical details in the proofs.
+
+The first natural place (or universe ?) where flavours of $\infty$-categories live is called an $\infty$-cosmos. Some technical definitions, in particular Leibniz cotensors, are omitted for brevity as they are not key to understand the use of virtual equipments in the study of flavours of $\infty$-categories.
+
+\begin{definition}[{\cite[Definition 1.2.1]{riehl_verity}}]
+    \label{def:inf_cosmos}
+    \index{\texorpdfstring{$\infty$}{∞}-cosmos}
+    An \textbf{$\infty$-cosmos} $\ca K$ is a category enriched in quasicategories equipped with a collection of maps called \textbf{isofibrations} such that:
+    \begin{enumerate}
+        \item $\ca K$ has a terminal object, small products, pullbacks of isofibrations, limits of countable towers of isofibrations and cotensors with simplicial sets; such that those limits are those when $\ca K$ is viewed as simplicially enriched.
+        \item The class of isofibrations contains the isomorphisms, maps with codomain the terminal object, and is closed under composition, product, pullback, inverse limit of tower and Leibniz cotensor with monomorphisms. Moreover, we ask that for $f : A \to B$ an isofibration, the induced morphism $\Fun(X, A) \to \Fun(X, B)$ is an isofibration for any $X$.
+    \end{enumerate}
+\end{definition}
+
+\begin{remark}
+    Note that, in particular, an $\infty$-cosmos is a simplicially enriched category such that all Hom objects are weak Kan complexes. Hom objects of an $\infty$-cosmos are also called functor spaces. What we call "maps" are vertices of functor spaces.
+\end{remark}
+
+\begin{example}
+    \label{ex:infcats_cosmoi}
+    Most models for $\infty$-categories form $\infty$-cosmoï:
+    \begin{itemize}
+        \item Quasicategories define an $\infty$-cosmos in which the isofibrations are the usual isofibrations \cite[Proposition 1.2.10]{riehl_verity}.
+        \item 1-categories and Kan complexes also form $\infty$-cosmoï \cite[Propositions 1.2.11 and 1.2.12]{riehl_verity}.
+        \item Complete Segal spaces, Segal categories and 1-complicial sets define $\infty$-cosmoï \cite[Example 1.2.24]{riehl_verity}.
+    \end{itemize}
+\end{example}
+
+An easy method to reduce this higher data to 2 dimensions is to take the homotopy 2-category:
+
+\begin{definition}
+    \index{\texorpdfstring{$\infty$}{∞}-cosmos!homotopy 2-category}
+    Let $\ca K$ be an $\infty$-cosmos. Its \textbf{homotopy 2-category} is the 2-category $\fk h \ca K$ such that:
+    \begin{itemize}
+        \item The objects are the objects of $\ca K$.
+        \item The 1-morphisms are the 0-arrows in the functor spaces.
+        \item The 2-morphisms are homotopy classes of simplices in functor spaces.
+    \end{itemize}
+    i.e. the categories of morphisms are the homotopy categories of the (quasicategories) functor spaces
+\end{definition}
+
+Finally, there's a notion of morphism of $\infty$-cosmoï.
+
+\begin{definition}[{\cite[Deinition 1.3.1]{riehl_verity}}]
+    \label{def:cosmological_functor}
+    \index{\texorpdfstring{$\infty$}{∞}!cosmological functor} \index{\texorpdfstring{$\infty$}{∞}!cosmological biequivalence}
+    A \textbf{cosmological functor} is a simplicial functor between $\infty$-cosmoï preserving the isofibrations and all the cosmological limits. Given a cosmological functor $F : \ca K \to \ca L$, it is a \textbf{cosmological biequivalence} if
+    \begin{enumerate}
+        \item it is essentially surjective on objects up to equivalence: For all object $C$ of $\ca L$, there exists an object $A$ of $\ca K$ such that $FA \simeq C$.
+        \item it defines a local equivalence: For all objects $A, B$ of $\ca K$, the action of $F$ defines an equivalence of quasicategories $\Fun(A, B) \xrightarrow{\sim} \Fun(FA, FB)$.
+    \end{enumerate}
+\end{definition}
+
+\begin{example}
+    \label{ex:cosmological_biequiv}
+    There are "underlying quasicategory" biequivalences from complete Segal spaces, Segal categories and 1-complicial sets to quasicategories, but also "nerve" biequivalences from quasicategories to complete Segal spaces and Segal categories and "discretization" from complete Segal spaces to Segal categories.
+\end{example}
+
+To construct a virtual double category, we still need horizontal arrows. For that, we use the class of isofibrations. A first approximation is two-sided fibrations, which will induce a double category:
+
+\begin{definition}
+    \index{two-sided fibrations}
+    A \textbf{two-sided fibration} is a span $A \from E \to B$ such that the induced map $E \to A\times B$ is an isofibration.
+\end{definition}
+
+Two-sided isofibrations from $A$ to $B$ form an $\infty$-cosmos $\ca K_{/A\times B}$. Because we want our horizontal arrows to "act like Hom spaces", a natural condition is to ask for (co)cartesianity on each side.
+
+We didn't introduce the notion of (co)cartesian fibration in an $\infty$-cosmos \cite[Definition 5.2.1]{riehl_verity}, and choose to think of them as the usual notion of Grothendieck fibrations. The reason for this is that, by working in a formal setting (in an $\infty$-cosmos), we have to define the cartesian fibration model-independently and in particular, "cartesian arrows". This is the subject of \cite[Section 5]{riehl_verity}, and we refer the interested (or confused) reader to the source. We admit that (co)cartesian fibrations form $\infty$-cosmoï $\Cart(\ca K)$ and $\coCart(\ca K)$ \cite[Section 6]{riehl_verity}. Note that $\Cart(\ca K)_{/B}$ (resp. $\coCart(\ca K)_{/B}$) refer not to the slice $\infty$-cosmos but to the $\infty$-cosmos of (co)cartesian fibrations over $B$.
+
+\begin{definition}
+    \index{two-sided isofibration!cartesian on the left}\index{two-sided isofibration!cocartesian on the right}
+    A two-sided isofibration $A \xleftarrow{p} E \xrightarrow{q} B$ is \textbf{cartesian on the left} when
+    \[\begin{tikzcd}
+        \ar[dr, "q"'] E \ar[rr, "{(q, p)}"] && A\times B \ar[dl, "\pi"]\\
+                            & B
+    \end{tikzcd}\]
+    is a cartesian fibration in $\ca K_{/B}$. Dually, it is \textbf{cocartesian on the right} when
+    \[\begin{tikzcd}
+        \ar[dr, "p"'] E \ar[rr, "{(q, p)}"] && A\times B \ar[dl, "\pi"]\\
+                            & A
+    \end{tikzcd}\]
+    is a cocartesian fibration in $\ca K_{/A}$.
+\end{definition}
+
+When we want to consider both cartesianity on the left and cocartesianity on the right, we get a useful criterion:
+
+\begin{lemma}[{\cite[Corollary 7.1.3]{riehl_verity}}]
+    A two-sided isofibration $A \xleftarrow{p} E \xrightarrow{q} B$ is cocartesian on the right and cartesian on the left if either of the following equivalent conditions is satisfied:
+    \begin{enumerate}
+        \item The map
+            \[\begin{tikzcd}
+                \ar[dr, "p"'] E \ar[rr, "{(q, p)}"] && A\times B \ar[dl, "\pi"]\\
+                                                    & A
+            \end{tikzcd}\]
+            lies in $\Cart(\ca K)_{/A}$ and defines a cocartesian fibration in $\ca K_{/A}$.
+        \item The map
+            \[\begin{tikzcd}
+                \ar[dr, "q"'] E \ar[rr, "{(q, p)}"] && A\times B \ar[dl, "\pi"]\\
+                                                    & B
+            \end{tikzcd}\]
+            lies in $\coCart(\ca K)_{/B}$ and defines a cartesian fibration in $\ca K_{/B}$.
+    \end{enumerate}
+\end{lemma}
+
+To get closer to an object "acting like a distributor", we define two-sided fibrations:
+
+\begin{definition}
+    \index{two-sided fibration}
+    A \textbf{two-sided fibration} $A \xleftarrow{p} E \xrightarrow{q} B$ is a two-sided isofibration such that either of the following equivalent conditions is satisfied:
+    \begin{enumerate}
+        \item The map
+            \[\begin{tikzcd}
+                \ar[dr, "p"'] E \ar[rr, "{(q, p)}"] && A\times B \ar[dl, "\pi"]\\
+                                                    & A
+            \end{tikzcd}\]
+            defines a cocartesian fibration in $\Cart(\ca K)_{/A}$.
+        \item The map
+            \[\begin{tikzcd}
+                \ar[dr, "q"'] E \ar[rr, "{(q, p)}"] && A\times B \ar[dl, "\pi"]\\
+                                                    & B
+            \end{tikzcd}\]
+            defines a cartesian fibration in $\coCart(\ca K)_{/A}$
+        \item $A \xleftarrow{p} E \xrightarrow{q} B$ is cartesian on the left, cocartesian on the right and given any pair of natural transformations as on the left, and a $q$-cocartesian lift $\psi : e \To \alpha_*e$ of $\alpha$ over $B$ a $p$-cartesian lift $\chi : \beta^*e\To e$ of $\beta$ over $A$ as on the right:
+            \[\begin{tikzcd}[sep=large]
+                & \ar[dl, "a"', ""{anchor=center,name=a}] X \ar[d, "e"{description}, ""{anchor=center,name=e}] \ar[dr, "b", ""{anchor=center,name=b,inner sep=0}] &\\
+                A & \ar[l, "p"] E \ar[r, "q"'] & B
+                \ar[from=e, to=a, Rightarrow, shorten=2mm, "\alpha"] \ar[from=b, to=e, Rightarrow, shorten=2mm, "\beta"]
+                \end{tikzcd}
+                \hspace{3em}
+                \begin{tikzcd}[sep=large]
+                & \ar[d, bend right=90, dashed, "\alpha_*e"', end anchor=north west, ""{anchor=west,name=ae}] X \ar[d, "d"{description}, ""{anchor=center,name=m}] \ar[d, bend left=90, dashed, "\beta^*e", end anchor=north east, ""{anchor=east,name=be}] &\\
+                A & \ar[l, "p"] E \ar[r, "q"'] & B
+                \ar[from=m, to=ae, Rightarrow, "\psi"] \ar[from=be, to=m, Rightarrow, "\chi"]
+                \end{tikzcd}
+            \]
+            There is a unique isomorphism $\alpha_*\beta^*e\simeqq\beta^*\alpha_*e$ over $A\times B$ commuting with the $p$-cartesian lift of $p\psi\cdot\beta$ over $A$ and the $p$-cocartesian lift of $\alpha\cdot q\chi$ over $B$.
+            \[\begin{tikzcd}
+                & \ar[dl, Rightarrow, "\psi"'] e &\\
+                \alpha_*e && \ar[ul, Rightarrow, "\chi"'] \beta^*e \ar[dl, Rightarrow, "\psi_{\alpha\cdot q\chi}", end anchor=north east]\\
+                          & \ar[ul, Rightarrow, "\chi_{p\psi\cdot\beta}", start anchor=north west] \beta^*\alpha_*e\simeqq\beta^*\alpha_*e
+            \end{tikzcd}\]
+    \end{enumerate}
+\end{definition}
+
+\begin{remark}
+    The last condition can be understood as "the cartesian and cocartesian properties commute" i.e. the processes of taking $p$-cartesian lift and $q$-cocartesian lift commute.
+\end{remark}
+
+\begin{example}[{\cite[Proposition 7.1.6]{riehl_verity}}]
+    For any object $A$ in an $\infty$-cosmos, the two-sided isofibration $A \xleftarrow{p_0} A^{\bb n} \xrightarrow{p_{n-1}} A$ is a two-sided fibration. In particular, $A \xleftarrow{p_0} A^{\bb 2} \xrightarrow{p_1} A$ is a two-sided fibration. Note that we use the property that $\infty$-cosmoï have cotensors by simplicial sets.
+\end{example}
+
+Finally, we can define what horizontal arrows will be:
+
+\begin{definition}[{\cite[Definition 7.4.1]{riehl_verity}}]
+    \index{\texorpdfstring{$\infty$}{∞}-cosmos!module}
+    A \textbf{module} from $A$ to $B$ in a $\infty$-cosmos is a two sided fibration $A \from E \to B$ that is a discrete object in $\prescript{}{A\textbackslash}\Fib(\ca K)_{/B}$ (i.e. the functor spaces with codomain the module are Kan complexes).
+\end{definition}
+
+\begin{example}[{\cite[Proposition 7.4.6]{riehl_verity}}]
+    Comma object in an $\infty$-cosmos are modules and so are arrow objects (cotensor by $\bb 2$).
+\end{example}
+
+Lastly, we need morphism of modules:
+
+\begin{definition}[{\cite[Definition 8.1.4]{riehl_verity}}]
+    \index{\texorpdfstring{$\infty$}{∞}-cosmos!morphism of module}
+    A \textbf{morphism of modules} from $A \from E \to B$ to $X \from F \to Y$
+    \[\begin{tikzcd}
+        \ar[d, "f"'] A & \ar[l, loose, "E"', ""{anchor=center,name=t}] B \ar[d, "g"]\\
+        X & \ar[l, loose, "F", ""{anchor=center,name=b}] Y
+        \ar[from=t, to=b, phantom, "\alpha"{anchor=center}]
+    \end{tikzcd}\]
+    is a fibered isomorphism class of \textit{strictly} commuting functors $a$
+    \[\begin{tikzcd}[sep=large]
+        \ar[d, "f"'] A & \ar[l, "p'"'] E \ar[d, "a"{description}] \ar[r, "q'"] & B \ar[d, "g"]\\
+        X & \ar[l, "p"] F \ar[r, "q"'] & Y
+    \end{tikzcd}\]
+    where two such functors $a$ and $a'$ are equivalent if there exists a natural isomorphism $\gamma : a\simeqq a'$ such that $q\gamma = \id_{aq'}$ and $p\gamma = \id_{bp'}$.
+\end{definition}
+
+We do not introduce fibered map of two-sided isofibrations, as they are not relevant to our goal. It is worth mentioning that using two-sided isofibrations, we get a double category. However the composition (span composition) is flawed and the evident horizontal unit, the identity span, is useless. Constructing the virtual equipment associated to an $\infty$-cosmos, unit distributors will be the arrow categories (which will match the intuition given by the virtual equipments of 1-categories or enriched categories).
+
+\begin{lemma}[{\cite[Lemma 8.1.11]{riehl_verity}}]
+    For $\ca K$ an $\infty$-cosmos, there is a virtual double category of two-sided isofibrations whose objects and arrows are those of $\ca K$, whose horizontal arrows are two-sided isofibrations and whose $n$-ary cells are maps of two-sided isofibrations over $f\times g$
+    \[\begin{tikzcd}
+        \ar[d, "f"'] A_0 & \ar[l, loose, "E_1"'] \cdots & \ar[l, loose, "E_n"'] A_n \ar[d, "g"]\\
+        B_0 &{}& \ar[ll, loose, "F"]
+        \ar[from=1-2, to=2-2, phantom, "\alpha"{anchor=center}]
+    \end{tikzcd}
+    \hspace{3em}
+    \begin{tikzcd}[sep=small]
+        & \ar[dl, start anchor=south west] E_1 \times_{A_1}\cdots\times_{A_{n-1}}E_n \ar[ddd, dashed, "a"{description}] \ar[dr, start anchor=south east] &\\
+        \ar[d, "f"'] A && A_n \ar[d, "g"]\\
+        B_0 && B_n\\
+            & \ar[ul] F \ar[ur]
+    \end{tikzcd}\]
+\end{lemma}
+
+\begin{corollary}
+    Restricting the class of horizontal arrows, we get the virtual double category $\bb Mod(\ca K)$ whose objects and arrows are those of $\ca K$, whose horizontal arrows are modules and whose $n$-ary cells are maps of modules over $f\times g$.
+\end{corollary}
+
+What's left is to show that this virtual double category is a virtual equipment, that is, it admits restrictions and horizontal units.
+
+\begin{proposition}[{\cite[Proposition 8.2.1]{riehl_verity}}]
+    $\bb Mod(\ca K)$ admits restriction.
+\end{proposition}
+
+\begin{proof}[Sketch of proof]
+    Consider the following frame:
+    \[\begin{tikzcd}
+        \ar[d, "f"'] A & B \ar[d, "g"]\\
+        X & \ar[l, loose, "E"] Y
+    \end{tikzcd}\]
+    The horizontal source of the cartesian cell is constructed as the pullback
+    \[\begin{tikzcd}
+        \ar[d] E(f, g) \ar[dr, pullback] \ar[r, "\rho"] & E \ar[d]\\
+        A\times B \ar[r, "f\times g"'] & X \times Y
+    \end{tikzcd}\]
+    This defines a module from $B$ to $A$. The universal property of the cartesian cell is represented by the equivalence of functor spaces induced by the simplicial pullback:
+    \[
+        \Fun_{f\times g}(E_1\times_{A_1}\cdots\times_{A_{n-1}}E_n, E(f, g))\xrightarrow[\sim]{\rho\circ-}\Fun_{fa\times gb}(E_1\times_{A_1}\cdots\times_{A_{n-1}}E_n, E(f, g))
+    \]
+    Where $a$ and $b$ are as follow
+    \[\begin{tikzcd}
+        \ar[d, "fa"'] X_0 & \ar[l, loose, "E_1"'] \cdots & \ar[l, loose, "E_n"'] X_n \ar[d, "gb"]\\
+        X &{} & \ar[ll, loose, "E"] Y
+        \ar[from=1-2, to=2-2, phantom, "\phi"{anchor=center}]
+    \end{tikzcd}\]
+    The equivalence descends to a bijection on isomorphism classes of objects, therefore we have a factorization
+    \[\begin{tikzcd}
+        \ar[d, "a"'] X_0 & \ar[l, loose, "E_1"'] \cdots & \ar[l, loose, "E_n"'] X_n \ar[d, "b"]\\
+        \ar[d, "f"'] A &{} & \ar[ll, loose, "{E(f, g)}"] B \ar[d, "g"]\\
+        X &{} & \ar[ll, loose, "E"] Y
+        \ar[from=1-2, to=2-2, phantom, "\tilde\phi"{anchor=center}]
+        \ar[from=2-2, to=3-2, phantom, "\rho"{anchor=center}]
+    \end{tikzcd}\]
+\end{proof}
+
+\begin{proposition}[{\cite[Proposition 8.2.4]{riehl_verity}}]
+    $\bb Mod(\ca K)$ admits horizontal units.
+\end{proposition}
+
+\begin{proof}[Sketch of proof]
+    The nullary cell is the following:
+    \[\begin{tikzcd}
+        & \ar[dl, equal] A \ar[dd, "\iota"] \ar[dr, equal] &\\
+        A && A\\
+          & \ar[ul, "p_0"] A^{\bb 2} \ar[ur, "p_1"']
+    \end{tikzcd}\]
+    Where $\iota$ is given by the weak universal property of the arrow object \cite[Proposition 3.2.5]{riehl_verity} applied to the identity functor. For the universal property, there are two cases:
+    \[\begin{tikzcd}
+        \ar[d, "f"'] X & \ar[l, loose, "E_1"'] \cdots & \ar[l, loose, "E_n"'] A & \ar[l, loose, "F_1"'] \cdots & \ar[l, loose, "F_m"'] Y \ar[d, "g"]\\
+        B &&{}&& \ar[llll, loose, "G"] C
+        \ar[from=1-3, to=2-3, phantom, "\rho"{description}]
+    \end{tikzcd}\]
+    \begin{itemize}
+        \item If $n = m = 0$, we conclude using the Yoneda Lemma for modules that the restriction gives a equivalence of functor spaces
+            \[
+                \Fun_{A\times A}(A^{\bb 2}, G(f, g)) \xrightarrow{\sim} \Fun_{A\times A}(A, G(f, g))
+            \]
+            Passing to isomorphism classes of objects, we get the universal property
+        \item Otherwise, we take the horizontal composite of both sequences to get $X \xleftarrow{p} E \xrightarrow{q} A$ and $A \xleftarrow{r} E \xrightarrow{s} Y$. We have the following pullbacks:
+            \[\begin{tikzcd}
+                &&& \ar[dl] E\times_A\Hom_A\times_AF \ar[dd, pullback] \ar[dr] &&&\\
+                && \ar[dl] \Hom_A(q, A) \ar[dd, pullback] \ar[dr] &{}& \ar[dl] \Hom_A(A, s) \ar[dr] \ar[dd, pullback]\\
+                & \ar[dl, "p"'] E \ar[dr, "q"] &{}& \ar[dl, "p_0"'] \Hom_A \ar[dr, "p_1"] &{}& \ar[dl, "r"'] F \ar[dr, "s"]\\
+                X && A && A && Y
+            \end{tikzcd}\]
+            The $E$ horizontal composite is the two-sided fibration $(qp_0, p_1) : \Hom_A(q, A)$ and the $F$ one is $(p_0, rp_1)$. Pulling back the induced fibered adjunctions, we get:
+            \[\begin{tikzcd}
+                \ar[dr] E\times_AF \ar[rr, bend left=10, "E\times_A\iota\times_AF", ""{anchor=center,name=t}] && \ar[ll, bend left=10, dashed, "r", ""{anchor=center,name=b}] E\times_A\Hom_A\times_AF \ar[dl]\\
+                & X\times Y
+                \ar[from=t, to=b, adj]
+            \end{tikzcd}\]
+            Mapping into the discrete object $G(f, g)$ and restricting along $\iota$, we get an equivalence of Kan complexes
+            \[
+                \Fun_{X\times Y}(E\times_A\Hom_A\times_AF, G(f, g))\xrightarrow[\sim]{-\circ E\times_A\iota\times_AE} \Fun_{X\times Y}(E\times_AF, G(f, g))
+            \]
+            Taking isomorphism classes of objects, we get the universal property.
+    \end{itemize}
+\end{proof}
+
+In conclusion, $\bb Mod(\ca K)$ is a virtual equipment. The various propositions in \cite[Sections 8.3 and 8.4]{riehl_verity}, with the exception of strong composites and cocartesian cells, are consequences of results due to \cite{cs10} in Section \ref{sec:fct}. For example, \cite[Corollary 8.4.6]{riehl_verity} is Theorem \ref{th:spider} and \cite[Proposition 8.4.7]{riehl_verity} is a consequence of Theorem \ref{th:comp_rest}.
+
+The results in \cite[Sections 9.1, 9.4, 9.5]{riehl_verity} are generalized in Subsection \ref{subsec:ext_lift_colims}. The main appeal of virtual equipments for $\infty$-categories is studied in \cite[Chapters 10 and 11]{riehl_verity}: model independence.
+
+Recall the many $\infty$-cosmoï of models of $(\infty, 1)$-categories introduced in Example \ref{ex:infcats_cosmoi}, related using multiple cosmological biequivalences as mentioned in Example.
+
+
+
+
+
 \todo{problème des homotopy coherent monads}
 \todo{mentionner les \texorpdfstring{$\infty$}{∞}-équipements de \cite{ruit2025formalcategorytheoryinftyequipments} comme potentielle solution ?}
 
-\subsection{Fibered Categories}
-\todo{À jeter !?}
+% \subsection{Fibered Categories}
+% \todo{À jeter !?}
 
-\cite{borceux2} \cite{benaboudistributorsfibrations}
+% \cite{borceux2} \cite{benaboudistributorsfibrations}
 
 \clearpage
 \appendix
