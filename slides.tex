@@ -1,0 +1,935 @@
+%! TeX program = lualatex
+\documentclass[9pt]{beamer}
+
+\usepackage{enumitem}                                  % list config
+\usepackage{amssymb,amsmath,amsthm,stmaryrd,mathtools} % fonts, symbols
+\usepackage{unicode-math}                              % fonts
+\usepackage{tikz-cd}                                   % diagrams
+\usepackage{hyperref}
+\usepackage{booktabs}                                  % cmidrules
+\usepackage{newunicodechar}
+\usepackage[backend=biber,style=alphabetic]{biblatex}  % citations
+
+\usepackage{adjustbox}
+
+\usetheme{Montpellier}
+\setbeamertemplate{page number in head/foot}[totalframenumber]
+\setbeamertemplate{footline}[page number]
+
+\setmainfont{fbb}
+\setmathfont{Libertinus Math}
+%FIXME: Trouver mieux que STIX Two Math
+\setmathfont{STIX Two Math}[range={\obslash, \oslash, \sharp, \flat, \natural}]
+
+% Shortcuts for math fonts
+\newcommand{\bb}[1]{\mathbb{#1}}
+\newcommand{\ca}[1]{\mathcal{#1}}
+\newcommand{\fk}[1]{\mathfrak{#1}}
+\newcommand{\sr}[1]{\mathscr{#1}}
+\newcommand{\cat}[1]{\textcat{#1}}
+\newcommand{\textcat}[1]{{\normalfont\textsf{#1}}}
+
+% Utilities
+\newcommand{\flip}[1]{\text{\rotatebox[origin=c]{-180}{$#1$}}}
+
+% Shortcuts
+% FIXME: blacktriangleleft and right too short, cf setmathfont
+\newcommand{\PP}{{\bb P}}
+\newcommand{\To}{\Rightarrow}
+\newcommand{\coce}[2]{{\hat{#1}}_{#2}}
+\newcommand{\coc}[2]{{\widehat{#1}}(#2)}
+\newcommand{\colimeq}{\mathrel{\hat\approx}}
+\newcommand{\colimleq}{\mathrel{\hat\lesssim}}
+\newcommand{\copsh}[2]{{\widebreve{#1}}[{#2}]}
+\newcommand{\dfrom}{\nvleftarrow}
+\newcommand{\from}{\leftarrow}
+\newcommand{\ip}{\flip\pi}
+\newcommand{\iset}[1]{\llbracket #1 \rrbracket}
+\newcommand{\lext}{\mathbin{\rhd}}
+\newcommand{\lift}{\mathbin{\lhd}}
+\newcommand{\nvequal}{=\!\!\!|\!\!\!=}
+\newcommand{\op}{\mathrm{op}}
+\newcommand{\oy}{\flip\yo}
+\newcommand{\plext}{\mathbin{{\rhd}\mathclap{\mspace{-17.5mu}\cdot}}}
+\newcommand{\plift}{\mathbin{\flip{{\rhd}\mathclap{\mspace{-17.5mu}\cdot}}}}
+\newcommand{\prext}{\mathbin{{\blacktriangleright}\mathclap{\mspace{-10.5mu}\raisebox{-0.45pt}{\textcolor{white}{$\cdot$}}}}}
+\newcommand{\prift}{\mathbin{\flip{{\blacktriangleright}\mathclap{\mspace{-10.5mu}\raisebox{-0.45pt}{\textcolor{white}{$\cdot$}}}}}}
+\newcommand{\psh}[2]{{\widehat{#1}}[{#2}]}
+\newcommand{\rext}{\mathbin{\blacktriangleright}}
+\newcommand{\rift}{\mathbin{\blacktriangleleft}}
+\newcommand{\set}[1]{\left\{#1\right\}}
+\newcommand{\simeqq}{\cong}
+\newcommand{\tp}[1]{\langle#1\rangle}
+\newcommand{\unit}{{\tp{}}}
+
+% Operators
+\DeclareMathOperator{\Alg}{\cat{Alg}}
+\DeclareMathOperator{\Cart}{\cat{Cart}}
+\DeclareMathOperator{\Dist}{\bb{D}\textbf{ist}}
+\DeclareMathOperator{\Env}{\cat{Env}}
+\DeclareMathOperator{\Fib}{Fib}
+\DeclareMathOperator{\Fun}{Fun}
+\DeclareMathOperator{\Hom}{Hom}
+\DeclareMathOperator{\Ind}{Ind}
+\DeclareMathOperator{\Lan}{Lan}
+\DeclareMathOperator{\Mod}{\bb{M}\textbf{od}}
+\DeclareMathOperator{\Opalg}{\cat{Opalg}}
+\DeclareMathOperator{\Pro}{Pro}
+\DeclareMathOperator{\Sh}{\cat{Sh}}
+\DeclareMathOperator{\Span}{\bb{S}\textbf{pan}}
+\DeclareMathOperator{\Spec}{Spec}
+\DeclareMathOperator{\bSpan}{\ca{S}\mathit{pan}}
+\DeclareMathOperator{\cart}{cart}
+\DeclareMathOperator{\coCart}{\cat coCart}
+\DeclareMathOperator{\cod}{cod}
+\DeclareMathOperator{\colim}{colim}
+\DeclareMathOperator{\co}{co}
+\DeclareMathOperator{\dom}{dom}
+\DeclareMathOperator{\hFun}{hFun}
+\DeclareMathOperator{\id}{id}
+\DeclareMathOperator{\ob}{ob}
+\DeclareMathOperator{\opcart}{opcart}
+
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+
+% Adjunctions, horizontal arrows, pullback
+\usetikzlibrary{decorations.pathmorphing}
+\usetikzlibrary{decorations.markings}
+\tikzset{%
+    adj/.style={%
+        /tikz/commutative diagrams/phantom,
+        "\dashv"{rotate=-90}
+    },
+    loose/.default=0.5ex,
+    loose/.style={%
+        /utils/exec=\tikzset{every node/.append style={outer sep=0.8ex}},
+        postaction=decorate,
+        decoration={markings, mark=at position 0.5 with {\draw[-] (0,#1) -- (0,-#1);}}
+    },
+    pullback/.style={
+        /tikz/commutative diagrams/phantom,
+        "\scalebox{1.5}{$\lrcorner$}"{pos=0.125}
+    }
+}
+
+% `よ`
+\DeclareFontFamily{U}{min}{}
+\DeclareFontShape{U}{min}{m}{n}{<-> udmj30}{}
+\newcommand\yo{\!\text{\usefont{U}{min}{m}{n}\symbol{'207}}\!}
+
+% widearc and widebreve
+\makeatletter
+\def\widebreve{\mathpalette\wide@breve}
+\def\wide@breve#1#2{\sbox\z@{$#1#2$}%
+     \mathop{\vbox{\m@th\ialign{##\crcr
+\kern0.08em\brevefill#1{0.8\wd\z@}\crcr\noalign{\nointerlineskip}%
+                    $\hss#1#2\hss$\crcr}}}\limits}
+\def\brevefill#1#2{$\m@th\sbox\tw@{$#1($}%
+  \hss\resizebox{#2}{\wd\tw@}{\rotatebox[origin=c]{90}{\upshape(}}\hss$}
+\makeatother
+\makeatletter
+\def\widearc{\mathpalette\wide@arc}
+\def\wide@arc#1#2{\sbox\z@{$#1#2$}%
+     \mathop{\vbox{\m@th\ialign{##\crcr
+\kern0.08em\arcfill#1{0.8\wd\z@}\crcr\noalign{\nointerlineskip}%
+                    $\hss#1#2\hss$\crcr}}}\limits}
+\def\arcfill#1#2{$\m@th\sbox\tw@{$#1($}%
+  \hss\resizebox{#2}{\wd\tw@}{\rotatebox[origin=c]{-90}{\upshape(}}\hss$}
+\makeatother
+
+% Bijection of cells
+\newenvironment{iffseq}{%
+    \global\let\externaldblbackslash\\
+    \begin{array}{cl}
+    \ifundef{\internaldblbackslash}{%
+        \global\let\internaldblbackslash\\%
+        \gdef\\{\internaldblbackslash\cmidrule{1-1}\morecmidrules\cmidrule{1-1}}%
+    }{}
+}{%
+    \end{array}
+    \global\undef\internaldblbackslash
+    \global\let\\\externaldblbackslash
+}
+
+\definecolor{ocre}{RGB}{0, 113, 188}
+\hypersetup{
+    colorlinks,
+    citecolor=ocre,
+    filecolor=ocre,
+    linkcolor=ocre,
+    urlcolor=ocre
+}
+
+% lists (fix babel)
+\setlist[itemize]{label=\textbullet}
+\setlist[enumerate]{label=(\alph*)}
+
+% citations
+\addbibresource{slides.bib}
+
+\title{Théorie des catégories formelle}
+\author{Luc Saccoccio--Le Guennec\\[1ex] {\small Encadrant : Morgan Rogers}}
+\date{Mardi 22 Septembre 2026}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\begin{frame}{Théorie des catégories formelle}
+    \begin{columns}[T]
+        \begin{column}{0.5\textwidth}
+        Plusieurs saveurs :
+        \begin{itemize}
+            \item Catégories enrichies (dans un cosmos, une bicatégorie, une catégorie virtuelle double...)
+            \item Catégories (localement) internes
+            \item Catégories fibrées et indexées
+        \end{itemize}
+        \end{column}
+        \vrule{}
+        \begin{column}{0.5\textwidth}
+        Mais résultats communs
+        \begin{itemize}
+            \item Adjonctions
+            \item Monades
+            \item Yoneda
+        \end{itemize}
+        \end{column}
+    \end{columns}
+    \vspace{\baselineskip}
+    \hrule
+    \vspace{\baselineskip}
+    \begin{itemize}
+        \item Structures de Yoneda sur 2-catégories
+        \item 2-monades lax-idempotentes (KZ-doctrines)
+        \item Équipements de proflèches
+    \end{itemize}
+    Imparfaites: catégories enrichies sur une base quelconque, constructions des préfaisceaux, composition horizontale...
+\end{frame}
+
+\begin{frame}{Catégories $\cat V$-enrichies}
+    On fixe une catégorie monoïdale symétrique close complète et cocomplète $\cat V$. Tout au long de l'exposé on instanciera les définitions et résultats dans les catégories $\cat V$-enrichies.
+    \vspace{\baselineskip}
+    \[\cat{Set}, \cat{sSet}, \cat{Cat}...\]
+\end{frame}
+
+\begin{frame}{Catégories virtuelles doubles}
+    \begin{columns}[T]
+        \begin{column}{0.5\textwidth}
+            Une \textbf{catégorie virtuelle double} $\bb X$ est la donnée de :
+            \begin{enumerate}
+                \item Objets $A, B, C, \cdots$
+                \item Flèches composables $\begin{tikzcd} X \ar[d, "f"]\\ Y \end{tikzcd}$
+                \item Distributeurs $p : X \dfrom Y$
+                \item Cellules
+                    \[\adjustbox{scale=0.8,center}{\begin{tikzcd}[row sep=tiny,ampersand replacement=\&]
+                X_0 \ar[dd, "f"'] \& \ar[l, "p_1"', loose] X_1
+                                     \& \ar[l, "p_2"', loose] \cdots
+                                     \& \ar[l, "p_{n-1}"', loose] X_{n-1}
+                                     \& \ar[l, "p_n"', loose] X_n \ar[dd, "g"]\\
+                \&\& \phi \&\& \\
+                Y \&\&\&\& \ar[llll, "q", loose] Z
+            \end{tikzcd}}\]
+            \end{enumerate}
+        \end{column}
+        \vrule{}
+        \begin{column}{0.5\textwidth}
+            $\bb X = \cat V-\Dist$
+            \begin{enumerate}
+                \item $\cat V$-catégories
+                \item $\cat V$-foncteurs
+                \item $\cat V$-distributeurs
+                    \[\adjustbox{scale=0.8}{\begin{tikzcd}
+                            p : X^\op \otimes Y \to \cat V
+                        \end{tikzcd}
+                    }\]
+                \item $\cat V$-transformations naturelles
+                    \[\adjustbox{scale=0.8,center}{
+                            \begin{tikzcd}[ampersand replacement=\&]
+                                p_1(x_0, x_1) \otimes \cdots \otimes p_n(x_{n-1}, x_n) \ar[r, "{\phi_{x_0, \cdots, x_n}}"] \& q(fx_0, gx_n)
+                            \end{tikzcd}
+                    }\]
+            \end{enumerate}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Cellules globulaires}
+    On notera $\phi : p_1, \cdots, p_n \To q$ une cellule de la forme
+    \[\adjustbox{scale=0.8}{\begin{tikzcd}[ampersand replacement=\&]
+                X_0 \ar[dd, equal] \& \ar[l, "p_1"', loose] X_1
+                                     \& \ar[l, "p_2"', loose] \cdots
+                                     \& \ar[l, "p_{n-1}"', loose] X_{n-1}
+                                     \& \ar[l, "p_n"', loose] X_n \ar[dd, equal]\\
+                \&\& \phi \&\& \\
+                Y \&\&\&\& \ar[llll, "q", loose] Z
+        \end{tikzcd}}\]
+    On notera aussi $\vec p$ pour $p_1, \cdots, p_n$.
+\end{frame}
+
+\begin{frame}{Cellules (op)cartésiennes}
+    \begin{columns}[T]
+        \begin{column}{0.5\textwidth}
+            \begin{itemize}
+                \item Cellule opcartésienne : $\phi : \vec q \To q$ avec une bijection
+                    \[\begin{iffseq}
+                        \vec p, \vec q, \vec r \To s\\
+                        \vec p, q, \vec r \To s
+                    \end{iffseq}\]
+                    On note $q = q_1 \odot \cdots \odot q_n$.
+                \item Cellule cartésienne :
+                    $\adjustbox{scale=0.8}{\begin{tikzcd}[ampersand replacement=\&]
+                        \ar[d, "f"'] A \& \ar[l, loose, "{q(f, g)}"', ""{anchor=center,name=t}] B \ar[d, "g"]\\
+                        X \& \ar[l, loose, "q", ""{anchor=center,name=b}] Y
+                        \ar[from=t, to=b, phantom, "\cart"{anchor=center}]
+                    \end{tikzcd}}$
+                    \[\hspace{-2em}\adjustbox{scale=0.8}{\begin{tikzcd}[row sep=tiny, ampersand replacement=\&]
+                        \cdot \ar[dd, "gf"'] \& \ar[l, "r_1"', loose] \cdots \& \ar[l, "r_n"', loose] \cdot \ar[dd, "ih"]\\
+                                            \& \phi \& \\
+                        \cdot \&\& \ar[ll, "q", loose] \cdot
+                    \end{tikzcd}}
+                    \hspace{0.5em}=\hspace{0.5em}
+                    \adjustbox{scale=0.8}{\begin{tikzcd}[row sep=tiny, ampersand replacement=\&]
+                        \cdot \ar[dd, "f"'] \& \ar[l, "r_1"', loose] \cdots \& \ar[l, "r_n"', loose] \cdot \ar[dd, "h"]\\
+                                           \& \tilde{\phi} \& \\
+                        \cdot \ar[dd, "g"'] \&\& \ar[ll, "p", loose] \cdot \ar[dd, "i"]\\
+                                            \& \text{cart} \&\\
+                        \cdot \&\& \ar[ll, "q", loose] \cdot
+                    \end{tikzcd}}\]
+            \end{itemize}
+        \end{column}
+        \vrule{}
+        \begin{column}{0.5\textwidth}
+            Dans $\bb X = \cat V-\Dist$
+            \begin{itemize}
+                \item $p : B \dfrom C, q : C \dfrom D$
+                    \[(p\odot q)(b, d) \simeqq \int^{c\in\ob C} p(b, c)\otimes q(c, d)\]
+                \item $q(f, g)(a, b) = q(fa, gb)$
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Équipements virtuels}
+    \begin{columns}[T]
+        \begin{column}{0.5\textwidth}
+            Un équipement virtuel a les
+            \begin{itemize}
+                \item Distributeurs identités $A(1, 1)$
+                    \[\adjustbox{scale=0.8}{\begin{tikzcd}[ampersand replacement=\&]
+                        \& \ar[dl, equal] A \ar[dr, equal] \&\\
+                        A \&{}\& \ar[ll, loose, equal, "{A(1, 1)}"] A
+                        \ar[from=1-2, to=2-2, phantom, "\opcart"{anchor=center}]
+                    \end{tikzcd}}\]
+                \item Restrictions $q(f, g)$
+                    \[\adjustbox{scale=0.8}{\begin{tikzcd}[ampersand replacement=\&]
+                            \ar[d, "f"'] A \& \ar[l, loose, "{q(f, g)}"', ""{anchor=center,name=t}] B \ar[d, "g"]\\
+                            X \& \ar[l, loose, "q", ""{anchor=center,name=b}] Y
+                            \ar[from=t, to=b, phantom, "\cart"{anchor=center}]
+                    \end{tikzcd}}\]
+            \end{itemize}
+        \end{column}
+        \vrule{}
+        \begin{column}{0.5\textwidth}
+            Dans $\bb X = \cat V-\Dist$
+            \begin{itemize}
+                \item \(\begin{aligned}
+                        A(1, 1)(x, y) &= A(x, y)\\
+                                     &:=\Hom_A(x, y)
+                    \end{aligned}\)
+                \item $q(f, g)(a, b) = q(fa, gb)$
+            \end{itemize}
+            \vspace{\baselineskip}
+            \hrule
+            \vspace{\baselineskip}
+            \[A(f, g) := A(1, 1)(f, g)\]
+            On fera un \textit{choix} de restrictions fonctorielles. Un tel équipement virtuel est \textbf{strict}.
+            \begin{align*}
+                p(1, 1) &= p & p(f, g)(h, i) &= p(fh, gi)
+            \end{align*}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Relèvements et extensions}
+    \begin{columns}[T]
+        \begin{column}{0.5\textwidth}
+            \begin{enumerate}
+                \item Relèvement à droite
+                    $\adjustbox{scale=0.8}{\begin{tikzcd}[ampersand replacement=\&]
+                            Y \ar[dr, "\vec{p}"', ""{name=p, anchor=center}, loose] \& \ar[l, loose, "q \rift \vec{p}"'] X \ar[d, loose, "q", ""{name=q, anchor=center}]\\
+                            \ar[from=p, to=q, Rightarrow, shift left=2, xshift=-1mm]
+                                                      \& Z
+                        \end{tikzcd}}$ avec
+                        \begin{iffseq}
+                            \vec r \To q\rift\vec p\\
+                            \vec p, \vec r \To q
+                        \end{iffseq}
+                \item Extension à droite
+                    $\adjustbox{scale=0.8}{\begin{tikzcd}[ampersand replacement=\&]
+                            Y \& \ar[l, loose, "\vec p \rext q"'] Z\\
+                            \& \ar[ul, loose, "q", ""{anchor=center,name=q}] X \ar[u, loose, "\vec p"']
+                            \ar[from=1-2, to=q, Rightarrow]
+                        \end{tikzcd}}$ avec
+                        \begin{iffseq}
+                            \vec r \To \vec p \rext q\\
+                            \vec r, \vec p \To q
+                        \end{iffseq}
+            \end{enumerate}
+        \end{column}
+        \vrule{}
+        \begin{column}{0.5\textwidth}
+            Dans $\bb X = \cat V-\Dist$
+            \begin{align*}
+                (q\rift p)(x, y) &\simeqq \ca PA(p(-, x), q(-, y))\\
+                                 &\simeqq \int_{z\in\ob Z}\cat V(p(z, x) q(z, y))
+            \end{align*}
+
+            \vspace{\baselineskip}
+            En particulier, n'existe pas nécessairement si $\cat V$ n'est pas fermé.
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Colimites et extensions de Kan}
+    \begin{columns}[T]
+        \begin{column}{0.5\textwidth}
+            \begin{enumerate}
+                \item Colimites pondérées : $Y(\colim^{\vec p}f, 1) \simeq Y(f, 1) \rift \vec p$
+                    \[\adjustbox{scale=0.8}{\begin{tikzcd}[ampersand replacement=\&]
+                            X \ar[dr, loose, "\vec p"'] \ar[r, "\colim^{\vec p}f"] \& Y\\
+                            \& A \ar[u, "f"']
+                    \end{tikzcd}}\]
+                \item Extension de Kan à gauche : $j\plext f \simeqq \colim^{E(j, 1)}f\simeqq Y(f, 1) \rift E(j, 1)$
+                    \[\adjustbox{scale=0.8}{\begin{tikzcd}[ampersand replacement=\&]
+                            E \ar[r, "j\plext f"] \& Y\\
+                            \& \ar[ul, "j"] A \ar[u, "f"']
+                    \end{tikzcd}}\]
+            \end{enumerate}
+        \end{column}
+        \vrule{}
+        \begin{column}{0.5\textwidth}
+            Dans $\bb X = \cat V-\Dist$
+            \begin{itemize}
+                \item $Y((\colim^pf)x, y) \simeqq \ca PA(p(-, x), Y(f-, y))$
+                \item $Y((j\plext f)x, y) \simeq \ca PA(E(j-, x), Y(f-, y))$
+            \end{itemize}
+            \vspace{\baselineskip}
+            \hrule
+            \vspace{\baselineskip}
+            On peut obtenir la caractérisation 2-catégorique :
+            \begin{iffseq}
+                j\plext f \To x\\
+                f \To x\circ j
+            \end{iffseq}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Que peut-on étudier ?}
+    \begin{enumerate}
+        \item Densité et pleine fidélité de flèches.
+        \item (co)Limites absolues.
+        \item Monades et adjonctions relatives.
+        \item Algèbres et algèbres libres.
+        \item Cocomplétions.
+        \item Objets en préfaisceaux.
+        \item Dualité d'Isbell et point fixe.
+    \end{enumerate}
+    \vspace{\baselineskip}
+    \hrule
+    \vspace{\baselineskip}
+    \begin{itemize}
+        \item Préservation, réflexion, relèvement et création de (co)limites.
+        \item Monadicité relative.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Densité et pleine fidélité}
+    \begin{columns}[T]
+        \begin{column}{0.5\textwidth}
+            \begin{enumerate}
+                \item Pleine fidélité (f.f.) : $B(f, f) \simeqq A(1, 1)$
+                \item Densité : $p\rift p \simeqq 1_B$ et $f\plext f \simeqq \id_B$.
+                    \[\adjustbox{scale=0.8}{\begin{tikzcd}[ampersand replacement=\&]
+                            A \& \ar[l, loose, "p"'] B \ar[d, equal, loose]\\
+                            \& \ar[ul, loose, "p"] B
+                    \end{tikzcd}}
+                    \adjustbox{scale=0.8}{\begin{tikzcd}[ampersand replacement=\&]
+                            A \ar[r, "f"] \ar[dr, "f"] \& B \ar[d, equal]\\
+                            \& B
+                    \end{tikzcd}}\]
+            \end{enumerate}
+        \end{column}
+        \vrule{}
+        \begin{column}{0.5\textwidth}
+        Dans $\bb X = \cat V-\Dist$
+            \begin{enumerate}
+                \item $\forall c, d, B(fc, fd) \simeqq A(c, d)$.
+                \item $\Lan_ff$ existe et est isomorphe à $\id_B$.
+            \end{enumerate}
+        \end{column}
+    \end{columns}
+    \vspace{\baselineskip}
+    \hrule
+    \vspace{\baselineskip}
+    La densité se définit horizontalement et se récupère grâce au conjoint. On a la caractérisation équivalente
+    \begin{columns}[T]
+        \begin{column}{0.5\textwidth}
+            \[\begin{iffseq}
+                \vec r \To E(g, h)\\
+                p(1, g), \vec r \To p(1, h)
+            \end{iffseq}\]
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \[\begin{iffseq}
+                g \To h\\
+                p(1, g) \To p(1, h)
+            \end{iffseq}\]
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{$j$-Absoluité}
+    Pour $j : A \to E$, $\colim^{\vec p}f$ est $j$-absolue si
+    $$E(j, \colim^{\vec p}f) \simeqq E(j, f) \odot_L \vec p$$
+    $\colim^{\vec p}f$ est préservé par tout les $j\plext g$, en particulier tout les foncteurs préservent les colimites $1_E$-absolues.
+    \vspace{\baselineskip}
+    \pause
+    \hrule
+    \vspace{\baselineskip}
+    \begin{itemize}
+        \item Dans $\cat{Set}-\Dist$, les coégaliseurs split ou les pushouts dans une catégorie de Reedy élégante sont absolus.
+        \item Dans $\cat{Ab}-\Dist$, les biproduits initiaux sont absolus.
+        \item Dans $\overline{\bb R_+}-\Dist$, les limites de suites de Cauchy sont absolues.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Adjonctions et monades horizontales}
+    Postulant l'existence des compositions, on peut définir les notions horizontalement :
+    \begin{columns}[T]
+        \begin{column}{0.5\textwidth}
+            \[\ell \dashv r\]
+            \begin{enumerate}
+                \item $\ell : C \dfrom A$, $r : A \dfrom C$.
+                \item $\eta : \To r\odot\ell$.
+                \item $\varepsilon : \ell, r\To C(1, 1)$.
+            \end{enumerate}
+            \begin{align*}
+                (1_\ell, \varepsilon)(e_\ell, \eta) &= e_\ell & (\varepsilon, 1_r)(\eta, e_r) = e_r
+            \end{align*}
+        \end{column}
+        \vrule{}
+        \begin{column}{0.5\textwidth}
+            \[(t, \mu, \eta)\]
+            \begin{enumerate}
+                \item $t : A \dfrom A$
+                \item $\mu : t, t\To t$
+                \item $\eta : \To t$
+            \end{enumerate}
+            \begin{align*}
+                \mu(\mu, e_t) &= \mu(e_t, \mu) & \mu(\eta, e_t) &= \mu(e_t, \eta) = e_t
+            \end{align*}
+        \end{column}
+    \end{columns}
+    \pause
+    \vspace{\baselineskip}
+    \hrule
+    \vspace{\baselineskip}
+    Lien avec
+    \begin{itemize}
+        \item les flèches pleinement fidèles,
+        \item les adjonctions relatives,
+        \item l'équipement virtuel des monades $\Mod(\bb X)$
+        \item ...
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Adjonctions relatives}
+    \begin{columns}[T]
+        \begin{column}{0.5\textwidth}
+            \begin{enumerate}
+                \item $j : A \to E$
+                \item $\ell : A \to C$
+                \item $r : C \to E$
+                \item $\sharp : C(\ell, 1) \simeqq E(j, r) : \flat$
+            \end{enumerate}
+            \[\adjustbox{scale=0.8}{\begin{tikzcd}[ampersand replacement=\&]
+                \& C \ar[dr, "r", ""{anchor=north,name=radj}] \&\\
+                A \ar[ur, "\ell", ""{anchor=north,name=ladj}] \ar[rr, "j"']  \&\& E
+                \ar[from=ladj, to=radj, phantom, "\dashv"{anchor=center}]
+        \end{tikzcd}}\]
+        De façon équivalente :
+        \begin{enumerate}
+            \item $\eta : j \To r\circ \ell$
+            \item $\varepsilon : C(1, \ell), E(j, r) \To C(1, 1)$
+        \end{enumerate}
+        \end{column}
+        \vrule{}
+        \begin{column}{0.5\textwidth}
+            On retrouve$^*$ :
+            \begin{enumerate}
+                \item Essentielle unicité des adjoints.
+                \item Préservation des (co)limites.
+                \item Construction des adjoints comme extension ou relèvement de Kan.
+                \[\adjustbox{scale=0.8}{\begin{tikzcd}[ampersand replacement=\&]
+                    \&  C \ar[dr, "r"] \&\\
+                    A \ar[ur, dashed, "j\plift r"] \ar[rr, "j"'] \&{}\& E
+                    \ar[from=1-2, to=2-2, phantom, "\dashv"{anchor=center}]
+                \end{tikzcd}}\]
+            \end{enumerate}
+            \vspace{\baselineskip}
+            \hrule
+            \vspace{\baselineskip}
+            \[C(1, \ell) \dashv E(j, r)\]
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Constructions}
+    \begin{columns}[T]
+        \begin{column}{0.5\textwidth}
+            Précomposition :
+            \[\adjustbox{scale=0.8}{\begin{tikzcd}[ampersand replacement=\&]
+                    \&\&C\ar[dr, "r"]\&\\
+                    A \ar[r, "\ell'"] \& B \ar[ur, "\ell"] \ar[rr, "j"'] \&{}\& D
+                    \ar[from=1-3, to=2-3, phantom, "\dashv"{anchor=center}]
+                \end{tikzcd}}\]
+                \[\adjustbox{scale=0.8}{\begin{tikzcd}[ampersand replacement=\&]
+                    \&C\ar[dr, "r"]\&\\
+                    A \ar[ur, "\ell\ell'"] \ar[rr, "j\ell'"'] \&{}\& D
+                    \ar[from=1-2, to=2-2, phantom, "\dashv"{anchor=center}]
+                \end{tikzcd}}\]
+        \end{column}
+        \vrule{}
+        \begin{column}{0.5\textwidth}
+            Collage :
+            \[\adjustbox{scale=0.8}{\begin{tikzcd}[ampersand replacement=\&]
+                \&C \ar[dr, "r"] \&\&\\
+                \&\& \ar[dr, "r'", ""{anchor=center,name=r_}] D \&\\
+                A \ar[uur, "\ell"] \ar[urr, "\ell'", ""{anchor=center,name=l_}] \ar[rrr, "j"'] \&\&\& E\\
+                \ar[from=l_, to=r_, phantom, "\dashv", shift right]
+            \end{tikzcd}}\]
+        \end{column}
+    \end{columns}
+    \vspace{\baselineskip}
+    \hrule
+    \vspace{\baselineskip}
+    Postcomposition :
+    \[\adjustbox{scale=0.8}{\begin{tikzcd}[ampersand replacement=\&]
+        \&C\ar[dr, "r"]\&\&\\
+        A \ar[ur, "\ell"] \ar[rr, "j"'] \&{}\& B \ar[r, "r'", hook] \& D
+        \ar[from=1-2, to=2-2, phantom, "\dashv"{anchor=center}]
+    \end{tikzcd}}
+    \hspace{0.5em}
+    \implies
+    \hspace{0.5em}
+    \adjustbox{scale=0.8}{\begin{tikzcd}[ampersand replacement=\&]
+        \&C\ar[dr, "r'r"]\&\\
+        A \ar[ur, "\ell"] \ar[rr, "r'j"'] \&{}\& D
+        \ar[from=1-2, to=2-2, phantom, "\dashv"{anchor=center}]
+    \end{tikzcd}}\]
+\end{frame}
+
+\begin{frame}{Monades relatives}
+    \begin{columns}[T]
+        \begin{column}{0.5\textwidth}
+            \[T := (t, \dag, \eta)\]
+            \begin{enumerate}
+                \item $j : A \to E$
+                \item $t : A \to E$
+                \item $\dag : E(j, t) \To E(t, t)$
+                \item $\eta : j \To t$
+            \end{enumerate}
+            Source : Adjonctions relatives
+        \end{column}
+        \vrule{}
+        \begin{column}{0.5\textwidth}
+            \begin{center}
+                Constructions
+            \end{center}
+            \begin{enumerate}
+                \item $C(1, \ell) \dashv E(j, r)$ induit $E(j, T)$.
+                \item Précomposition
+                \item Collage
+                    \[\adjustbox{scale=0.8}{\begin{tikzcd}[ampersand replacement=\&]
+                            \& D \ar[dr, "r"] \&\\
+                            A \ar[ur, "\ell"{description}, ""{anchor=center,name=ell}] \ar[ur, "t", bend left=50, ""{anchor=center,name=t}] \ar[rr, "j"'] \&{}\& E
+                            \ar[from=ell, to=t, Rightarrow, "\eta"'] \ar[from=1-2, to=2-2, phantom, "\dashv"{anchor=center}]
+                    \end{tikzcd}}\]
+            \end{enumerate}
+        \end{column}
+    \end{columns}
+    \vspace{\baselineskip}
+    \hrule
+    \vspace{\baselineskip}
+    \[\adjustbox{scale=0.8}{\begin{tikzcd}[ampersand replacement=\&]
+            \& B \ar[r, "j"{description}] \ar[r, "t", bend left=50] \& D \ar[dr, "r", ""{anchor=center,name=r_}] \&\\
+            A \ar[ru, "\ell"] \ar[rru, "j\ell"{description}, ""{anchor=center,name=jl}] \ar[rrr, "j"'] \&\&\& E
+            \ar[from=jl, to=r_, phantom, "\dashv"{anchor=center}]
+    \end{tikzcd}}\]
+\end{frame}
+
+\begin{frame}{Algèbres}
+    \[T = (t, \dag, \eta)\]
+    \begin{columns}[T]
+        \begin{column}{0.5\textwidth}
+            \begin{enumerate}
+                \item $D$
+                \item $e : D \to E$
+                \item $\rtimes : E(j, e) \To E(t, e)$
+            \end{enumerate}
+            \[E(\eta, e)\rtimes = e_{E(j, e)}\]
+            \[\smallsmile_t(t, e)(\dag, \rtimes) = \rtimes\smallsmile_t(j, e)(e_{E(j, t)}, \rtimes)\]
+            \vspace{\baselineskip}
+            \hrule
+            \vspace{\baselineskip}
+            Morphisme $\vec p$-gradué $(e, \rtimes) \to (e', \rtimes')$
+            \[\varepsilon : \vec p \To E(e, e')\]
+        \end{column}
+        \vrule{}
+        \begin{column}{0.5\textwidth}
+            \[(u_T : \Alg(T) \to E, \rtimes_T)\]
+            \begin{enumerate}
+                \item $(e, \rtimes)$ se factorise en $e = u_T\unit_{(e, \rtimes)}$ et $\rtimes = \rtimes_T(1, \unit_{(e, \rtimes)})$.
+                \item $\varepsilon : E(1, e), \vec p \To E(1, e')$ se factorise en $\varepsilon = E(1, u_T), \unit_\varepsilon$ avec
+            \end{enumerate}
+            $$\unit_\varepsilon :\Alg(T)(1, \unit_{(e, \rtimes)}), \vec p \To \Alg(1, \unit_{(e', \rtimes')})$$
+            \vspace{\baselineskip}
+            \hrule
+            \vspace{\baselineskip}
+            \[\adjustbox{scale=0.8}{\begin{tikzcd}[ampersand replacement=\&]
+                \& \Alg(T) \ar[dr, "u_T"] \&\\
+                A \ar[ur, "f_T"] \ar[rr, "j"'] \&{}\& E
+                \ar[from=1-2, to=2-2, phantom, "\dashv"{anchor=center}]
+            \end{tikzcd}}\]
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Résolutions}
+    Soit $T$ admettant un objet en algèbre et un objet en opalgèbre.
+    \begin{itemize}
+        \item $f_T\dashv_ju_T$ est terminale.
+        \item $k_T\dashv_jv_T$ est initiale.
+        \item Il existe un unique $i_T : \Opalg(T) \to \Alg(T)$ tel que
+        \[\begin{tikzcd}[ampersand replacement=\&]
+            {\Opalg(T)} \ar[r, "i_T"] \& {\Alg(T)}\\
+            A \ar[u, "k_T"] \ar[ur, "f_T"']
+        \end{tikzcd}
+        \hspace{3em}
+        \begin{tikzcd}[ampersand replacement=\&]
+            {\Opalg(T)} \ar[r, "i_T"] \ar[dr, "v_T"'] \& {\Alg(T)} \ar[d, "u_T"]\\
+                                                      \& E
+        \end{tikzcd}\]
+    \end{itemize}
+    \vspace{\baselineskip}
+    \hrule
+    \vspace{\baselineskip}
+    Dans $\bb X = \cat V-\Dist$:
+    \begin{columns}[T]
+        \begin{column}{0.65\textwidth}
+            \begin{itemize}
+                \item Tout monade relative admet un objet en opalgèbres.
+                \item Si $\cat V$ est fermée et admet les égaliseurs, tout $j$-monade admet un objet en algèbres.
+            \end{itemize}
+        \end{column}
+        \vrule{}
+        \begin{column}{0.35\textwidth}
+            \begin{itemize}
+                \item $\cat V$-Catégorie de Kleisli.
+                \item $\cat V$-Catégorie d'Eilenberg-Moore.
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Objets en préfaisceaux}
+    \begin{columns}[T]
+        \begin{column}{0.5\textwidth}
+            $A$ un objet, $\PP$ une classe de distributeurs
+            \begin{enumerate}
+                \item $\pi_A^\PP : A \dfrom \psh\PP A$ dense
+                \item $\forall p : A \dfrom X \in \PP, \exists! \widearc p : X \to \psh\PP A, p = \pi_A^\PP(1, \widearc p)$
+                \item $\forall f : X \to \psh\PP A, \pi_A^\PP(1, f)\in\PP$
+            \end{enumerate}
+        \end{column}
+        \vrule{}
+        \begin{column}{0.5\textwidth}
+            Dans $\bb X = \cat V-\Dist$, $\PP = \ca P$. $\psh\PP A$ a:
+            \begin{enumerate}
+                \item Objets: $\cat V$-préfaisceaux sur $A$
+                \item $\psh\PP A(f, g) = \int_{a\in A}\cat V(f(a), g(a))$
+                \item $\pi_A^\PP(a, f) = f(a)$
+            \end{enumerate}
+        \end{column}
+    \end{columns}
+    \vspace{\baselineskip}
+    \hrule
+    \vspace{\baselineskip}
+    Premières propriétés
+    \begin{columns}[T]
+        \begin{column}{0.75\textwidth}
+            \begin{enumerate}
+                \item $\psh\PP A(\widearc{p}, \widearc{q}) \simeqq q \rift p$
+                \item $\colim^{\vec p}\widearc q$ existe si et seulement si $(q\odot\vec p)\in\PP^\simeqq$.
+                \item Si $A(1, 1)$, $\yo_A^\PP := \widearc{A(1, 1)}$ et $\psh\PP A(\yo_A^\PP, 1) \simeqq \pi_A^\PP$.
+                \item $\yo_A^\PP$ dense, pleinement fidèle et crée les limites pondérées.
+            \end{enumerate}
+        \end{column}
+        \begin{column}{0.25\textwidth}
+            \hspace{-5em}
+            \begin{tikzcd}[ampersand replacement=\&]
+                    \psh\PP A \ar[rr, hook, "\widearc{\pi_A^\PP}"] \&\& \psh{\PP'}A\\
+                                                                   \& \ar[lu, "\yo_A^\PP"] A \ar[ru, "\yo_A^{\PP'}"']
+            \end{tikzcd}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Cocomplétions}
+    $A$ un objet, $\Phi$ une classe de poids
+    \begin{enumerate}
+        \item $\coce\Phi A : A  \to \coc\Phi A$
+        \item $\coc\Phi A$ est $\Phi$-cocomplète
+        \item Toute flèche $f : A \to X$ avec $X$ cocomplet se factorise en $f \simeqq \tilde{f} \circ \coce\Phi A$ avec $\tilde f  = \coce\Phi A \plext f : \coc\Phi A \to X$.
+        \item Tout distributeur $p$ s'écrit $p \simeqq \tilde p(\coce\Phi A, 1)$ avec $\tilde p = p\rift\coc\Phi A(\coce\Phi A, 1) : \coc\Phi A \dfrom X$.
+    \end{enumerate}
+    \pause
+    \vspace{\baselineskip}
+    \hrule
+    \vspace{\baselineskip}
+    \begin{itemize}
+        \item $\coce\Phi A : A \to \coc\Phi A$ est pleinement fidèle et dense.
+        \item Si les $\tilde p \simeqq p\rift\coc\Phi A(\coce\Phi A, 1)$ sont représentables par $\widearc p$, cette flèche est essentiellement unique avec cette propriété : $\pi_A(1, \widearc p) \simeqq p$ avec $\pi_A := \coc\Phi A(\coce\Phi A, 1)$.
+    \end{itemize}
+    Une cocomplétion est \textit{presque} un objet en préfaisceaux. La distinction décèle le problème de \textbf{taille}.
+\end{frame}
+
+\begin{frame}{Cocomplétions comme objets en préfaisceaux}
+    \begin{columns}[T]
+        \begin{column}{0.5\textwidth}
+            $\Phi$, $\PP$ et $A$ un objet $\PP$-admissible tels que
+            \begin{enumerate}
+                \item $\forall\vec p\in\Phi, q\in\PP, q\odot_L\vec p\in\PP^\simeqq$.
+                \item Tout les relèvements à droite par $\pi_A^\PP : A \dfrom \psh\PP A$ existent.
+                \item $\Phi$ induit les $\pi_A^\PP$-colimites.
+            \end{enumerate}
+            Alors $\yo_A^\PP : A \to \psh\PP A$ est la $\Phi$-cocomplétion de $A$.
+        \end{column}
+        \vrule{}
+        \begin{column}{0.5\textwidth}
+            Dans $\bb X = \cat V-\Dist$, $A$ petit et tel que tout $p\in\Phi$ a un petit codomaine.\\
+            $\coc\Phi A \hookrightarrow \psh\PP A$ est la plus petite sous-$\cat V$-catégorie
+            \begin{itemize}
+                \item Contenant les représentables
+                \item Close par $\Phi$-colimites.
+            \end{itemize}
+        \end{column}
+    \end{columns}
+    \vspace{\baselineskip}
+    \hrule
+    \vspace{\baselineskip}
+    \begin{itemize}
+        \item Si $\PP$ clôse par composées à gauche, $\psh\PP A$ est $\PP$-complet.
+        \item Si $\pi_A^\PP$ relève à droite, $\yo_A^\PP$ exhibe la $\PP$-cocomplétion de $A$.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Dualité d'Isbell}
+    Si $\psh\PP A(1, \yo_A^\PP), \copsh\PP A(\oy_A^\PP, 1)\in\PP^\simeqq$:
+    \[\adjustbox{scale=0.8}{\begin{tikzcd}[ampersand replacement=\&]
+            \ca{O} : \psh\PP A \ar[r, bend left=15, ""{name=O, below}] \& \ar[l, bend left=15, ""{name=Spec, above}] \copsh\PP A : \Spec \ar[from=O, to=Spec, adj]
+    \end{tikzcd}}\]
+    Avec $\ca O = \yo_A^\PP \plext \oy_A^\PP$ et $\Spec = \oy_A^\PP \prext \yo_A^\PP$.
+    \[\adjustbox{scale=0.8}{\begin{tikzcd}[ampersand replacement=\&]
+            \ar[dd, hook, "\widearc{\pi_A^\PP}"'] \psh\PP A \ar[rr, bend left=15, "\ca{O}", ""{anchor=center,name=O}] \&\& \ar[ll, bend left=15, "\Spec", ""{anchor=center,name=Spec}] \copsh\PP A \ar[dd, hook, "\widebreve{\ip_A^\PP}"] \\
+            \& A \ar[ul, "\yo_A^\PP"] \ar[ur, "\oy_A^\PP"'] \ar[dl, "\yo_A^{\PP'}"'] \ar[dr, "\oy_A^{\PP'}"]\&\\
+            \psh{\PP'} A \ar[rr, bend left=15, "\ca{O}'", ""{anchor=center,name=O_}] \&\& \ar[ll, bend left=15, "\Spec'", ""{anchor=center,name=Spec_}] \copsh{\PP'} A \\
+            \ar[from=O, to=Spec, adj] \ar[from=O_, to=Spec_, adj]
+    \end{tikzcd}}\]
+\end{frame}
+
+\begin{frame}{Point fixe de l'adjonction}
+    D'après \cite{averyleinster}, adapté pour un équipement virtuel.
+    \begin{enumerate}
+        \item Une flèche $x_A : X \to \psh\PP A$ est réflexive si $\eta : A \to \Spec\circ\ca O$ induit un isomorphisme $\eta x_A : x_A \to \Spec\circ\ca O\circ x_A$.
+        \item Une complétion reflexive est une flèche f.f. et  réflexive $\ca r_A^\PP : \ca R^\PP(A) \to \psh\PP A$ à travers laquelle toutes les flèches réflexives se factorisent.
+            \begin{itemize}
+                \item $\yo_A^\PP$ est réflexive
+            \end{itemize}
+    \end{enumerate}
+    \vspace{\baselineskip}
+    \hrule
+    \vspace{\baselineskip}
+    Problème : l'étude d'Avery et Leinster se base sur les \textbf{petits} $\cat V$-préfaisceaux.
+\end{frame}
+
+\begin{frame}{Propriété universelle du point fixe (1)}
+    Une flèche est $\PP$-petite si son nerf $B(f, 1)$ est dans $\PP^\simeqq$. Elle est adéquate si elle est dense, codense et pleinement fidèle, et $\PP$-adéquate si elle est de plus $\PP$-petite et copetite.
+    \begin{itemize}
+        \item Stables par composition.
+        \item $\ca J_A^\PP$ induite par $\yo_A^\PP$ est $\PP$-adéquate.
+        \item Pour $f$ f.f., dense et $\PP$-petite, $n_f^\PP$ réflexive si et seulement si $f$ $\PP$-adéquate.
+    \end{itemize}
+    Pour $f$ $\PP$-adéquate, $\ca r_f^\PP$ induite par $n_f^\PP$ est adéquate et unique telle que
+    \[\adjustbox{scale=0.8}{\begin{tikzcd}[ampersand replacement=\&]
+            B \ar[rr, "\ca{r}_f^\PP"] \&\& \ca{R}^\PP(A)\\
+            \& A \ar[ul, "f"] \ar[ur, hook, "\ca{J}_A^\PP"'] \&
+    \end{tikzcd}}\]
+\end{frame}
+
+\begin{frame}{Propriété universelle du point fixe (2)}
+    \begin{itemize}
+        \item Cette construction est fonctorielle.
+        \item $\ca r_f^\PP$ est $\PP$-adéquate si et seulement si $\ca R^\PP(f)$ l'est si et seulement si $\ca R^\PP(f)$ est une équivalence.
+        \item Si on peut l'itérer, $\ca R^\PP(A) \simeq \ca R^\PP (\ca R^\PP(A))$.
+        \item En particulier $\ca J_A^\PP$ est une équivalence si $A$ est une complétion réflexive.
+        \item $\ca J_A^\PP$ préserve et réfléchit les (co)limites pondérées, $\ca r_A^\PP$ préserve les limites et réfléchit les (co)limites pondérées.
+        \item $\ca R^\PP(A)$ est stable par les colimites absolues que $\psh\PP A$ admet.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Bibliographie}
+    \nocite{*}
+    \printbibliography[heading=bibintoc]
+\end{frame}
+
+\begin{frame}{Opalgèbres}
+    \[T = (t, \dag, \eta)\]
+    \begin{columns}[T]
+        \begin{column}{0.5\textwidth}
+            \begin{enumerate}
+                \item $B$
+                \item $a : A \to B$
+                \item $\ltimes : E(j, t) \To B(a, a)$
+            \end{enumerate}
+            \[\smallfrown_a = \ltimes E(j, \eta)\smallfrown_j\]
+            \[\ltimes\smallsmile_t(j, t)(e_{E(j, t)}, \dag) = \smallsmile_a(a, a)(\ltimes, \ltimes)\]
+            \vspace{\baselineskip}
+            \hrule
+            \vspace{\baselineskip}
+            Morphisme $\vec p$-gradué $(a, \ltimes) \to (a', \ltimes')$
+            \[\alpha : \vec p, B(1, a) \To B'(1, a')\]
+        \end{column}
+        \vrule{}
+        \begin{column}{0.5\textwidth}
+            \[(k_T : A \to \Opalg(T), \ltimes_T)\]
+            \begin{enumerate}
+                \item $(a, \ltimes)$ se factorise en $a = []_{(a, \ltimes)}k_T$ et $\ltimes = []_{(a, \ltimes)}\ltimes_T$.
+                \item $\alpha : \vec p, B(1, a) \To B(1, a')$ se factorise en $\alpha = []_\alpha(1, k_T)$ avec
+            \end{enumerate}
+            \[[]_\alpha : \vec p, \Opalg(T)(1, []_{(a, \ltimes)}) \To B'(1, []_{(a', \ltimes')})\]
+            \vspace{\baselineskip}
+            \hrule
+            \vspace{\baselineskip}
+            \[\adjustbox{scale=0.8}{\begin{tikzcd}[ampersand replacement=\&]
+                \& \Opalg(T) \ar[dr, "v_T"] \&\\
+                A \ar[ur, "k_T"] \ar[rr, "j"'] \&{}\& E
+                \ar[from=1-2, to=2-2, phantom, "\dashv"{anchor=center}]
+            \end{tikzcd}}\]
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\end{document}

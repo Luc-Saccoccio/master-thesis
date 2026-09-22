@@ -8,7 +8,7 @@
 \usepackage{xcolor}                                    % \textcolor
 \usepackage[framemethod=tikz]{mdframed}                % theorem styling
 \usepackage{unicode-math}                              % fonts
-\usepackage{memoize}                                   
+% \usepackage{memoize}                                   
 \usepackage{wrapfig}
 \usepackage{booktabs}                                  % cmidrules
 \usepackage{tikz-cd}                                   % diagrams
@@ -157,7 +157,7 @@
 }
 
 % memoize config
-\mmzset{prefix=diagrams/,mkdir,auto={tikzcd}{memoize,verbatim}}
+% \mmzset{prefix=diagrams/,mkdir,auto={tikzcd}{memoize,verbatim}}
 
 % Frames for math env
 \usetikzlibrary{calc}
@@ -2149,7 +2149,7 @@ We are in fact interested in when a relative monad is induced by a relative adju
 \end{proof}
 
 \begin{corollary}
-    Let $(\ell_2\ell_1\dashv_j r$ a relative adjunction with unit $\eta$. The unit then exhibits a relative adjunction $\ell_1\dashv_jr\ell_2$ if and only if the identity $e_{\ell_2\ell_2}$ exhibits a relative adjunction $\ell_1\dashv_{\ell_2\ell_1}\ell_2$. In this case, the induced $j$-monads are identical.
+    Let $(\ell_2\ell_1\dashv_j r)$ a relative adjunction with unit $\eta$. The unit then exhibits a relative adjunction $\ell_1\dashv_jr\ell_2$ if and only if the identity $e_{\ell_2\ell_2}$ exhibits a relative adjunction $\ell_1\dashv_{\ell_2\ell_1}\ell_2$. In this case, the induced $j$-monads are identical.
     \[\begin{tikzcd}
         B \ar[r, "\ell_2"] & C \ar[dr, "r"] &\\
         A \ar[u, "\ell_1"] \ar[ur, "\ell_2\ell_1"{description}] \ar[rr, "j"'] &{}& E
@@ -3214,11 +3214,11 @@ The deviation in notation from \cite{arkor2026presheavescocompletionsformalcateg
 \begin{lemma}
     \label{lem:pp_admisible}
     Let $A$ be a $\PP$-admissible object.
-    \begin{itemize}[ref=\ref{lem:pp_admissible} (\alph*)]
+    \begin{enumerate}[ref=\ref{lem:pp_admissible} (\alph*)]
         \item \label{lem:pp_admissible:yoneda} (Yoneda Lemma) There's an isomorphism $\psh\PP A(\yo_A^\PP, 1) \simeq \pi_A$.
         \item $\yo_A^\PP$ is dense, fully faithful and creates weighted limits.
         \item For each weight $p\in\PP$, $\widearc{p}$ is the $\yo_A^\PP$-absolute $p$-weighted colimit of $\yo_A^\PP$.
-    \end{itemize}
+    \end{enumerate}
 \end{lemma}
 
 \begin{proof}\hfill
